@@ -84,9 +84,9 @@ export default function HomePage() {
   const bannerLabel =
     activeLesson.state.key === "completed"
       ? "Natapos na ang araling ito sa browser na ito"
-      : activeLesson.state.key === "in-progress"
-        ? `${bannerPercent}% ang pinakamahusay na sagot sa pagsusulit ng aralin`
-        : "Hindi pa nasisimulan — wala pang pagtatangka sa pagsusulit";
+      : activeLesson.bestPercent === null
+        ? "Wala pang pagtatangka sa pagsusulit — simulan ang aralin"
+        : `${bannerPercent}% ang pinakamahusay na sagot sa pagsusulit ng aralin`;
 
   return (
     <div className="space-y-4 pt-1">
