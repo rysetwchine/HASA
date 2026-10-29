@@ -571,7 +571,7 @@ export const demoFeaturedChallenge = {
     xpLabel: "+50 XP",
     passPercent: 60,
     timerSeconds: 90,
-    cta: "Play featured challange",
+    cta: "Play featured challenge",
   },
   streakLabel: "DAILY STREAK     4 DAYS",
   streakHeadline: "Ready for a quick brain boost?",

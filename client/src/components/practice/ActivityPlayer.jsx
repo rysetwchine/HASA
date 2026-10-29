@@ -181,7 +181,9 @@ export default function ActivityPlayer({ activity, onClose }) {
           </div>
 
           <ProgressBar
-            value={current}
+            // Bilang ng nasagutan, hindi index ng tanong: dating 0% ito sa
+            // unang tanong kahit nakabukas na ang player.
+            value={current + (submitted ? 1 : 0)}
             max={Math.max(1, totalQuestions)}
             tone="brand"
             size="sm"

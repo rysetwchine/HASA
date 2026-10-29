@@ -141,7 +141,8 @@ export default function SimplifyPage() {
         description="Ito ay STATIC na halimbawa mula sa demo data. Hindi ito ang output ng pindutang Pasimplehin."
       >
         <Alert variant="warning" title="Hindi gawa ng AI">
-          {DEMO_AI_NOTICE}
+          {DEMO_AI_NOTICE} Hindi rin ito nagbabago ayon sa antas na pinili mo sa
+          hakbang 02 — iisa ang halimbawang teksto sa prototype.
         </Alert>
 
         <div

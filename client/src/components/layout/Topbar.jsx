@@ -20,8 +20,7 @@ export default function Topbar() {
       {/* Pangkat ng antas */}
       <div className="flex items-center gap-3">
         <div
-          className="flex h-[52px] w-[52px] shrink-0 flex-col items-center justify-center rounded-full bg-canvas pointer-events-none"
-          style={{ boxShadow: `0 0 0 5px #aeaec4` }}
+          className="pointer-events-none flex h-[52px] w-[52px] shrink-0 flex-col items-center justify-center rounded-full bg-canvas shadow-[0_0_0_5px_#aeaec4]"
           aria-hidden="true"
         >
           <span className="text-[15px] font-extrabold leading-none text-plum-800">
@@ -63,7 +62,10 @@ export default function Topbar() {
           >
             {demoStudent.avatarInitials}
           </span>
-          <div className="min-w-0">
+          {/* Sa maliit na screen, ang pangalan ay nakaimbak sa avatar na
+              may initial at sa sr-only na teksto upang manatiling isang
+              linya ang Topbar. */}
+          <div className="hidden min-w-0 sm:block">
             <p className="text-[19px] font-semibold leading-tight text-ink">
               {demoStudent.displayName}
             </p>
@@ -71,6 +73,10 @@ export default function Topbar() {
               {demoStudent.gradeShort} · {demoStudent.sectionShort}
             </p>
           </div>
+          <span className="sr-only sm:hidden">
+            {demoStudent.displayName} · {demoStudent.gradeShort} ·{" "}
+            {demoStudent.sectionShort}
+          </span>
         </div>
         <span className="sr-only">{DEMO_STUDENT_LABEL}</span>
       </div>

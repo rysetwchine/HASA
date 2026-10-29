@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router";
 import {
   Award,
@@ -5,7 +6,9 @@ import {
   Flame,
   History,
   ListChecks,
+  RotateCcw,
   Sparkles,
+  TrendingUp,
   XCircle,
 } from "lucide-react";
 import PageHeader from "../../components/ui/PageHeader.jsx";
@@ -14,6 +17,8 @@ import Alert from "../../components/ui/Alert.jsx";
 import Card from "../../components/ui/Card.jsx";
 import Chip from "../../components/ui/Chip.jsx";
 import ProgressBar from "../../components/ui/ProgressBar.jsx";
+import Modal from "../../components/ui/Modal.jsx";
+import Button from "../../components/ui/Button.jsx";
 import { useProgress } from "../../app/ProgressProvider.jsx";
 import { getLevelProgress } from "../../data/demoData.js";
 import {
@@ -22,7 +27,6 @@ import {
   getCompletedActivities,
   getXpBreakdown,
 } from "../../services/progressStore.js";
-import iconHeaderRewards from "../../assets/images/rewards/icon-header-rewards.png";
 
 const DATE_FORMAT = new Intl.DateTimeFormat("en-PH", {
   month: "short",
@@ -44,7 +48,8 @@ function formatDate(value) {
  * Malinaw na nakasaad na temporaryong localStorage ang persistence.
  */
 export default function ProgressPage() {
-  const { progress } = useProgress();
+  const { progress, resetProgress, storageAvailable } = useProgress();
+  const [resetOpen, setResetOpen] = useState(false);
   const level = getLevelProgress(progress.xp);
   const badges = getBadgeStates(progress);
   const earnedBadges = badges.filter((badge) => badge.earned);
@@ -59,8 +64,8 @@ export default function ProgressPage() {
   return (
     <div className="space-y-6 pt-1">
       <PageHeader
-        icon={iconHeaderRewards}
-        kicker="YOUR COLLECTION"
+        icon={<TrendingUp className="h-12 w-12" strokeWidth={2.5} />}
+        kicker="YOUR JOURNEY"
         title="PROGRESS"
         description="Tingnan ang iyong XP, streak, at mga natapos na aktibidad."
       />
@@ -85,10 +90,20 @@ export default function ProgressPage() {
               {level.level + 1}.
             </p>
           </div>
-          <Chip tone="brand">
-            <Sparkles className="h-3 w-3" aria-hidden="true" />
-            +{xpBreakdown.activityXp + xpBreakdown.badgeXp} XP mula sa Practice
-          </Chip>
+          <div className="flex flex-col items-start gap-2 sm:items-end">
+            <Chip tone="brand">
+              <Sparkles className="h-3 w-3" aria-hidden="true" />
+              +{xpBreakdown.activityXp + xpBreakdown.badgeXp} XP mula sa Practice
+            </Chip>
+            <button
+              type="button"
+              onClick={() => setResetOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs font-semibold text-muted transition-colors hover:border-line-dark hover:text-ink"
+            >
+              <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
+              I-reset ang pag-unlad
+            </button>
+          </div>
         </div>
 
         <ProgressBar
@@ -308,6 +323,43 @@ export default function ProgressPage() {
         sa iyong mga aktibidad sa browser na ito. Hindi ito totoong rekord ng
         mag-aaral at walang backend.
       </DemoNotice>
+
+      <Modal
+        open={resetOpen}
+        onClose={() => setResetOpen(false)}
+        size="sm"
+        eyebrow="Browser storage"
+        title="I-reset ang pag-unlad?"
+        subtitle="Pansamantala lamang ito para sa prototype. Walang server na maaapektuhan."
+      >
+        <p className="text-sm leading-relaxed text-muted">
+          Burahin ang XP, streak, badges, best scores, at kasaysayan ng
+          aktibidad na naka-save sa browser na ito. Hindi na ito maibabalik.
+        </p>
+
+        {storageAvailable ? null : (
+          <Alert variant="warning" title="Naka-block ang storage" className="mt-3">
+            Hindi maisave ang pag-unlad sa browser na ito, kaya wala ring
+            maibabalik sa dating halaga.
+          </Alert>
+        )}
+
+        <div className="mt-5 flex flex-wrap gap-2.5">
+          <Button
+            variant="danger"
+            onClick={() => {
+              resetProgress();
+              setResetOpen(false);
+            }}
+          >
+            <RotateCcw className="h-4 w-4" aria-hidden="true" />
+            Oo, i-reset
+          </Button>
+          <Button variant="secondary" onClick={() => setResetOpen(false)}>
+            Kanselahin
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }

@@ -72,6 +72,8 @@ function LessonCard({ lesson }) {
         <img
           src={THUMBS[lesson.thumb]}
           alt=""
+          loading="lazy"
+          decoding="async"
           className="h-[188px] w-full rounded-[15px] object-cover"
           aria-hidden="true"
         />
@@ -162,7 +164,13 @@ export default function LessonsPage() {
   const lessons = useMemo(() => {
     const q = query.trim().toLowerCase();
     return demoFigmaLessons.filter((lesson) => {
-      if (q && !lesson.title.toLowerCase().includes(q)) return false;
+      if (
+        q &&
+        !lesson.title.toLowerCase().includes(q) &&
+        !lesson.label.toLowerCase().includes(q)
+      ) {
+        return false;
+      }
       if (filter === "all") return true;
       if (filter === "completed") return lesson.status === "completed";
       return lesson.difficultyKey === filter;
@@ -173,12 +181,19 @@ export default function LessonsPage() {
     <div className="space-y-6">
       <h1 className="sr-only">Araling Panlipunan</h1>
 
-      {/* Banner na may nakaukit na pamagat mula sa Figma — huwag magdagdag
-          ng teksto sa ibabaw para walang dobleng teksto. */}
-      <div className="-mx-4 -mt-5 sm:-mx-6 xl:-mx-12 xl:-mt-7 2xl:-mx-14">
+      {/*
+       * Banner na may nakaukit na pamagat mula sa Figma — huwag magdagdag
+       * ng teksto sa ibabaw para walang dobleng teksto.
+       * Full-bleed lamang sa gilid: dating may `-mt-5/-mt-7` din ito, na
+       * humihila sa banner pataas at nagpapatong dito sa Topbar.
+       */}
+      <div className="-mx-4 sm:-mx-6 xl:-mx-12 2xl:-mx-14">
         <img
           src={bannerLessons}
           alt="Araling Panlipunan — Hi, Siri! Continue your lesson and learn something new."
+          width={2470}
+          height={576}
+          fetchPriority="high"
           className="w-full object-cover"
         />
       </div>

@@ -3,7 +3,6 @@ import { Link } from "react-router";
 import { Eye, EyeOff } from "lucide-react";
 import AuthShell from "../../components/layout/AuthShell.jsx";
 import Alert from "../../components/ui/Alert.jsx";
-import { cx } from "../../utils/cx.js";
 import { demoStudent } from "../../data/demoData.js";
 
 import logoHasa from "../../assets/images/brand/logo-hasa.png";
@@ -12,8 +11,7 @@ import featAi from "../../assets/images/auth/feat-ai.png";
 import featTrack from "../../assets/images/auth/feat-track.png";
 import inputUser from "../../assets/images/auth/input-user.png";
 import inputLock from "../../assets/images/auth/input-lock.png";
-import roleStudent from "../../assets/images/auth/role-student.png";
-import roleTeacher from "../../assets/images/auth/role-teacher.png";
+import RoleTabs from "../../components/auth/RoleTabs.jsx";
 
 const REMEMBER_KEY = "hasa:remembered-username";
 
@@ -109,7 +107,7 @@ export default function LoginPage() {
             aria-hidden="true"
           />
 
-          <div className="relative mt-auto">
+          <div className="relative my-auto">
             <h1 className="font-sans text-[40px] font-bold leading-[1.18] tracking-tight text-white 2xl:text-[55px]">
               HASA: TARA, MATUTO AT MAHASA!
             </h1>
@@ -156,36 +154,7 @@ export default function LoginPage() {
             </p>
 
             {/* Role tabs */}
-            <div
-              role="tablist"
-              aria-label="Uri ng account"
-              className="mt-10 grid grid-cols-2 gap-6"
-            >
-              {[
-                { id: "student", label: "Student", icon: roleStudent },
-                { id: "teacher", label: "Teacher", icon: roleTeacher },
-              ].map(({ id, label, icon }) => (
-                <button
-                  key={id}
-                  type="button"
-                  role="tab"
-                  id={`login-tab-${id}`}
-                  aria-selected={role === id}
-                  aria-controls="login-panel"
-                  tabIndex={role === id ? 0 : -1}
-                  onClick={() => selectRole(id)}
-                  className={cx(
-                    "flex items-center justify-center gap-3 rounded-[11px] border-2 text-[18px] font-medium transition-colors",
-                    role === id
-                      ? "border-plum-800 bg-canvas text-accent-deep shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
-                      : "border-transparent text-ink/70 hover:text-ink",
-                  )}
-                >
-                  <img src={icon} alt="" className="h-8 w-8" aria-hidden="true" />
-                  {label}
-                </button>
-              ))}
-            </div>
+            <RoleTabs value={role} onChange={selectRole} idPrefix="login" />
 
             <form
               id="login-panel"
@@ -218,9 +187,7 @@ export default function LoginPage() {
                     onChange={(event) => setUsername(event.target.value)}
                     aria-invalid={errors.username ? "true" : undefined}
                     aria-describedby={
-                      errors.username
-                        ? "login-username-error"
-                        : "login-username-hint"
+                      errors.username ? "login-username-error" : undefined
                     }
                     placeholder="2026-08421  (e.g. Juan Dela Cruz)"
                     className="h-[50px] w-full rounded-[15px] border border-[#9d9d9d] bg-canvas pl-14 pr-4 text-[15px] text-ink placeholder:text-[#717171] focus:border-plum-800 focus:outline-none"
@@ -260,9 +227,7 @@ export default function LoginPage() {
                     onChange={(event) => setPassword(event.target.value)}
                     aria-invalid={errors.password ? "true" : undefined}
                     aria-describedby={
-                      errors.password
-                        ? "login-password-error"
-                        : "login-password-hint"
+                      errors.password ? "login-password-error" : undefined
                     }
                     placeholder="••••••••"
                     className="h-[50px] w-full rounded-[15px] border border-[#9d9d9d] bg-canvas pl-14 pr-16 text-[15px] tracking-widest text-ink placeholder:text-ink/70 focus:border-plum-800 focus:outline-none"
@@ -281,7 +246,7 @@ export default function LoginPage() {
                     ) : (
                       <Eye className="h-4 w-4" aria-hidden="true" />
                     )}
-                    Show
+                    {showPassword ? "Hide" : "Show"}
                   </button>
                 </div>
               </div>

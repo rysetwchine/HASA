@@ -12,8 +12,7 @@ import featAi from "../../assets/images/auth/feat-ai.png";
 import featTrack from "../../assets/images/auth/feat-track.png";
 import inputUser from "../../assets/images/auth/input-user.png";
 import inputLock from "../../assets/images/auth/input-lock.png";
-import roleStudent from "../../assets/images/auth/role-student.png";
-import roleTeacher from "../../assets/images/auth/role-teacher.png";
+import RoleTabs from "../../components/auth/RoleTabs.jsx";
 
 const FEATURES = [
   { icon: featXp, text: "Earn XP, Badges, and level up as you learn" },
@@ -148,36 +147,7 @@ export default function RegisterPage() {
             </p>
 
             {/* Role tabs */}
-            <div
-              role="tablist"
-              aria-label="Uri ng account"
-              className="mt-10 grid grid-cols-2 gap-6"
-            >
-              {[
-                { id: "student", label: "Student", icon: roleStudent },
-                { id: "teacher", label: "Teacher", icon: roleTeacher },
-              ].map(({ id, label, icon }) => (
-                <button
-                  key={id}
-                  type="button"
-                  role="tab"
-                  id={`register-tab-${id}`}
-                  aria-selected={role === id}
-                  aria-controls="register-panel"
-                  tabIndex={role === id ? 0 : -1}
-                  onClick={() => selectRole(id)}
-                  className={cx(
-                    "flex items-center justify-center gap-3 rounded-[11px] border-2 text-[18px] font-medium transition-colors",
-                    role === id
-                      ? "border-plum-800 bg-canvas text-accent-deep shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
-                      : "border-transparent text-ink/70 hover:text-ink",
-                  )}
-                >
-                  <img src={icon} alt="" className="h-8 w-8" aria-hidden="true" />
-                  {label}
-                </button>
-              ))}
-            </div>
+            <RoleTabs value={role} onChange={selectRole} idPrefix="register" />
 
             <form
               id="register-panel"
@@ -259,7 +229,7 @@ export default function RegisterPage() {
                     ) : (
                       <Eye className="h-4 w-4" aria-hidden="true" />
                     )}
-                    Show
+                    {showPassword ? "Hide" : "Show"}
                   </button>
                 </div>
                 {errors.password ? (

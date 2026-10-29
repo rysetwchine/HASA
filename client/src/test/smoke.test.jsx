@@ -104,7 +104,7 @@ describe("katapatan ng prototype", () => {
     }
 
     await user.click(
-      screen.getByRole("button", { name: /Play featured challange/i }),
+      screen.getByRole("button", { name: /Play featured challenge/i }),
     );
 
     expect(

@@ -65,9 +65,9 @@ export default function HomePage() {
       id: entry.id,
       icon: entry.passed ? "trophy" : "medal",
       title: entry.title,
-      detail: `${entry.correct}/${entry.total} correct · ${entry.percent}%${
-        entry.xpAwarded > 0 ? "" : " · walang bagong XP"
-      }`,
+      detail: `${entry.correct}/${entry.total || entry.correct} correct · ${
+        entry.percent
+      }%${entry.xpAwarded > 0 ? "" : " · walang bagong XP"}`,
       xpLabel: entry.xpAwarded > 0 ? `+${entry.xpAwarded} XP` : "No XP",
       when: relativeDay(entry.completedAt),
     }));

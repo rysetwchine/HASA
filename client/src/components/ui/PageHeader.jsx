@@ -24,11 +24,19 @@ export default function PageHeader({
           className="flex h-[124px] w-[150px] shrink-0 items-center justify-center rounded-[15px] bg-lav-300 max-sm:h-[92px] max-sm:w-[110px]"
           aria-hidden="true"
         >
-          <img
-            src={icon}
-            alt=""
-            className="h-[92px] w-[92px] max-sm:h-[68px] max-sm:w-[68px]"
-          />
+          {typeof icon === "string" ? (
+            <img
+              src={icon}
+              alt=""
+              className="h-[92px] w-[92px] max-sm:h-[68px] max-sm:w-[68px]"
+            />
+          ) : (
+            // Pinapayagan din ang React element (hal. lucide icon) para sa
+            // mga pahinang walang itinalagang PNG sa Figma.
+            <span className="flex h-[92px] w-[92px] items-center justify-center text-plum-800 max-sm:h-[68px] max-sm:w-[68px]">
+              {icon}
+            </span>
+          )}
         </span>
       ) : null}
       <div className="min-w-0 flex-1 pt-1">
