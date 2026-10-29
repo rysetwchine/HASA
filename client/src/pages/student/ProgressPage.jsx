@@ -226,7 +226,7 @@ export default function ProgressPage() {
               </p>
               <p className="mt-1 max-w-md text-xs leading-relaxed text-muted">
                 Pumunta sa Pagsasanay at tapusin ang unang hamon para
-                lumabas dito ang best score mo.
+                lumabas dito ang pinakamahusay na marka mo.
               </p>
               <Link
                 to="/aktibidad"
@@ -332,7 +332,7 @@ export default function ProgressPage() {
         subtitle="Pansamantala lamang ito para sa prototype. Walang server na maaapektuhan."
       >
         <p className="text-sm leading-relaxed text-muted">
-          Burahin ang XP, streak, badges, best scores, at kasaysayan ng
+          Burahin ang XP, streak, mga badge, pinakamahusay na marka, at kasaysayan ng
           aktibidad na naka-save sa browser na ito. Hindi na ito maibabalik.
         </p>
 

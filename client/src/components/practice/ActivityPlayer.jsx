@@ -326,7 +326,7 @@ export default function ActivityPlayer({ activity, onClose }) {
           ) : outcome.alreadyCompleted ? (
             <Alert variant="info" title="Walang bagong XP">
               Nakuha mo na ang XP para sa aktibidad na ito. Ang retry ay
-              nagpapabuti lamang ng best score at hindi na nagbibigay ng
+              nagpapabuti lamang ng pinakamahusay na marka at hindi na nagbibigay ng
               panibagong XP.
             </Alert>
           ) : (
