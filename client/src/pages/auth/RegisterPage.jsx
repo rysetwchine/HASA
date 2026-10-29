@@ -12,17 +12,19 @@ import featAi from "../../assets/images/auth/feat-ai.png";
 import featTrack from "../../assets/images/auth/feat-track.png";
 import inputUser from "../../assets/images/auth/input-user.png";
 import inputLock from "../../assets/images/auth/input-lock.png";
-import roleStudent from "../../assets/images/auth/role-student.png";
-import roleTeacher from "../../assets/images/auth/role-teacher.png";
+import RoleTabs from "../../components/auth/RoleTabs.jsx";
 
 const FEATURES = [
-  { icon: featXp, text: "Earn XP, Badges, and level up as you learn" },
-  { icon: featAi, text: "AI Simplifier turns hard topics into easy one" },
-  { icon: featTrack, text: "Track your progress lesson by lesson" },
+  { icon: featXp, text: "Kumita ng XP at sagisag, at umangat sa bawat pag-aaral" },
+  {
+    icon: featAi,
+    text: "Ginagawang madali ng AI Tagapagpasimple ang mahihirap na paksa",
+  },
+  { icon: featTrack, text: "Subaybayan ang iyong pag-unlad sa bawat aralin" },
 ];
 
 const inputClasses =
-  "h-[50px] w-full rounded-[15px] border border-[#9d9d9d] bg-canvas pl-14 pr-4 text-[15px] text-ink placeholder:text-[#717171] focus:border-plum-800 focus:outline-none";
+  "h-[44px] w-full rounded-[12px] border border-[#9d9d9d] bg-canvas pl-12 pr-3 text-[14px] text-ink placeholder:text-[#717171] focus:border-plum-800 focus:outline-none";
 
 export default function RegisterPage() {
   const [role, setRole] = useState("student");
@@ -90,7 +92,7 @@ export default function RegisterPage() {
     <AuthShell>
       <div className="flex min-h-screen flex-col bg-canvas lg:flex-row">
         {/* Kaliwa: plum panel na may hugis-bilog na dekorasyon */}
-        <section className="relative hidden flex-col overflow-hidden bg-plum-800 px-8 py-14 lg:flex lg:w-[54.6%] lg:px-20 lg:py-24 2xl:px-24">
+        <section className="relative hidden flex-col overflow-hidden bg-plum-800 px-7 py-12 lg:flex lg:w-[52%] lg:px-14 lg:py-16 2xl:px-20">
           <span
             className="pointer-events-none absolute -left-24 -top-28 h-[340px] w-[360px] rounded-full bg-lav-400"
             aria-hidden="true"
@@ -105,24 +107,24 @@ export default function RegisterPage() {
           />
 
           <div className="relative mt-auto">
-            <h1 className="font-sans text-[40px] font-bold leading-[1.18] tracking-tight text-white 2xl:text-[55px]">
+            <h1 className="font-sans text-[28px] font-bold leading-[1.2] tracking-tight text-white lg:text-[34px] 2xl:text-[40px]">
               HASA: TARA, MATUTO AT MAHASA!
             </h1>
-            <p className="mt-4 max-w-[590px] text-[17px] leading-snug text-white 2xl:text-[20px]">
+            <p className="mt-3 max-w-[520px] text-[14px] leading-snug text-white 2xl:text-[16px]">
               Sumali sa HASA at matuto ng Araling Panlipunan sa mas madali at
               masayang paraan
             </p>
 
-            <ul className="mt-11 max-w-[540px] space-y-8">
+            <ul className="mt-8 max-w-[470px] space-y-4">
               {FEATURES.map(({ icon, text }) => (
                 <li key={text} className="flex items-center gap-5">
                   <span
-                    className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[20px] bg-black/60"
+                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-black/60"
                     aria-hidden="true"
                   >
-                    <img src={icon} alt="" className="h-12 w-[52px] object-contain" />
+                    <img src={icon} alt="" className="h-8 w-9 object-contain" />
                   </span>
-                  <p className="text-[18px] font-semibold text-white 2xl:text-[22px]">
+                  <p className="text-[14px] font-semibold text-white 2xl:text-[16px]">
                     {text}
                   </p>
                 </li>
@@ -130,67 +132,38 @@ export default function RegisterPage() {
             </ul>
           </div>
 
-          <p className="relative mt-16 text-[14px] font-medium text-white/60 lg:mt-auto">
+          <p className="relative mt-10 text-[12px] font-medium text-white/60 lg:mt-auto">
             © 2026 HASA — Grade 8 Araling Panlipunan
           </p>
         </section>
 
         {/* Kanan: form ng pagpaparehistro */}
-        <section className="relative flex flex-1 flex-col items-center overflow-hidden px-6 py-14 lg:px-16 lg:py-16">
-          <img src={logoHasa} alt="HASA logo" className="w-[280px] 2xl:w-[340px]" />
+        <section className="relative flex flex-1 flex-col items-center overflow-hidden px-5 py-8 lg:px-10 lg:py-10">
+          <img src={logoHasa} alt="HASA logo" className="w-[190px] 2xl:w-[230px]" />
 
-          <div className="w-full max-w-[560px]">
-            <h1 className="font-display mt-4 text-[30px] font-extrabold text-ink 2xl:text-[36px]">
-              Create an Account
+          <div className="w-full max-w-[480px]">
+            <h1 className="font-display mt-3 text-[23px] font-extrabold text-ink 2xl:text-[27px]">
+              Gumawa ng Account
             </h1>
-            <p className="mt-1 text-[17px] text-ink 2xl:text-[20px]">
+            <p className="mt-1 text-[13.5px] text-ink 2xl:text-[15px]">
               Huwag gumamit ng totoong password sa prototype.
             </p>
 
             {/* Role tabs */}
-            <div
-              role="tablist"
-              aria-label="Uri ng account"
-              className="mt-10 grid grid-cols-2 gap-6"
-            >
-              {[
-                { id: "student", label: "Student", icon: roleStudent },
-                { id: "teacher", label: "Teacher", icon: roleTeacher },
-              ].map(({ id, label, icon }) => (
-                <button
-                  key={id}
-                  type="button"
-                  role="tab"
-                  id={`register-tab-${id}`}
-                  aria-selected={role === id}
-                  aria-controls="register-panel"
-                  tabIndex={role === id ? 0 : -1}
-                  onClick={() => selectRole(id)}
-                  className={cx(
-                    "flex items-center justify-center gap-3 rounded-[11px] border-2 text-[18px] font-medium transition-colors",
-                    role === id
-                      ? "border-plum-800 bg-canvas text-accent-deep shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
-                      : "border-transparent text-ink/70 hover:text-ink",
-                  )}
-                >
-                  <img src={icon} alt="" className="h-8 w-8" aria-hidden="true" />
-                  {label}
-                </button>
-              ))}
-            </div>
+            <RoleTabs value={role} onChange={selectRole} idPrefix="register" />
 
             <form
               id="register-panel"
               role="tabpanel"
               aria-labelledby={`register-tab-${role}`}
-              className="mt-10 space-y-5"
+              className="mt-5 space-y-4"
               onSubmit={handleSubmit}
               noValidate
             >
               <div>
                 <label
                   htmlFor="reg-username"
-                  className="block text-[18px] font-medium text-ink"
+                  className="block text-[14px] font-medium text-ink"
                 >
                   Username
                 </label>
@@ -198,7 +171,7 @@ export default function RegisterPage() {
                   <img
                     src={inputUser}
                     alt=""
-                    className="pointer-events-none absolute left-4 top-1/2 h-7 w-7 -translate-y-1/2"
+                    className="pointer-events-none absolute left-3.5 top-1/2 h-6 w-6 -translate-y-1/2"
                     aria-hidden="true"
                   />
                   <input
@@ -209,7 +182,7 @@ export default function RegisterPage() {
                     value={values.username}
                     onChange={(event) => update("username", event.target.value)}
                     aria-invalid={errors.username ? "true" : undefined}
-                    placeholder={isTeacher ? "teacher-cruz" : "estudyante1"}
+                    placeholder={isTeacher ? "guro-cruz" : "estudyante1"}
                     className={inputClasses}
                   />
                 </div>
@@ -223,7 +196,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="reg-password"
-                  className="block text-[18px] font-medium text-ink"
+                  className="block text-[14px] font-medium text-ink"
                 >
                   Password
                 </label>
@@ -231,7 +204,7 @@ export default function RegisterPage() {
                   <img
                     src={inputLock}
                     alt=""
-                    className="pointer-events-none absolute left-4 top-1/2 h-7 w-7 -translate-y-1/2"
+                    className="pointer-events-none absolute left-3.5 top-1/2 h-6 w-6 -translate-y-1/2"
                     aria-hidden="true"
                   />
                   <input
@@ -259,7 +232,7 @@ export default function RegisterPage() {
                     ) : (
                       <Eye className="h-4 w-4" aria-hidden="true" />
                     )}
-                    Show
+                    {showPassword ? "Hide" : "Show"}
                   </button>
                 </div>
                 {errors.password ? (
@@ -272,7 +245,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="reg-display-name"
-                  className="block text-[18px] font-medium text-ink"
+                  className="block text-[14px] font-medium text-ink"
                 >
                   {isTeacher ? "Pangalan ng guro" : "Palayaw sa HASA"}
                 </label>
@@ -280,7 +253,7 @@ export default function RegisterPage() {
                   <img
                     src={inputUser}
                     alt=""
-                    className="pointer-events-none absolute left-4 top-1/2 h-7 w-7 -translate-y-1/2"
+                    className="pointer-events-none absolute left-3.5 top-1/2 h-6 w-6 -translate-y-1/2"
                     aria-hidden="true"
                   />
                   <input
@@ -313,7 +286,7 @@ export default function RegisterPage() {
                 <div>
                   <label
                     htmlFor="reg-class-code"
-                    className="block text-[18px] font-medium text-ink"
+                    className="block text-[14px] font-medium text-ink"
                   >
                     Kodigo ng Klase
                   </label>
@@ -321,7 +294,7 @@ export default function RegisterPage() {
                     <img
                       src={inputLock}
                       alt=""
-                      className="pointer-events-none absolute left-4 top-1/2 h-7 w-7 -translate-y-1/2"
+                      className="pointer-events-none absolute left-3.5 top-1/2 h-6 w-6 -translate-y-1/2"
                       aria-hidden="true"
                     />
                     <input
@@ -345,14 +318,14 @@ export default function RegisterPage() {
 
               <button
                 type="submit"
-                className="mt-6 flex h-[46px] w-full items-center justify-center rounded-[20px] bg-plum-800 text-[16px] font-bold text-canvas shadow-[0_4px_4px_rgba(0,0,0,0.25)] transition-colors hover:bg-plum-900"
+                className="mt-5 flex h-11 w-full items-center justify-center rounded-[14px] bg-plum-800 text-[14px] font-bold text-canvas shadow-[0_4px_4px_rgba(0,0,0,0.25)] transition-colors hover:bg-plum-900"
               >
-                Create an Account
+                Gumawa ng Account
               </button>
 
-              <div className="flex items-center gap-4 pt-1" aria-hidden="true">
+              <div className="flex items-center gap-4 pt-0.5" aria-hidden="true">
                 <span className="h-px flex-1 bg-[#bdbdbd]" />
-                <span className="text-[16px] text-ink">or</span>
+                <span className="text-[16px] text-ink">o</span>
                 <span className="h-px flex-1 bg-[#bdbdbd]" />
               </div>
 

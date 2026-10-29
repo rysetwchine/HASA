@@ -88,11 +88,32 @@
 
   --shadow-card: 0 4px 4px rgb(0 0 0 / 0.25);
   --shadow-soft: 0 4px 4px rgb(0 0 0 / 0.3);
+  /*
+   * `shadow-lifted` ay ginagamit ng modal, popover ng abiso, at mga card na
+   * nakalutang sa hover. Kulang ang dating token kaya walang anino ang mga
+   * elementong ito — dito na idinagdag ang totoong halaga.
+   */
+  --shadow-lifted: 0 18px 40px -12px rgb(30 30 30 / 0.35);
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
+  }
+
+  /* Iginiit ng mga gumagamit na ayaw ng animation ang agarang pag-scroll. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 
   body {

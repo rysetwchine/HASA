@@ -6,12 +6,12 @@ import Modal from "../../components/ui/Modal.jsx";
 import { cx } from "../../utils/cx.js";
 import { useProgress } from "../../app/ProgressProvider.jsx";
 import {
-  demoStudent,
-  demoLearningProgress,
   demoFigmaAnnouncements,
+  demoLearningProgress,
   getLevelProgress,
 } from "../../data/demoData.js";
 import { localDateKey } from "../../services/progressStore.js";
+import { getLessons } from "../../services/lessonService.js";
 
 import mascotHello from "../../assets/images/dashboard/mascot-hello.png";
 import iconRosette from "../../assets/images/dashboard/icon-trophy.png";
@@ -20,9 +20,8 @@ import iconBookSparkle from "../../assets/images/dashboard/icon-megaphone.png";
 import iconMegaphone from "../../assets/images/dashboard/icon-book.png";
 
 /**
- * Dashboard — eksaktong anyo ng Figma frame "dashboard" (42:107):
- * Welcome row na may mascot, malaking module card (#3e3e75 r30),
- * Recent Achievements card, at Announcement card.
+ * Pangunahing pahina (Dashboard) — anyo mula sa Figma frame "dashboard",
+ * na inangkop sa mas maliit na desktop (1366×768).
  */
 const ACHIEVEMENT_ICONS = {
   trophy: { src: iconTrophy, tile: "bg-lav-200/60" },
@@ -31,7 +30,7 @@ const ACHIEVEMENT_ICONS = {
 
 const ACHIEVEMENT_HEADER = { src: iconRosette };
 
-const DATE_FORMAT = new Intl.DateTimeFormat("en-PH", {
+const DATE_FORMAT = new Intl.DateTimeFormat("fil-PH", {
   month: "short",
   day: "numeric",
   year: "numeric",
@@ -48,8 +47,8 @@ function relativeDay(value) {
   const yesterday = localDateKey(yesterdayDate);
   const key = localDateKey(date);
 
-  if (key === today) return "TODAY";
-  if (key === yesterday) return "YESTERDAY";
+  if (key === today) return "NGAYON";
+  if (key === yesterday) return "KAHAPON";
   return DATE_FORMAT.format(date);
 }
 
@@ -65,148 +64,155 @@ export default function HomePage() {
       id: entry.id,
       icon: entry.passed ? "trophy" : "medal",
       title: entry.title,
-      detail: `${entry.correct}/${entry.total} correct · ${entry.percent}%${
-        entry.xpAwarded > 0 ? "" : " · walang bagong XP"
-      }`,
-      xpLabel: entry.xpAwarded > 0 ? `+${entry.xpAwarded} XP` : "No XP",
+      detail: `${entry.correct}/${entry.total || entry.correct} tamang sagot · ${
+        entry.percent
+      }%${entry.xpAwarded > 0 ? "" : " · walang bagong XP"}`,
+      xpLabel: entry.xpAwarded > 0 ? `+${entry.xpAwarded} XP` : "Walang XP",
       when: relativeDay(entry.completedAt),
     }));
 
+  const lessons = getLessons(progress);
+  const activeLesson =
+    lessons.find((lesson) => lesson.state.key === "in-progress") ??
+    lessons.find((lesson) => lesson.state.key === "not-started") ??
+    lessons[0];
+
+  const bannerPercent =
+    activeLesson.state.key === "completed"
+      ? 100
+      : (activeLesson.bestPercent ?? 0);
+  const bannerLabel =
+    activeLesson.state.key === "completed"
+      ? "Natapos na ang araling ito sa browser na ito"
+      : activeLesson.state.key === "in-progress"
+        ? `${bannerPercent}% ang pinakamahusay na sagot sa pagsusulit ng aralin`
+        : "Hindi pa nasisimulan — wala pang pagtatangka sa pagsusulit";
+
   return (
-    <div className="space-y-6 pt-2">
-      {/* Maligayang pagbabalik + mascot */}
-      <header>
-        <div className="flex items-center gap-5">
-          <h1 className="font-display text-[40px] font-bold leading-[1.15] tracking-tight text-ink sm:text-[48px] 2xl:text-[55px]">
-            Welcome back, {demoStudent.displayName}!
+    <div className="space-y-4 pt-1">
+      {/* Maligayang pagbabalik */}
+      <header className="flex items-center gap-3 sm:gap-4">
+        <div className="min-w-0">
+          <h1 className="text-[26px] font-bold leading-tight tracking-tight text-ink sm:text-[32px] 2xl:text-[36px]">
+            Maligayang pagbabalik, Siri!
           </h1>
-          <img
-            src={mascotHello}
-            alt=""
-            className="h-[70px] w-auto shrink-0 sm:h-[84px] 2xl:h-[104px]"
-            aria-hidden="true"
-          />
+          <p className="mt-0.5 text-[13.5px] font-light text-ink sm:text-[15px]">
+            Ipagpatuloy natin ang iyong pag-aaral ngayong araw
+          </p>
         </div>
-        <p className="mt-1 text-[18px] font-light text-ink sm:text-[20px]">
-          Let&rsquo;s continue your learning journey today
-        </p>
+        <img
+          src={mascotHello}
+          alt=""
+          className="h-[52px] w-auto shrink-0 sm:h-[64px]"
+          aria-hidden="true"
+        />
       </header>
 
-      {/* Continue Learning card (#3e3e75 r30) */}
+      {/* Magpatuloy sa pag-aaral — ang porsiyento ay mula sa tunay na
+          pagtatangka sa pagsusulit ng aralin, hindi sa halimbawang numero. */}
       <section
         aria-labelledby="continue-learning-heading"
-        className="rounded-[30px] bg-plum-800 px-6 py-8 shadow-card sm:px-11 sm:py-10"
+        className="rounded-2xl bg-plum-800 px-4 py-5 shadow-card sm:px-7 sm:py-6"
       >
         <h2 id="continue-learning-heading" className="sr-only">
-          Continue learning
+          Magpatuloy sa pag-aaral
         </h2>
 
-        {/* Eyebrow pill */}
-        <span className="inline-flex min-w-[220px] items-center justify-center rounded-[12px] bg-lav-400 px-7 py-1.5">
-          <span className="text-[13px] font-semibold tracking-[0.08em] text-ink/90">
-            CONTINUE LEARNING
+        <span className="inline-flex items-center justify-center rounded-lg bg-lav-400 px-3 py-1">
+          <span className="text-[10.5px] font-bold uppercase tracking-[0.1em] text-ink/90">
+            Magpatuloy sa Pag-aaral
           </span>
         </span>
 
-        <p className="mt-5 max-w-[950px] text-[30px] font-bold leading-[1.2] tracking-tight text-white sm:text-[40px] 2xl:text-[48px]">
-          {demoLearningProgress.module}
+        <p className="mt-3 text-[20px] font-bold leading-tight tracking-tight text-white sm:text-[26px] 2xl:text-[30px]">
+          {activeLesson.label} · {activeLesson.title}
+        </p>
+        <p className="mt-1.5 text-[13px] text-[#c8c8c8] sm:text-[15px]">
+          {activeLesson.content?.objective ?? demoLearningProgress.module}
         </p>
 
-        <p className="mt-4 text-[19px] text-[#c8c8c8] sm:text-[24px]">
-          {demoLearningProgress.lesson}
-        </p>
-
-        <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
           <div className="min-w-0 flex-1">
             <div
-              className="h-[15px] w-full overflow-hidden rounded-[5px] bg-plum-1000"
+              className="h-2.5 w-full overflow-hidden rounded-[4px] bg-plum-1000"
               role="progressbar"
-              aria-valuenow={demoLearningProgress.percent}
+              aria-valuenow={bannerPercent}
               aria-valuemin={0}
               aria-valuemax={100}
               aria-label="Progreso ng aralin"
             >
               <div
-                className="h-full rounded-[5px] bg-canvas"
-                style={{ width: `${demoLearningProgress.percent}%` }}
+                className="h-full rounded-[4px] bg-canvas"
+                style={{ width: `${bannerPercent}%` }}
               />
             </div>
-            <p className="mt-3 text-[19px] text-white 2xl:text-[24px]">
-              {demoLearningProgress.percent}%
-              <span className="ml-1.5"> complete</span>
-            </p>
+            <p className="mt-1.5 text-[12px] text-white">{bannerLabel}</p>
           </div>
 
           <Link
-            to={demoLearningProgress.to}
-            className="inline-flex h-[56px] shrink-0 items-center justify-center rounded-[23px] bg-lav-400 px-9 text-[19px] font-medium text-ink transition-colors hover:bg-[#9b9bc7] sm:h-[64px] sm:text-[22px]"
+            to={activeLesson.to}
+            className="inline-flex h-10 shrink-0 items-center justify-center rounded-xl bg-lav-400 px-5 text-[13.5px] font-semibold text-ink transition-colors hover:bg-[#9b9bc7]"
           >
-            {demoLearningProgress.cta}
+            {activeLesson.state.action} ang Aralin
           </Link>
         </div>
       </section>
 
-      {/* Recent Achievements */}
+      {/* Mga nakaraang nakamit */}
       <section aria-labelledby="recent-achievements-heading">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
+        <div className="mb-2.5 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
             <img
               src={ACHIEVEMENT_HEADER.src}
               alt=""
-              className="h-[42px] w-[42px]"
+              className="h-7 w-7"
               aria-hidden="true"
             />
             <h2
               id="recent-achievements-heading"
-              className="text-[20px] font-black tracking-tight text-ink sm:text-[22px]"
+              className="text-[16px] font-black tracking-tight text-ink sm:text-[18px]"
             >
-              Recent Achievements
+              Mga Nakaraang Nakamit
             </h2>
           </div>
           <Link
-            to="/mga-nakamit"
-            className="text-[15px] font-medium text-accent-strong hover:underline"
+            to="/pag-unlad"
+            className="text-[12.5px] font-medium text-accent-strong hover:underline"
           >
-            View all
+            Tingnan lahat
           </Link>
         </div>
 
-        <div className="rounded-[25px] border border-ink bg-canvas px-6 py-7 shadow-card sm:px-10">
+        <div className="rounded-2xl border border-ink/70 bg-canvas px-4 py-1.5 shadow-card sm:px-6">
           {recentActivities.length > 0 ? (
-            <ul className="divide-ink/0">
-              {recentActivities.map((item, index) => {
+            <ul className="divide-y divide-ink/10">
+              {recentActivities.map((item) => {
                 const icon =
                   ACHIEVEMENT_ICONS[item.icon] ?? ACHIEVEMENT_ICONS.trophy;
                 return (
-                  <li
-                    key={item.id}
-                    className={cx(
-                      "flex items-center gap-5 py-4",
-                      index > 0 && "mt-2",
-                    )}
-                  >
+                  <li key={item.id} className="flex items-center gap-3 py-3">
                     <span
                       className={cx(
-                        "flex h-[56px] w-[54px] shrink-0 items-center justify-center rounded-[5px] border border-ink",
+                        "flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-ink/60",
                         icon.tile,
                       )}
                       aria-hidden="true"
                     >
-                      <img src={icon.src} alt="" className="h-[40px] w-[40px]" />
+                      <img src={icon.src} alt="" className="h-7 w-7" />
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="text-[21px] font-medium leading-tight text-ink sm:text-[25px]">
+                      <p className="truncate text-[14px] font-medium leading-tight text-ink sm:text-[15px]">
                         {item.title}
                       </p>
-                      <p className="mt-0.5 text-[15px] font-light text-ink">
+                      <p className="mt-0.5 text-[11.5px] font-light text-ink/80">
                         {item.detail}
                       </p>
                     </div>
                     <div className="shrink-0 text-right">
-                      <p className="text-[21px] font-medium text-accent sm:text-[25px]">
+                      <p className="text-[14px] font-semibold text-accent sm:text-[15px]">
                         {item.xpLabel}
                       </p>
-                      <p className="mt-0.5 text-[13px] font-medium 2xl:text-[15px]">
+                      <p className="mt-0.5 text-[10.5px] font-medium text-ink/80">
                         {item.when}
                       </p>
                     </div>
@@ -215,77 +221,76 @@ export default function HomePage() {
               })}
             </ul>
           ) : (
-            <div className="rounded-[15px] border border-dashed border-ink/30 bg-white/40 px-5 py-8 text-center">
-              <p className="text-[19px] font-semibold text-ink">
+            <div className="my-3 rounded-xl border border-dashed border-ink/30 bg-white/40 px-4 py-6 text-center">
+              <p className="text-[14px] font-semibold text-ink">
                 Wala pang natapos na aktibidad
               </p>
-              <p className="mx-auto mt-1 max-w-md text-sm leading-relaxed text-muted">
-                Pumili ng challenge sa Practice. Lalabas dito ang tunay na
-                resulta at XP mula sa browser na ito.
+              <p className="mx-auto mt-1 max-w-md text-[12px] leading-relaxed text-muted">
+                Pumili ng hamon sa Pagsasanay. Lalabas dito ang tunay na resulta
+                at XP mula sa browser na ito.
               </p>
               <Link
                 to="/aktibidad"
-                className="mt-4 inline-flex rounded-[15px] bg-plum-800 px-5 py-2.5 text-sm font-semibold text-canvas transition-colors hover:bg-plum-900"
+                className="mt-3 inline-flex rounded-lg bg-plum-800 px-4 py-2 text-[12.5px] font-semibold text-canvas transition-colors hover:bg-plum-900"
               >
-                Pumunta sa Practice
+                Pumunta sa Pagsasanay
               </Link>
             </div>
           )}
         </div>
       </section>
 
-      {/* Announcement */}
+      {/* Mga anunsyo */}
       <section aria-labelledby="announcement-heading">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
+        <div className="mb-2.5 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
             <img
               src={iconMegaphone}
               alt=""
-              className="h-[42px] w-[42px]"
+              className="h-7 w-7"
               aria-hidden="true"
             />
             <h2
               id="announcement-heading"
-              className="text-[20px] font-black tracking-tight text-ink sm:text-[22px]"
+              className="text-[16px] font-black tracking-tight text-ink sm:text-[18px]"
             >
-              Announcement
+              Mga Anunsyo
             </h2>
           </div>
           <button
             type="button"
             onClick={() => setAnnouncementsOpen(true)}
-            className="text-[15px] font-semibold text-accent-strong hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+            className="text-[12.5px] font-semibold text-accent-strong hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
           >
-            View all
+            Tingnan lahat
           </button>
         </div>
 
-        <div className="rounded-[25px] border border-ink bg-canvas px-6 py-7 shadow-card sm:px-10">
-          <ul>
-            {demoFigmaAnnouncements.map((item, index) => (
-              <li
-                key={item.id}
-                className={cx("flex items-center gap-5 py-4", index > 0 && "mt-2")}
-              >
+        <div className="rounded-2xl border border-ink/70 bg-canvas px-4 py-1.5 shadow-card sm:px-6">
+          <ul className="divide-y divide-ink/10">
+            {demoFigmaAnnouncements.map((item) => (
+              <li key={item.id} className="flex items-center gap-3 py-3">
                 <span
                   className={cx(
-                    "flex h-[56px] w-[54px] shrink-0 items-center justify-center rounded-[5px] border border-ink",
+                    "flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-ink/60",
                     item.isNew ? "bg-[#a591d8]/60" : "bg-[#ebe0e2]",
                   )}
                   aria-hidden="true"
                 >
                   {item.isNew ? (
-                    <span className="text-[18px] font-bold text-accent">NEW</span>
+                    <span className="text-[11px] font-bold text-accent">
+                      BAGO
+                    </span>
                   ) : null}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[18px] font-semibold leading-snug text-ink">
+                  <p className="text-[13.5px] font-semibold leading-snug text-ink">
                     {item.title}
                   </p>
-                  <p className="mt-0.5 text-[13px] font-light text-ink sm:text-[15px]">
+                  <p className="mt-0.5 text-[11.5px] font-light leading-relaxed text-ink/80">
                     {item.detail}
                   </p>
-                  <p className="mt-1 text-[10px] font-medium text-ink/80">
+                  <p className="mt-0.5 text-[10px] font-medium text-ink/70">
                     {item.date}
                   </p>
                 </div>
@@ -296,11 +301,10 @@ export default function HomePage() {
       </section>
 
       <p className="text-[11px] leading-relaxed text-muted">
-        Antas {levelProgress.level} ·{" "}
-        {levelProgress.xpIntoLevel.toLocaleString()} /{" "}
-        {levelProgress.xpForNextLevel.toLocaleString()} XP — panimulang demo
-        XP kasama ang mga aktibidad na natapos sa browser na ito. Hindi ito
-        totoong rekord ng mag-aaral.
+        Antas {levelProgress.level} · {levelProgress.xpIntoLevel.toLocaleString()}{" "}
+        / {levelProgress.xpForNextLevel.toLocaleString()} XP — kasama ang
+        panimulang demo XP at ang mga aktibidad na natapos sa browser na ito.
+        Hindi ito totoong rekord ng mag-aaral.
       </p>
 
       <DemoNotice />
@@ -308,21 +312,21 @@ export default function HomePage() {
       <Modal
         open={announcementsOpen}
         onClose={() => setAnnouncementsOpen(false)}
-        title="Announcement"
+        title="Mga Anunsyo"
         eyebrow="Prototype"
         size="md"
       >
-        <Alert variant="info" title="Walang live announcement feed">
-          Walang notification system o guro-message backend sa prototype. Ang
-          mga nasa ibaba ay halimbawang nilalaman mula sa Figma, hindi tunay na
-          anunsyo.
+        <Alert variant="info" title="Walang live na feed ng anunsyo">
+          Walang notification system o backend para sa mensahe ng guro sa
+          prototype. Ang mga nasa ibaba ay halimbawang nilalaman mula sa Figma,
+          hindi tunay na anunsyo.
         </Alert>
 
         <ul className="mt-4 space-y-3">
           {demoFigmaAnnouncements.map((item) => (
             <li
               key={item.id}
-              className="rounded-2xl border border-line bg-canvas/60 p-4"
+              className="rounded-xl border border-line bg-canvas/60 p-3.5"
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="text-sm font-bold text-ink">{item.title}</p>
@@ -330,7 +334,7 @@ export default function HomePage() {
                   {item.date}
                 </span>
               </div>
-              <p className="mt-1 text-sm leading-relaxed text-muted">
+              <p className="mt-1 text-[12.5px] leading-relaxed text-muted">
                 {item.detail}
               </p>
             </li>

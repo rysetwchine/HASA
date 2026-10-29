@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import App from "../app/App.jsx";
@@ -18,21 +18,22 @@ beforeEach(() => {
 });
 
 /**
- * Ang mga pamagat ay tugma sa bagong Figma UI (English labels) maliban sa
- * mga pahinang Tagalog pa rin ang nilalaman (Misyon, Guro, 404).
+ * Ang buong UI ng mag-aaral ay Filipino na. Ang mga pamagat dito ang
+ * aktwal na H1 ng bawat ruta.
  */
 const ROUTES = [
-  ["/", "Welcome back, Siri!"],
-  ["/mga-aralin", "Araling Panlipunan"],
-  ["/pagsasanay", "PRACTICE"],
-  ["/mga-gantimpala", "REWARDS"],
+  ["/", "Maligayang pagbabalik, Siri!"],
+  ["/mga-aralin", "Mga Aralin sa Araling Panlipunan"],
+  ["/mga-aralin/lesson-1-5", "Sanhi ng Rebolusyong Pilipino"],
+  ["/pagsasanay", "PAGSASANAY"],
+  ["/mga-gantimpala", "MGA GANTIMPALA"],
   ["/login", "HASA: TARA, MATUTO AT MAHASA!"],
-  ["/register", "Create an Account"],
-  ["/pasimplehin", "AI Simplifier"],
-  ["/aktibidad", "PRACTICE"],
+  ["/register", "Gumawa ng Account"],
+  ["/pasimplehin", "AI Tagapagpasimple"],
+  ["/aktibidad", "PAGSASANAY"],
   ["/misyon", "Mga Misyon"],
-  ["/mga-nakamit", "REWARDS"],
-  ["/pag-unlad", "PROGRESS"],
+  ["/mga-nakamit", "MGA GANTIMPALA"],
+  ["/pag-unlad", "AKING PAG-UNLAD"],
   ["/guro", "Tanawan ng Guro"],
   ["/hindi-ito-umiiral", "Hindi mahanap ang pahina"],
 ];
@@ -44,10 +45,15 @@ describe("mga ruta", () => {
       screen.getByRole("heading", { level: 1, name: heading }),
     ).toBeInTheDocument();
   });
+
+  it("may mensahe kapag wala ang aralin", () => {
+    renderAt("/mga-aralin/wala-ito");
+    expect(screen.getByText(/Hindi mahanap ang aralin/i)).toBeInTheDocument();
+  });
 });
 
 describe("antas ng pagbasa", () => {
-  it("ipinapakita ang tatlong aprubadong label sa AI Simplifier", () => {
+  it("ipinapakita ang tatlong aprubadong label sa AI Tagapagpasimple", () => {
     renderAt("/pasimplehin");
 
     for (const level of READING_LEVELS) {
@@ -80,9 +86,9 @@ describe("katapatan ng prototype", () => {
   it("may paalala na hindi gawa ng AI ang halimbawang teksto", () => {
     renderAt("/pasimplehin");
 
-    expect(
-      screen.getAllByText(/Hindi ito gawa ng AI/i).length,
-    ).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Hindi ito gawa ng AI/i).length).toBeGreaterThan(
+      0,
+    );
   });
 
   it("sinasabi kung hindi naka-configure ang AI provider", () => {
@@ -93,49 +99,50 @@ describe("katapatan ng prototype", () => {
     ).toBeInTheDocument();
   });
 
-  it("nagbubukas ng totoong activity mula sa Practice", async () => {
+  it("nagbubukas ng totoong activity mula sa Pagsasanay", async () => {
     const user = userEvent.setup();
     renderAt("/aktibidad");
 
-    const playButtons = screen.getAllByRole("button", { name: /Play now/i });
-    expect(playButtons.length).toBe(6);
+    const playButtons = screen.getAllByRole("button", { name: /^Laruin ang/i });
+    // Anim na challenge card + ang tampok na hamon.
+    expect(playButtons.length).toBe(7);
     for (const button of playButtons) {
       expect(button).toBeEnabled();
     }
 
     await user.click(
-      screen.getByRole("button", { name: /Play featured challange/i }),
+      screen.getByRole("button", { name: /Laruin ang tampok na hamon/i }),
     );
 
     expect(
-      screen.getByRole("dialog", { name: /HISTORY HOT SEAT/i }),
+      screen.getByRole("dialog", { name: /MAINIT NA UPUAN SA KASAYSAYAN/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getAllByText(
-        /Which group fought for Philippine independence from Spain in 1896/i,
-      ).length,
+      screen.getAllByText(/Aling samahan ang nakipaglaban/i).length,
     ).toBeGreaterThan(0);
     expect(screen.getByRole("timer")).toBeInTheDocument();
   });
 
-  it("nagfi-filter ng Quiz at Skill Lab sa Practice", async () => {
+  it("nagsasala ng Pagsusulit at Gawaing Kasanayan", async () => {
     const user = userEvent.setup();
     renderAt("/aktibidad");
 
-    await user.click(screen.getByRole("button", { name: "Skill lab" }));
+    await user.click(
+      screen.getByRole("button", { name: "Gawaing Kasanayan" }),
+    );
     expect(
-      screen.getByRole("heading", { name: "Source Detective" }),
+      screen.getByRole("heading", { name: "Detektib ng Sanggunian" }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("heading", { name: "Time Builder" }),
+      screen.queryByRole("heading", { name: "Tagabuo ng Oras" }),
     ).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Quiz" }));
+    await user.click(screen.getByRole("button", { name: "Pagsusulit" }));
     expect(
-      screen.getByRole("heading", { name: "Time Builder" }),
+      screen.getByRole("heading", { name: "Tagabuo ng Oras" }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("heading", { name: "Source Detective" }),
+      screen.queryByRole("heading", { name: "Detektib ng Sanggunian" }),
     ).not.toBeInTheDocument();
   });
 });
@@ -145,25 +152,31 @@ describe("dashboard", () => {
     renderAt("/");
 
     expect(
-      screen.getByText(/MODULE 3: Rise of Nationalism in the Philippines/i),
+      screen.getByRole("heading", { name: "Magpatuloy sa pag-aaral" }),
+    ).toBeInTheDocument();
+    // Ang CTA ay tumuturo sa tunay na aralin, hindi lamang sa listahan.
+    expect(
+      screen.getByRole("link", { name: /ang Aralin$/i }),
+    ).toHaveAttribute("href", expect.stringMatching(/^\/mga-aralin\/lesson-/));
+    expect(
+      screen.getByRole("heading", { name: "Mga Nakaraang Nakamit" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Recent Achievements" }),
+      screen.getByRole("heading", { name: "Mga Anunsyo" }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: "Announcement" }),
-    ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Resume Lesson/i })).toHaveAttribute(
-      "href",
-      "/mga-aralin",
-    );
   });
 
   it("ipinapakita ang antas at XP ng halimbawang mag-aaral", () => {
     renderAt("/");
 
     expect(
-      screen.getByText(/1,200 \/ 1,500 XP\s+to level 5/),
+      screen.getByText(
+        (_, element) =>
+          element?.tagName === "P" &&
+          /1,200 \/ 1,500 XP\s*para sa antas 5/.test(
+            element.textContent ?? "",
+          ),
+      ),
     ).toBeInTheDocument();
     expect(
       screen.getAllByRole("progressbar", {
@@ -183,37 +196,66 @@ describe("dashboard", () => {
     );
   });
 
-  it("nagpapakita ng tapat na empty state sa mga abiso", async () => {
+  it("nagbubukas ng panel ng mga abiso", async () => {
     const user = userEvent.setup();
     renderAt("/");
 
-    const bell = screen.getByRole("button", { name: /Mga abiso/i });
+    const bell = screen.getByRole("button", { name: /Mga Abiso/i });
     expect(bell).toBeEnabled();
 
     await user.click(bell);
 
-    expect(screen.getByText(/Wala pang anunsyo/i)).toBeInTheDocument();
-    expect(screen.getByText(/0 anunsyo/i)).toBeInTheDocument();
+    const panel = screen.getByRole("dialog", { name: /Mga Abiso/i });
     expect(
-      screen.getByText(/Hindi nag-imbento ng anunsyo ang prototype/i),
+      within(panel).getByText(/2 halimbawang anunsyo/i),
+    ).toBeInTheDocument();
+    expect(
+      within(panel).getByText(/Hamon ng Katapusan ng Linggo!/i),
+    ).toBeInTheDocument();
+    expect(
+      within(panel).getByText(/Walang live na notification system/i),
     ).toBeInTheDocument();
   });
 
-  it("nagbubukas ng announcement list", async () => {
+  it("nagbubukas ng listahan ng anunsyo", async () => {
     const user = userEvent.setup();
     renderAt("/");
 
-    await user.click(screen.getByRole("button", { name: /^View all$/i }));
+    await user.click(screen.getByRole("button", { name: /^Tingnan lahat$/i }));
+
+    const dialog = screen.getByRole("dialog", { name: "Mga Anunsyo" });
+    expect(
+      within(dialog).getByText(/Walang live na feed ng anunsyo/i),
+    ).toBeInTheDocument();
+    expect(
+      within(dialog).getAllByText(/Hamon ng Katapusan ng Linggo!/i).length,
+    ).toBeGreaterThan(0);
+  });
+
+  it("nagbubukas ng menu ng profile at bumabalik sa login", async () => {
+    const user = userEvent.setup();
+    renderAt("/");
+
+    await user.click(
+      screen.getByRole("button", { name: /Menu ng profile ni Siri/i }),
+    );
+
+    const menu = screen.getByRole("menu", { name: /Menu ng profile/i });
+    expect(
+      within(menu).getByRole("menuitem", { name: /Aking Pag-unlad/i }),
+    ).toHaveAttribute("href", "/pag-unlad");
+
+    await user.click(within(menu).getByRole("menuitem", { name: /Mag-logout/i }));
 
     expect(
-      screen.getByRole("dialog", { name: "Announcement" }),
+      screen.getByRole("heading", {
+        level: 1,
+        name: "HASA: TARA, MATUTO AT MAHASA!",
+      }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/Walang live announcement feed/i),
+      screen.getByText(/Naka-log out ka sa prototype/i),
     ).toBeInTheDocument();
-    expect(screen.getAllByText(/Weekend Challenge!/i).length).toBeGreaterThan(
-      0,
-    );
   });
 });
 
@@ -223,74 +265,259 @@ describe("mga aralin", () => {
     renderAt("/mga-aralin");
 
     await user.type(
-      screen.getByRole("searchbox", { name: /Search lessons/i }),
-      "Cause",
+      screen.getByRole("searchbox", { name: /Maghanap ng Aralin/i }),
+      "Pakikidigma",
     );
 
     expect(
       screen.getByRole("heading", {
-        name: /Cause of the Philippine Revolution/i,
+        name: /Ang Katipunan at ang Panawagan sa Pakikidigma/i,
       }),
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("heading", {
-        name: /Katipunan and the Call to Arms/i,
+        name: /Sanhi ng Rebolusyong Pilipino/i,
       }),
     ).not.toBeInTheDocument();
   });
 
-  it("nagfi-filter ng natapos na aralin", async () => {
+  it("hinahanap din gamit ang bilang ng aralin", async () => {
     const user = userEvent.setup();
     renderAt("/mga-aralin");
 
-    await user.click(screen.getByRole("button", { name: "Completed" }));
+    await user.type(
+      screen.getByRole("searchbox", { name: /Maghanap ng Aralin/i }),
+      "3.5",
+    );
+
+    expect(
+      screen.getByRole("heading", { name: /Pagpapahayag ng Kalayaan/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("hinahanap din ang mga salita sa nilalaman ng aralin", async () => {
+    const user = userEvent.setup();
+    renderAt("/mga-aralin");
+
+    await user.type(
+      screen.getByRole("searchbox", { name: /Maghanap ng Aralin/i }),
+      "Kalakalang Galyon",
+    );
 
     expect(
       screen.getByRole("heading", {
-        name: /Cause of the Philippine Revolution/i,
+        name: /Pagbabalik-aral sa Panahon ng mga Kastila/i,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("nagsasala ng natapos na aralin", async () => {
+    const user = userEvent.setup();
+    renderAt("/mga-aralin");
+
+    await user.click(screen.getByRole("button", { name: "Natapos Na" }));
+
+    expect(
+      screen.getByRole("heading", {
+        name: /Sanhi ng Rebolusyong Pilipino/i,
       }),
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("heading", {
-        name: /Katipunan and the Call to Arms/i,
+        name: /Ang Katipunan at ang Panawagan sa Pakikidigma/i,
       }),
     ).not.toBeInTheDocument();
-    expect(screen.getAllByText("Completed").length).toBeGreaterThan(0);
+  });
+
+  it("nagsasala gamit ang antas ng hirap", async () => {
+    const user = userEvent.setup();
+    renderAt("/mga-aralin");
+
+    await user.click(screen.getByRole("button", { name: "Madali" }));
+
+    expect(
+      screen.getByRole("heading", {
+        name: /Sanhi ng Rebolusyong Pilipino/i,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", {
+        name: /Ang Labanan sa Look ng Maynila/i,
+      }),
+    ).not.toBeInTheDocument();
   });
 
   it("nagpapalit ng grid at list view", async () => {
     const user = userEvent.setup();
     renderAt("/mga-aralin");
 
-    const listButton = screen.getByRole("button", { name: "List View" });
-    const gridButton = screen.getByRole("button", { name: "Grid View" });
+    expect(await screen.findByRole("button", { name: "Grid na Ayos" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
 
-    await user.click(listButton);
-    expect(listButton).toHaveAttribute("aria-pressed", "true");
-    expect(gridButton).toHaveAttribute("aria-pressed", "false");
+    await user.click(screen.getByRole("button", { name: "Listahang Ayos" }));
 
-    await user.click(gridButton);
-    expect(gridButton).toHaveAttribute("aria-pressed", "true");
+    expect(
+      screen.getByRole("button", { name: "Listahang Ayos" }),
+    ).toHaveAttribute("aria-pressed", "true");
+    expect(
+      screen.getByRole("button", { name: "Grid na Ayos" }),
+    ).toHaveAttribute("aria-pressed", "false");
   });
 
-  it("nagpapakita ng empty state at nagre-reset ng filter", async () => {
+  it("nagpapakita ng empty state at nagre-reset ng salaan", async () => {
     const user = userEvent.setup();
     renderAt("/mga-aralin");
 
     await user.type(
-      screen.getByRole("searchbox", { name: /Search lessons/i }),
+      screen.getByRole("searchbox", { name: /Maghanap ng Aralin/i }),
       "walang ganitong aralin",
     );
 
-    expect(screen.getByText(/Walang aralin na tugma/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Walang aralin na tumugma/i),
+    ).toBeInTheDocument();
 
     await user.click(
-      screen.getByRole("button", { name: /I-reset ang mga filter/i }),
+      screen.getByRole("button", { name: /I-reset ang mga salaan/i }),
     );
 
     expect(
       screen.getByRole("heading", {
-        name: /Cause of the Philippine Revolution/i,
+        name: /Sanhi ng Rebolusyong Pilipino/i,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("binubuksan ang tamang aralin mula sa card", async () => {
+    const user = userEvent.setup();
+    renderAt("/mga-aralin");
+
+    await user.click(
+      screen.getByRole("link", {
+        name: /Aralin 2\.3: Ang Katipunan at ang Panawagan sa Pakikidigma/i,
+      }),
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: /Ang Katipunan at ang Panawagan sa Pakikidigma/i,
+      }),
+    ).toBeInTheDocument();
+    // May tunay na nilalaman at tanong ang aralin.
+    expect(
+      screen.getByRole("heading", { name: /Pagtatatag ng Katipunan/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /Simulan — Pagsusulit/i }),
+    ).toHaveAttribute("href", "/aktibidad?activity=ch6");
+  });
+
+  it("ipinapakita ang 'Ipagpatuloy' kapag may nasimulang pagsusulit", () => {
+    window.localStorage.setItem(
+      "hasa:progress:v1",
+      JSON.stringify({
+        version: 1,
+        startingXp: 1200,
+        xp: 1200,
+        xpFromActivities: 0,
+        xpFromBadges: 0,
+        streak: 4,
+        lastActivityDate: "2026-10-29",
+        completions: {
+          "featured-hot-seat": {
+            title: "MAINIT NA UPUAN SA KASAYSAYAN",
+            attempts: 1,
+            bestCorrect: 2,
+            bestPercent: 40,
+            total: 5,
+            completed: false,
+            completedAt: null,
+            xpAwarded: 0,
+            lastAttemptAt: "2026-10-29T09:00:00.000Z",
+          },
+        },
+        badges: {},
+        history: [],
+        updatedAt: "2026-10-29T09:00:00.000Z",
+      }),
+    );
+
+    renderAt("/mga-aralin/lesson-1-5");
+
+    expect(
+      screen.getByRole("link", { name: /Ipagpatuloy — Pagsusulit/i }),
+    ).toHaveAttribute("href", "/aktibidad?activity=featured-hot-seat");
+    expect(screen.getAllByText(/Isinasagawa/i).length).toBeGreaterThan(0);
+  });
+
+  it("binubuksan ang pagsusulit mula sa aralin", async () => {
+    const user = userEvent.setup();
+    renderAt("/mga-aralin/lesson-2-3");
+
+    await user.click(
+      screen.getByRole("link", { name: /Simulan — Pagsusulit/i }),
+    );
+
+    expect(
+      screen.getByRole("dialog", {
+        name: /Ang Katipunan at ang Panawagan sa Pakikidigma|Hamon ng Katipunan/i,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByText(/Ano ang buong pangalan ng Katipunan/i).length,
+    ).toBeGreaterThan(0);
+  });
+
+  it("may draft na paalala ang nilalaman ng aralin", () => {
+    renderAt("/mga-aralin/lesson-3");
+
+    expect(
+      screen.getByText(/Draft na nilalaman ng aralin/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /Pamamahala/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("ipinapakita ang tunay na katayuan pagkatapos ng pagsusulit", () => {
+    window.localStorage.setItem(
+      "hasa:progress:v1",
+      JSON.stringify({
+        version: 1,
+        startingXp: 1200,
+        xp: 1225,
+        xpFromActivities: 25,
+        xpFromBadges: 0,
+        streak: 4,
+        lastActivityDate: "2026-10-29",
+        completions: {
+          "featured-hot-seat": {
+            title: "MAINIT NA UPUAN SA KASAYSAYAN",
+            attempts: 1,
+            bestCorrect: 5,
+            bestPercent: 100,
+            total: 5,
+            completed: true,
+            completedAt: "2026-10-29T09:00:00.000Z",
+            xpAwarded: 25,
+            lastAttemptAt: "2026-10-29T09:00:00.000Z",
+          },
+        },
+        badges: {},
+        history: [],
+        updatedAt: "2026-10-29T09:00:00.000Z",
+      }),
+    );
+
+    renderAt("/mga-aralin");
+
+    expect(screen.getAllByText(/Natapos Na/i).length).toBeGreaterThan(0);
+    expect(
+      screen.getByRole("link", {
+        name: /Aralin 1\.5: Sanhi ng Rebolusyong Pilipino — Balikan/i,
       }),
     ).toBeInTheDocument();
   });
@@ -319,7 +546,9 @@ describe("login at registration", () => {
     const user = userEvent.setup();
     renderAt("/login");
 
-    await user.click(screen.getByRole("button", { name: /Log in as Student/i }));
+    await user.click(
+      screen.getByRole("button", { name: /Mag-log in bilang Mag-aaral/i }),
+    );
 
     expect(
       screen.getByText(/Ilagay ang iyong username o student ID/i),
@@ -337,12 +566,14 @@ describe("login at registration", () => {
     renderAt("/login");
 
     await user.type(
-      screen.getByLabelText(/Username \/ Student I'D/i),
+      screen.getByLabelText(/Username o Student ID/i),
       "estudyante1",
     );
     await user.type(screen.getByLabelText(/^Password/i), "halimbawa123");
-    await user.click(screen.getByRole("checkbox", { name: /Remember me/i }));
-    await user.click(screen.getByRole("button", { name: /Log in as Student/i }));
+    await user.click(screen.getByRole("checkbox", { name: /Tandaan ako/i }));
+    await user.click(
+      screen.getByRole("button", { name: /Mag-log in bilang Mag-aaral/i }),
+    );
 
     expect(
       screen.getByText(/Hindi pa aktibo ang pag-log in/i),
@@ -352,16 +583,16 @@ describe("login at registration", () => {
     );
   });
 
-  it("may hiwalay na teacher tab at patunay ng guro", async () => {
+  it("may hiwalay na tab ng guro at patunay ng guro", async () => {
     const user = userEvent.setup();
     renderAt("/login");
 
-    await user.click(screen.getByRole("tab", { name: /Teacher/i }));
+    await user.click(screen.getByRole("tab", { name: /Guro/i }));
 
     expect(
-      screen.getByRole("button", { name: /Log in as Teacher/i }),
+      screen.getByRole("button", { name: /Mag-log in bilang Guro/i }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: /Teacher/i })).toHaveAttribute(
+    expect(screen.getByRole("tab", { name: /Guro/i })).toHaveAttribute(
       "aria-selected",
       "true",
     );
@@ -372,7 +603,7 @@ describe("login at registration", () => {
     renderAt("/register");
 
     await user.click(
-      screen.getByRole("button", { name: /Create an Account/i }),
+      screen.getByRole("button", { name: /Gumawa ng Account/i }),
     );
 
     expect(screen.getByText(/Gumawa ng username/i)).toBeInTheDocument();
@@ -386,7 +617,7 @@ describe("login at registration", () => {
     await user.type(screen.getByLabelText(/Palayaw sa HASA/i), "Siri");
     await user.type(screen.getByLabelText(/Kodigo ng Klase/i), "HASA-8A");
     await user.click(
-      screen.getByRole("button", { name: /Create an Account/i }),
+      screen.getByRole("button", { name: /Gumawa ng Account/i }),
     );
 
     expect(
@@ -395,19 +626,19 @@ describe("login at registration", () => {
   });
 });
 
-describe("mga nakamit", () => {
-  it("nagpapakita ng tunay na badge state at local persistence notice", () => {
+describe("mga gantimpala", () => {
+  it("nagpapakita ng tunay na badge state at lokal na pag-save", () => {
     renderAt("/mga-nakamit");
 
     expect(
-      screen.getByRole("heading", { level: 1, name: "REWARDS" }),
+      screen.getByRole("heading", { level: 1, name: "MGA GANTIMPALA" }),
     ).toBeInTheDocument();
     expect(screen.getByText(/0 \/ 3 nakamit/i)).toBeInTheDocument();
     expect(screen.getByText("Unang Hakbang")).toBeInTheDocument();
     expect(screen.getAllByText("Nakakandado").length).toBeGreaterThan(0);
     expect(
-      screen.getByText(/Temporary local persistence/i),
-    ).toBeInTheDocument();
+      screen.getAllByText(/Pansamantalang lokal na pag-save/i).length,
+    ).toBeGreaterThan(0);
     expect(
       screen.getByText(/Halimbawa lamang ang nilalaman/i),
     ).toBeInTheDocument();
@@ -419,18 +650,20 @@ describe("pag-unlad", () => {
     renderAt("/pag-unlad");
 
     expect(
-      screen.getByRole("heading", { level: 1, name: "PROGRESS" }),
+      screen.getByRole("heading", { level: 1, name: "AKING PAG-UNLAD" }),
     ).toBeInTheDocument();
-    expect(screen.getAllByText(/Level 4/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/Wala pang natapos na aktibidad/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Antas 4/i).length).toBeGreaterThan(0);
     expect(
-      screen.getByText(/Temporary local persistence/i),
+      screen.getByText(/Wala pang natapos na aktibidad/i),
     ).toBeInTheDocument();
+    expect(
+      screen.getAllByText(/Pansamantalang lokal na pag-save/i).length,
+    ).toBeGreaterThan(0);
   });
 });
 
 describe("nabigasyon", () => {
-  it("may pangunahing nabigasyon at mga item sa sidebar", () => {
+  it("may Filipino na pangunahing nabigasyon sa sidebar", () => {
     renderAt("/");
 
     const nav = screen.getByRole("navigation", {
@@ -439,47 +672,58 @@ describe("nabigasyon", () => {
     expect(nav).toBeInTheDocument();
 
     for (const label of [
-      "Dashboard",
-      "Lessons",
-      "AI Simplifier",
-      "Practice",
-      "Rewards",
-      "Progress",
+      "Pangunahing Pahina",
+      "Mga Aralin",
+      "AI Tagapagpasimple",
+      "Pagsasanay",
+      "Mga Gantimpala",
+      "Aking Pag-unlad",
     ]) {
       expect(
-        screen.getAllByRole("link", { name: label }).length,
+        within(nav).getAllByRole("link", { name: label }).length,
       ).toBeGreaterThan(0);
     }
   });
 
-  it("may nabigasyon sa mobile para sa mga pahinang wala sa Figma", () => {
+  it("may link sa Misyon at Tanawan ng Guro sa sidebar at mobile", () => {
     renderAt("/");
+
+    const desktopNav = screen.getByRole("navigation", {
+      name: /Pangunahing nabigasyon/i,
+    });
+    expect(
+      within(desktopNav).getByRole("link", { name: "Misyon" }),
+    ).toHaveAttribute("href", "/misyon");
+    expect(
+      within(desktopNav).getByRole("link", { name: "Tanawan ng Guro" }),
+    ).toHaveAttribute("href", "/guro");
 
     const mobileNav = screen.getByRole("navigation", {
       name: /Nabigasyon sa mobile/i,
     });
-    expect(mobileNav).toBeInTheDocument();
     expect(
-      screen.getAllByRole("link", { name: "Misyon" }).length,
-    ).toBeGreaterThan(0);
-    expect(
-      screen.getAllByRole("link", { name: "Tanawan ng Guro" }).length,
-    ).toBeGreaterThan(0);
+      within(mobileNav).getByRole("link", { name: "Misyon" }),
+    ).toBeInTheDocument();
   });
 
-  it("hindi nagpapanggap na available ang log out", () => {
-    renderAt("/");
+  it("may gumaganang logout na bumabalik sa login", async () => {
+    const user = userEvent.setup();
+    renderAt("/guro");
 
-    expect(screen.getByRole("button", { name: /Logout/i })).toBeDisabled();
-  });
+    const nav = screen.getByRole("navigation", {
+      name: /Pangunahing nabigasyon/i,
+    });
 
-  it("naka-highlight ang aktibong item sa nabigasyon", () => {
-    renderAt("/mga-aralin");
+    await user.click(within(nav).getByRole("button", { name: /Mag-logout/i }));
 
-    const activeLinks = screen
-      .getAllByRole("link", { name: "Lessons" })
-      .filter((link) => link.getAttribute("aria-current") === "page");
-
-    expect(activeLinks.length).toBeGreaterThan(0);
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "HASA: TARA, MATUTO AT MAHASA!",
+      }),
+    ).toBeInTheDocument();
+    expect(window.localStorage.getItem("hasa:demo-session:v1")).toBe(
+      "signed-out",
+    );
   });
 });

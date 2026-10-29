@@ -84,13 +84,13 @@ export default function TeacherPage() {
             <Button
               variant="secondary"
               disabled
-              title="Kailangan ng backend at teacher authentication bago makagawa ng klase"
+              title="Kailangan ng server at pagpapatunay ng guro bago makagawa ng klase"
             >
               Gumawa ng klase
             </Button>
             <Button
               disabled
-              title="Kailangan ng backend upang makapagtalaga ng materyal sa klase"
+              title="Kailangan ng server upang makapagtalaga ng materyal sa klase"
             >
               Magtalaga ng materyal
             </Button>
@@ -285,7 +285,7 @@ export default function TeacherPage() {
         </Card>
       </section>
 
-      <Alert variant="info" title="Hindi pa available">
+      <Alert variant="info" title="Hindi pa magagamit">
         Ang paggawa ng klase, pagpapalit ng kodigo, at pagtatalaga ng materyal ay
         magagamit kapag naisagawa na ang backend at ang pagsusuri ng
         pahintulot.

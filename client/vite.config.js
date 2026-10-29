@@ -9,6 +9,12 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     port: 5173,
+    strictPort: true,
+    // Kapag ini-host ang dev server sa likod ng proxy (hal. cloud preview),
+    // kailangang tanggapin ang host na iyon. Sa localhost lamang ito
+    // gumagana; wala itong epekto sa production build.
+    host: true,
+    allowedHosts: [".e2b.app", ".localhost", "localhost", "127.0.0.1"],
     proxy: {
       "/api": {
         target: "http://localhost:3000",

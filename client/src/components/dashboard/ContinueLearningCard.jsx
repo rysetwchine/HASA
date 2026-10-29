@@ -27,7 +27,7 @@ export default function ContinueLearningCard({
       <div className="grid md:grid-cols-[minmax(0,1fr)_210px]">
         <div className="p-5 sm:p-6">
           <div className="flex flex-wrap items-center gap-2">
-            <Chip tone="brand">Continue Learning</Chip>
+            <Chip tone="brand">Ipagpatuloy ang Pag-aaral</Chip>
             <Chip tone="muted">Halimbawa</Chip>
           </div>
 
@@ -66,7 +66,7 @@ export default function ContinueLearningCard({
 
           <div className="mt-5 flex flex-wrap items-center gap-2.5">
             <Link to={to} className={buttonClasses({ variant: "primary" })}>
-              Resume Lesson
+              Ipagpatuloy ang Aralin
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
             <Link

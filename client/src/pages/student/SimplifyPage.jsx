@@ -40,7 +40,7 @@ export default function SimplifyPage() {
     <div className="mx-auto max-w-5xl space-y-5">
       <PageHeader
         eyebrow="Kagamitang Pampagkatuto"
-        title="AI Simplifier"
+        title="AI Tagapagpasimple"
         description="I-paste ang teksto mula sa iyong modyul, piliin ang antas ng pagbasa, at tingnan ang halimbawang resulta. Wala pang aktibong AI provider sa prototype."
       />
 
@@ -99,11 +99,11 @@ export default function SimplifyPage() {
                 htmlFor="ai-provider"
                 className="block text-sm font-semibold text-ink"
               >
-                AI provider
+                Tagabigay ng AI
               </label>
               <p className="mt-1 text-xs leading-relaxed text-muted">
                 Kapag aktibo na, maaari mong piliin kung Gemini o OpenAI ang
-                gagamitin. Nasa server ang mga API key at hindi makikita sa
+                gagamitin. Nasa server ang mga API key at hindi ito makikita sa
                 browser.
               </p>
               <select
@@ -130,7 +130,7 @@ export default function SimplifyPage() {
           >
             <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
             Hindi naka-configure ang AI provider sa yugtong ito. Magagamit ang
-            pagpapasimple kapag nakakonekta na ang AI provider.
+            pagpapasimple kapag nakakonekta na ang tagabigay ng AI.
           </p>
         </div>
       </WorkspaceStep>
@@ -141,7 +141,8 @@ export default function SimplifyPage() {
         description="Ito ay STATIC na halimbawa mula sa demo data. Hindi ito ang output ng pindutang Pasimplehin."
       >
         <Alert variant="warning" title="Hindi gawa ng AI">
-          {DEMO_AI_NOTICE}
+          {DEMO_AI_NOTICE} Hindi rin ito nagbabago ayon sa antas na pinili mo sa
+          hakbang 02 — iisa ang halimbawang teksto sa prototype.
         </Alert>
 
         <div

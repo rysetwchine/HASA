@@ -46,9 +46,9 @@ export default function AchievementsPage() {
     <div className="space-y-6 pt-1">
       <PageHeader
         icon={iconHeaderRewards}
-        kicker="YOUR COLLECTION"
-        title="REWARDS"
-        description="Celebrate the milestones you earn while learning."
+        kicker="IYONG KOLEKSYON"
+        title="MGA GANTIMPALA"
+        description="Ipagdiwang ang mga hakbang na naabot mo habang nag-aaral."
       />
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
@@ -56,17 +56,17 @@ export default function AchievementsPage() {
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-brand-600">
-                Koleksyon ng sagisag
+                Koleksyon ng Sagisag
               </p>
               <h2 className="mt-1 text-xl font-bold tracking-tight text-ink">
                 {earned.length} / {badges.length} nakamit
               </h2>
               <p className="mt-1 text-sm leading-relaxed text-muted">
                 Binubuksan ang bawat sagisag kapag natapos mo ang tamang
-                bilang ng Practice activities.
+                bilang ng mga gawain sa Pagsasanay.
               </p>
             </div>
-            <Chip tone="brand">+{earnedBadgeXp} badge XP</Chip>
+            <Chip tone="brand">+{earnedBadgeXp} XP mula sa sagisag</Chip>
           </div>
 
           <ProgressBar
@@ -78,7 +78,7 @@ export default function AchievementsPage() {
           />
 
           <p className="mt-3 text-xs leading-relaxed text-muted">
-            Ang badge XP ay nakasama na sa iyong kabuuang XP. Hindi ito
+            Kasama na ang XP ng sagisag sa iyong kabuuang XP. Hindi ito
             nabibigay muli kapag nag-retry.
           </p>
         </Card>
@@ -120,7 +120,7 @@ export default function AchievementsPage() {
           >
             Mga sagisag
           </h2>
-          <Chip tone="muted">Temporary local progress</Chip>
+          <Chip tone="muted">Pansamantalang lokal na pag-save</Chip>
         </div>
 
         <ul className="grid gap-3 sm:grid-cols-2">
@@ -143,7 +143,7 @@ export default function AchievementsPage() {
         </ul>
       </section>
 
-      <Alert variant="info" title="Temporary local persistence">
+      <Alert variant="info" title="Pansamantalang lokal na pag-save">
         {PROGRESS_STORAGE_NOTE}
       </Alert>
 

@@ -84,15 +84,23 @@ for real AI output carries an explicit Tagalog disclaimer.
 
 | Path | Page |
 |---|---|
-| `/` | Simula |
+| `/` | Dashboard |
+| `/mga-aralin` | Lessons |
 | `/login` | Mag-log in |
 | `/register` | Magrehistro |
-| `/pasimplehin` | Pasimplehin |
-| `/aktibidad` | Aktibidad |
+| `/pasimplehin` | AI Simplifier |
+| `/aktibidad` | Practice |
 | `/misyon` | Misyon |
-| `/mga-nakamit` | Mga Nakamit |
-| `/pag-unlad` | Pag-unlad |
-| `/guro` | Guro |
+| `/mga-nakamit` | Rewards |
+| `/pag-unlad` | Progress |
+| `/guro` | Tanawan ng Guro |
+| `/pagsasanay` | alias → `/aktibidad` |
+| `/mga-gantimpala` | alias → `/mga-nakamit` |
+| `*` | 404 |
+
+XP, streak, best scores and badges are stored in `localStorage` under
+`hasa:progress:v1` (Temporary local persistence — no backend). The Progress page can reset
+that record. See `docs/REVIEW.md` for the current state of the codebase and the open issues.
 
 The reading levels live in exactly one place:
 `client/src/utils/readingLevels.js`.

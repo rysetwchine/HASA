@@ -5,10 +5,10 @@ import { buttonClasses } from "../components/ui/Button.jsx";
 export default function NotFoundPage() {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
-      <span className="flex h-16 w-16 items-center justify-center rounded-3xl bg-accent text-brand-700">
+      <span className="flex h-16 w-16 items-center justify-center rounded-3xl bg-accent text-white">
         <Compass className="h-8 w-8" aria-hidden="true" />
       </span>
-      <p className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-brand-600">
+      <p className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-accent-deep">
         404
       </p>
       <h1 className="font-display mt-1 text-3xl font-bold tracking-tight text-ink sm:text-4xl">

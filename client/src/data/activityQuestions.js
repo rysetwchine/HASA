@@ -1,11 +1,14 @@
 import { demoQuestions } from "./demoData.js";
 
 /**
- * Mga tanong para sa mga aktibidad sa Practice Arena.
+ * Mga tanong para sa mga aktibidad sa Pagsasanay.
  *
  * Lahat ng nilalaman ay halimbawa para sa prototype. Ang mga tanong ay
- * nakabatay sa mga paksang Araling Panlipunan (Philippine Revolution) at
+ * nakabatay sa mga paksang Araling Panlipunan (Rebolusyong Pilipino) at
  * ginagamit lamang ng lokal na activity player, hindi ng isang backend.
+ *
+ * Ang mga pamagat ng tao, lugar, at kilusan ay hindi isinasalin dahil
+ * mga pangngalang pantangi ang mga ito.
  *
  * Ang `reading-water` ay direktang gumagamit ng umiiral na `demoQuestions`
  * mula sa demo data, kaya hindi na ito dinoble.
@@ -14,20 +17,22 @@ export const ACTIVITY_QUESTIONS = {
   "featured-hot-seat": [
     {
       id: "hot-seat-q1",
-      prompt: "Which group fought for Philippine independence from Spain in 1896?",
+      prompt:
+        "Aling samahan ang nakipaglaban para sa kalayaan ng Pilipinas mula sa Espanya noong 1896?",
       options: [
-        "The Katipunan",
-        "The Spanish Cortes",
-        "The American colonial government",
-        "The United Nations",
+        "Ang Katipunan",
+        "Ang Cortes ng Espanya",
+        "Ang pamahalaang kolonyal ng Amerika",
+        "Ang Nagkakaisang mga Bansa",
       ],
       correctIndex: 0,
       explanation:
-        "The Katipunan, led by Andres Bonifacio, launched the Philippine Revolution against Spanish rule in 1896.",
+        "Ang Katipunan, sa pamumuno ni Andres Bonifacio, ang nagpasimula ng Rebolusyong Pilipino laban sa mga Kastila noong 1896.",
     },
     {
       id: "hot-seat-q2",
-      prompt: "Who is the national hero whose novels exposed abuses during Spanish rule?",
+      prompt:
+        "Sino ang pambansang bayani na ang mga nobela ay nagsiwalat ng mga pang-aabuso noong panahon ng mga Kastila?",
       options: [
         "Emilio Aguinaldo",
         "Jose Rizal",
@@ -36,24 +41,25 @@ export const ACTIVITY_QUESTIONS = {
       ],
       correctIndex: 1,
       explanation:
-        "Jose Rizal wrote Noli Me Tangere and El Filibusterismo. He was executed in 1896.",
+        "Isinulat ni Jose Rizal ang Noli Me Tangere at El Filibusterismo. Binaril siya noong 1896.",
     },
     {
       id: "hot-seat-q3",
-      prompt: "What did the Kartilya ng Katipunan teach its members?",
+      prompt: "Ano ang itinuturo ng Kartilya ng Katipunan sa mga kasapi nito?",
       options: [
-        "How to trade with Spain",
-        "The duties and values of a Katipunero",
-        "How to become a Spanish official",
-        "The rules of the American government",
+        "Kung paano makipagkalakalan sa Espanya",
+        "Ang mga tungkulin at pagpapahalaga ng isang Katipunero",
+        "Kung paano maging opisyal ng Espanya",
+        "Ang mga alituntunin ng pamahalaang Amerikano",
       ],
       correctIndex: 1,
       explanation:
-        "The Kartilya, written by Emilio Jacinto, explained the duties and moral values expected of Katipunan members.",
+        "Ang Kartilya, na isinulat ni Emilio Jacinto, ay nagpapaliwanag ng mga tungkulin at mabubuting pagpapahalagang inaasahan sa mga kasapi ng Katipunan.",
     },
     {
       id: "hot-seat-q4",
-      prompt: "Where was Philippine independence declared on June 12, 1898?",
+      prompt:
+        "Saan ipinahayag ang kalayaan ng Pilipinas noong Hunyo 12, 1898?",
       options: [
         "Kawit, Cavite",
         "Malolos, Bulacan",
@@ -62,90 +68,90 @@ export const ACTIVITY_QUESTIONS = {
       ],
       correctIndex: 0,
       explanation:
-        "Independence was proclaimed in Kawit, Cavite. The Malolos Congress came later.",
+        "Ipinahayag ang kalayaan sa Kawit, Cavite. Sumunod na lamang ang Kongreso ng Malolos.",
     },
     {
       id: "hot-seat-q5",
-      prompt: "Which of these is a primary source about the revolution?",
+      prompt: "Alin sa mga ito ang pangunahing sanggunian tungkol sa rebolusyon?",
       options: [
-        "A 2024 textbook chapter",
-        "A diary written by a Katipunero in 1897",
-        "A modern encyclopedia entry",
-        "A documentary film made in 2020",
+        "Isang kabanata ng aklat na isinulat noong 2024",
+        "Isang talaarawang isinulat ng isang Katipunero noong 1897",
+        "Isang makabagong lahok sa ensiklopedya",
+        "Isang dokumentaryong pelikulang ginawa noong 2020",
       ],
       correctIndex: 1,
       explanation:
-        "A diary written during the period is a primary source because it comes directly from a participant or witness.",
+        "Ang talaarawang isinulat noong panahong iyon ay pangunahing sanggunian dahil galing ito mismo sa kalahok o saksi.",
     },
   ],
 
   ch1: [
     {
       id: "ch1-q1",
-      prompt: "Which event happened first?",
+      prompt: "Aling pangyayari ang nauna?",
       options: [
-        "The founding of the Katipunan",
-        "The Cry of Pugad Lawin",
-        "The declaration of Philippine independence",
-        "The Battle of Manila Bay",
+        "Ang pagtatatag ng Katipunan",
+        "Ang Sigaw sa Pugad Lawin",
+        "Ang pagpapahayag ng kalayaan ng Pilipinas",
+        "Ang Labanan sa Look ng Maynila",
       ],
       correctIndex: 0,
       explanation:
-        "The Katipunan was founded in 1892. The revolution began in 1896, and independence was declared in 1898.",
+        "Itinatag ang Katipunan noong 1892. Nagsimula ang rebolusyon noong 1896, at ipinahayag ang kalayaan noong 1898.",
     },
     {
       id: "ch1-q2",
-      prompt: "Which event happened last?",
+      prompt: "Aling pangyayari ang huli?",
       options: [
-        "The founding of the Katipunan",
-        "The declaration of Philippine independence",
-        "The execution of Jose Rizal",
-        "The start of the Philippine Revolution",
+        "Ang pagtatatag ng Katipunan",
+        "Ang pagpapahayag ng kalayaan ng Pilipinas",
+        "Ang pagbitay kay Jose Rizal",
+        "Ang pagsisimula ng Rebolusyong Pilipino",
       ],
       correctIndex: 1,
       explanation:
-        "Independence was declared on June 12, 1898, after the revolution had begun.",
+        "Ipinahayag ang kalayaan noong Hunyo 12, 1898, matapos magsimula ang rebolusyon.",
     },
     {
       id: "ch1-q3",
-      prompt: "In what year was the Katipunan founded?",
+      prompt: "Anong taon itinatag ang Katipunan?",
       options: ["1892", "1896", "1898", "1901"],
       correctIndex: 0,
       explanation:
-        "Andres Bonifacio and other patriots founded the Katipunan in 1892.",
+        "Itinatag ni Andres Bonifacio at ng iba pang makabayan ang Katipunan noong 1892.",
     },
     {
       id: "ch1-q4",
-      prompt: "Which event took place in 1898?",
+      prompt: "Aling pangyayari ang naganap noong 1898?",
       options: [
-        "The Battle of Manila Bay",
-        "The Cry of Pugad Lawin",
-        "The execution of Jose Rizal",
-        "The founding of La Liga Filipina",
+        "Ang Labanan sa Look ng Maynila",
+        "Ang Sigaw sa Pugad Lawin",
+        "Ang pagbitay kay Jose Rizal",
+        "Ang pagtatatag ng La Liga Filipina",
       ],
       correctIndex: 0,
       explanation:
-        "The Battle of Manila Bay happened in 1898 during the Spanish-American War.",
+        "Naganap ang Labanan sa Look ng Maynila noong 1898 sa panahon ng Digmaang Espanyol-Amerikano.",
     },
     {
       id: "ch1-q5",
-      prompt: "Which sequence is in the correct order?",
+      prompt: "Alin ang tamang pagkakasunod-sunod?",
       options: [
-        "Founding of the Katipunan → Cry of Pugad Lawin → Declaration of Independence",
-        "Declaration of Independence → Founding of the Katipunan → Cry of Pugad Lawin",
-        "Cry of Pugad Lawin → Declaration of Independence → Founding of the Katipunan",
-        "Declaration of Independence → Cry of Pugad Lawin → Founding of the Katipunan",
+        "Pagtatatag ng Katipunan → Sigaw sa Pugad Lawin → Pagpapahayag ng Kalayaan",
+        "Pagpapahayag ng Kalayaan → Pagtatatag ng Katipunan → Sigaw sa Pugad Lawin",
+        "Sigaw sa Pugad Lawin → Pagpapahayag ng Kalayaan → Pagtatatag ng Katipunan",
+        "Pagpapahayag ng Kalayaan → Sigaw sa Pugad Lawin → Pagtatatag ng Katipunan",
       ],
       correctIndex: 0,
       explanation:
-        "The Katipunan was founded in 1892, the revolution began in 1896, and independence was declared in 1898.",
+        "Itinatag ang Katipunan noong 1892, nagsimula ang rebolusyon noong 1896, at ipinahayag ang kalayaan noong 1898.",
     },
   ],
 
   ch2: [
     {
       id: "ch2-q1",
-      prompt: "Who led the Katipunan and is known as the Supremo?",
+      prompt: "Sino ang namuno sa Katipunan at tinawag na Supremo?",
       options: [
         "Andres Bonifacio",
         "Jose Rizal",
@@ -154,11 +160,11 @@ export const ACTIVITY_QUESTIONS = {
       ],
       correctIndex: 0,
       explanation:
-        "Andres Bonifacio was the leader of the Katipunan and is remembered as the Supremo.",
+        "Si Andres Bonifacio ang pinuno ng Katipunan at naaalala bilang Supremo.",
     },
     {
       id: "ch2-q2",
-      prompt: "Who wrote Noli Me Tangere and El Filibusterismo?",
+      prompt: "Sino ang sumulat ng Noli Me Tangere at El Filibusterismo?",
       options: [
         "Jose Rizal",
         "Emilio Jacinto",
@@ -167,11 +173,11 @@ export const ACTIVITY_QUESTIONS = {
       ],
       correctIndex: 0,
       explanation:
-        "Jose Rizal wrote both novels, which exposed abuses and encouraged reform.",
+        "Isinulat ni Jose Rizal ang dalawang nobela, na nagsiwalat ng mga pang-aabuso at naghikayat ng reporma.",
     },
     {
       id: "ch2-q3",
-      prompt: "Who became the first President of the Philippine Republic?",
+      prompt: "Sino ang naging unang Pangulo ng Republika ng Pilipinas?",
       options: [
         "Emilio Aguinaldo",
         "Andres Bonifacio",
@@ -180,11 +186,12 @@ export const ACTIVITY_QUESTIONS = {
       ],
       correctIndex: 0,
       explanation:
-        "Emilio Aguinaldo led the revolutionary government and became the first President of the Philippine Republic.",
+        "Pinamunuan ni Emilio Aguinaldo ang rebolusyonaryong pamahalaan at naging unang Pangulo ng Republika ng Pilipinas.",
     },
     {
       id: "ch2-q4",
-      prompt: "Who was known as the Sublime Paralytic and served as an adviser to the revolution?",
+      prompt:
+        "Sino ang tinawag na Dakilang Paralitiko at nagsilbing tagapayo ng rebolusyon?",
       options: [
         "Apolinario Mabini",
         "Emilio Jacinto",
@@ -193,11 +200,12 @@ export const ACTIVITY_QUESTIONS = {
       ],
       correctIndex: 0,
       explanation:
-        "Apolinario Mabini was called the Sublime Paralytic and became a key adviser to the revolutionary government.",
+        "Si Apolinario Mabini ang tinawag na Dakilang Paralitiko at naging pangunahing tagapayo ng rebolusyonaryong pamahalaan.",
     },
     {
       id: "ch2-q5",
-      prompt: "Who was known as the Lakambini and helped organize the women of the Katipunan?",
+      prompt:
+        "Sino ang tinawag na Lakambini at tumulong sa pag-oorganisa ng mga kababaihan ng Katipunan?",
       options: [
         "Gregoria de Jesus",
         "Melchora Aquino",
@@ -206,98 +214,114 @@ export const ACTIVITY_QUESTIONS = {
       ],
       correctIndex: 0,
       explanation:
-        "Gregoria de Jesus, wife of Andres Bonifacio, was called Lakambini and helped organize the Katipunan's women.",
+        "Si Gregoria de Jesus, asawa ni Andres Bonifacio, ang tinawag na Lakambini at tumulong sa pag-oorganisa ng mga kababaihan ng Katipunan.",
     },
   ],
 
   ch3: [
     {
       id: "ch3-q1",
-      prompt: "Which of these is a primary source about the revolution?",
+      prompt: "Alin sa mga ito ang pangunahing sanggunian tungkol sa rebolusyon?",
       options: [
-        "A diary written by a Katipunero in 1896",
-        "A textbook chapter written in 2024",
-        "A modern encyclopedia entry",
-        "A documentary film made in 2021",
+        "Isang talaarawang isinulat ng isang Katipunero noong 1896",
+        "Isang kabanata ng aklat na isinulat noong 2024",
+        "Isang makabagong lahok sa ensiklopedya",
+        "Isang dokumentaryong pelikulang ginawa noong 2021",
       ],
       correctIndex: 0,
       explanation:
-        "Primary sources come from the time of the event and are created by participants or witnesses.",
+        "Ang pangunahing sanggunian ay galing sa panahon ng pangyayari at ginawa ng mga kalahok o saksi.",
     },
     {
       id: "ch3-q2",
-      prompt: "A history textbook written in 2020 is an example of what kind of source?",
+      prompt:
+        "Ang aklat sa kasaysayan na isinulat noong 2020 ay halimbawa ng anong uri ng sanggunian?",
       options: [
-        "A primary source",
-        "A secondary source",
-        "An artifact",
-        "An oral tradition",
+        "Pangunahing sanggunian",
+        "Pangalawang sanggunian",
+        "Artifakto",
+        "Salitang pasalita",
       ],
       correctIndex: 1,
       explanation:
-        "A textbook interprets earlier evidence, so it is a secondary source.",
+        "Ang aklat ay nagbibigay-kahulugan sa mga naunang ebidensiya, kaya pangalawang sanggunian ito.",
     },
     {
       id: "ch3-q3",
-      prompt: "Why should historians compare two accounts of the same event?",
+      prompt:
+        "Bakit dapat ihambing ng mga mananalaysay ang dalawang salaysay ng isang pangyayari?",
       options: [
-        "To check their reliability and identify bias",
-        "To make the story longer",
-        "To choose the more exciting version",
-        "To avoid using any evidence",
+        "Upang masuri ang pagiging mapagkakatiwalaan at makita ang pagkiling",
+        "Upang gawing mas mahaba ang kuwento",
+        "Upang piliin ang mas kapana-panabik na bersyon",
+        "Upang iwasang gumamit ng ebidensiya",
       ],
       correctIndex: 0,
       explanation:
-        "Comparing accounts helps historians check facts, spot differences, and understand each writer's perspective.",
+        "Tumutulong ang paghahambing upang masuri ang mga katotohanan, makita ang pagkakaiba, at maunawaan ang pananaw ng bawat may-akda.",
     },
     {
       id: "ch3-q4",
-      prompt: "Why might a letter from a Spanish official show bias?",
+      prompt:
+        "Bakit maaaring magpakita ng pagkiling ang liham mula sa isang opisyal na Kastila?",
       options: [
-        "It reflects the writer's own perspective and interests",
-        "Letters are never useful as evidence",
-        "It was written in Spanish",
-        "It is always completely false",
+        "Sumasalamin ito sa sariling pananaw at interes ng sumulat",
+        "Walang saysay ang mga liham bilang ebidensiya",
+        "Isinulat ito sa wikang Espanyol",
+        "Laging lubos itong mali",
       ],
       correctIndex: 0,
       explanation:
-        "All sources reflect a point of view. A Spanish official's letter may protect Spanish interests or describe Filipinos unfairly.",
+        "May sariling pananaw ang lahat ng sanggunian. Maaaring protektahan ng liham ng opisyal na Kastila ang interes ng Espanya o ilarawan nang di-makatarungan ang mga Pilipino.",
     },
     {
       id: "ch3-q5",
-      prompt: "Which question best helps you evaluate a source?",
+      prompt: "Aling tanong ang pinakanakatutulong sa pagsusuri ng sanggunian?",
       options: [
-        "Who wrote it, when, and why?",
-        "Is the title short?",
-        "Does it have a colorful cover?",
-        "Is it the most popular post online?",
+        "Sino ang sumulat, kailan, at bakit?",
+        "Maikli ba ang pamagat?",
+        "May makulay ba itong pabalat?",
+        "Ito ba ang pinakasikat na post sa internet?",
       ],
       correctIndex: 0,
       explanation:
-        "The author, date, and purpose help you judge whether a source is credible and useful.",
+        "Ang may-akda, petsa, at layunin ang tumutulong upang hatulan kung mapagkakatiwalaan at kapaki-pakinabang ang isang sanggunian.",
     },
   ],
 
   ch4: [
     {
       id: "ch4-q1",
-      prompt: "I led the Katipunan and was born in Tondo. Who am I?",
-      options: ["Andres Bonifacio", "Jose Rizal", "Emilio Aguinaldo", "Emilio Jacinto"],
+      prompt:
+        "Pinamunuan ko ang Katipunan at ipinanganak ako sa Tondo. Sino ako?",
+      options: [
+        "Andres Bonifacio",
+        "Jose Rizal",
+        "Emilio Aguinaldo",
+        "Emilio Jacinto",
+      ],
       correctIndex: 0,
       explanation:
-        "Andres Bonifacio was born in Tondo, Manila, and led the Katipunan.",
+        "Ipinanganak si Andres Bonifacio sa Tondo, Maynila, at pinamunuan niya ang Katipunan.",
     },
     {
       id: "ch4-q2",
-      prompt: "I wrote novels that exposed abuses and was executed in 1896. Who am I?",
-      options: ["Jose Rizal", "Andres Bonifacio", "Apolinario Mabini", "Antonio Luna"],
+      prompt:
+        "Sumulat ako ng mga nobelang nagsiwalat ng pang-aabuso at binaril noong 1896. Sino ako?",
+      options: [
+        "Jose Rizal",
+        "Andres Bonifacio",
+        "Apolinario Mabini",
+        "Antonio Luna",
+      ],
       correctIndex: 0,
       explanation:
-        "Jose Rizal wrote Noli Me Tangere and El Filibusterismo and was executed on December 30, 1896.",
+        "Isinulat ni Jose Rizal ang Noli Me Tangere at El Filibusterismo at binaril noong Disyembre 30, 1896.",
     },
     {
       id: "ch4-q3",
-      prompt: "I became president of the revolutionary government and declared independence in Kawit. Who am I?",
+      prompt:
+        "Naging pangulo ako ng rebolusyonaryong pamahalaan at nagpahayag ng kalayaan sa Kawit. Sino ako?",
       options: [
         "Emilio Aguinaldo",
         "Andres Bonifacio",
@@ -306,11 +330,12 @@ export const ACTIVITY_QUESTIONS = {
       ],
       correctIndex: 0,
       explanation:
-        "Emilio Aguinaldo proclaimed Philippine independence in Kawit, Cavite, on June 12, 1898.",
+        "Ipinahayag ni Emilio Aguinaldo ang kalayaan ng Pilipinas sa Kawit, Cavite, noong Hunyo 12, 1898.",
     },
     {
       id: "ch4-q4",
-      prompt: "I advised the revolutionary government and was called the Sublime Paralytic. Who am I?",
+      prompt:
+        "Nagpayo ako sa rebolusyonaryong pamahalaan at tinawag na Dakilang Paralitiko. Sino ako?",
       options: [
         "Apolinario Mabini",
         "Jose Rizal",
@@ -319,11 +344,11 @@ export const ACTIVITY_QUESTIONS = {
       ],
       correctIndex: 0,
       explanation:
-        "Apolinario Mabini was a political thinker and adviser known as the Sublime Paralytic.",
+        "Si Apolinario Mabini ay isang palaisip at tagapayo sa pulitika na kilala bilang Dakilang Paralitiko.",
     },
     {
       id: "ch4-q5",
-      prompt: "I organized the women's section of the Katipunan. Who am I?",
+      prompt: "Inorganisa ko ang pangkat ng kababaihan ng Katipunan. Sino ako?",
       options: [
         "Gregoria de Jesus",
         "Melchora Aquino",
@@ -332,57 +357,59 @@ export const ACTIVITY_QUESTIONS = {
       ],
       correctIndex: 0,
       explanation:
-        "Gregoria de Jesus, the Lakambini, helped organize the women of the Katipunan.",
+        "Si Gregoria de Jesus, ang Lakambini, ang tumulong sa pag-oorganisa ng mga kababaihan ng Katipunan.",
     },
   ],
 
   ch5: [
     {
       id: "ch5-q1",
-      prompt: "The Katipunan was founded by Andres Bonifacio in 1892.",
-      options: ["Fact", "Fiction"],
+      prompt: "Itinatag ni Andres Bonifacio ang Katipunan noong 1892.",
+      options: ["Katotohanan", "Katha"],
       correctIndex: 0,
       explanation:
-        "This is a fact. The Katipunan was founded in 1892, and Bonifacio was one of its leaders.",
+        "Katotohanan ito. Itinatag ang Katipunan noong 1892, at si Bonifacio ang isa sa mga pinuno nito.",
     },
     {
       id: "ch5-q2",
-      prompt: "Jose Rizal led the armed revolution as the Supremo.",
-      options: ["Fact", "Fiction"],
+      prompt: "Pinamunuan ni Jose Rizal ang armadong rebolusyon bilang Supremo.",
+      options: ["Katotohanan", "Katha"],
       correctIndex: 1,
       explanation:
-        "This is fiction. Andres Bonifacio was the Supremo. Rizal was a reformist and novelist.",
+        "Katha ito. Si Andres Bonifacio ang Supremo. Si Rizal ay repormista at nobelista.",
     },
     {
       id: "ch5-q3",
-      prompt: "The Cry of Pugad Lawin is remembered as the start of the Philippine Revolution.",
-      options: ["Fact", "Fiction"],
+      prompt:
+        "Ang Sigaw sa Pugad Lawin ay naaalala bilang simula ng Rebolusyong Pilipino.",
+      options: ["Katotohanan", "Katha"],
       correctIndex: 0,
       explanation:
-        "This is a fact. The Cry of Pugad Lawin in 1896 marked the open revolt against Spain.",
+        "Katotohanan ito. Ang Sigaw sa Pugad Lawin noong 1896 ang nagtanda ng hayagang pag-aalsa laban sa Espanya.",
     },
     {
       id: "ch5-q4",
-      prompt: "Philippine independence was declared on June 12, 1898, in Kawit, Cavite.",
-      options: ["Fact", "Fiction"],
+      prompt:
+        "Ipinahayag ang kalayaan ng Pilipinas noong Hunyo 12, 1898, sa Kawit, Cavite.",
+      options: ["Katotohanan", "Katha"],
       correctIndex: 0,
       explanation:
-        "This is a fact. The declaration took place in Kawit, Cavite, on June 12, 1898.",
+        "Katotohanan ito. Naganap ang pagpapahayag sa Kawit, Cavite, noong Hunyo 12, 1898.",
     },
     {
       id: "ch5-q5",
-      prompt: "The Spanish colonial government supported the Katipunan.",
-      options: ["Fact", "Fiction"],
+      prompt: "Sinuportahan ng pamahalaang kolonyal ng Espanya ang Katipunan.",
+      options: ["Katotohanan", "Katha"],
       correctIndex: 1,
       explanation:
-        "This is fiction. The Katipunan was a secret society that opposed Spanish rule.",
+        "Katha ito. Ang Katipunan ay lihim na samahan na lumaban sa pamamahala ng mga Kastila.",
     },
   ],
 
   ch6: [
     {
       id: "ch6-q1",
-      prompt: "What does the name Katipunan stand for?",
+      prompt: "Ano ang buong pangalan ng Katipunan?",
       options: [
         "Kataastaasan, Kagalanggalangang Katipunan ng mga Anak ng Bayan",
         "Kilusang Kabataan ng Bayan",
@@ -391,24 +418,24 @@ export const ACTIVITY_QUESTIONS = {
       ],
       correctIndex: 0,
       explanation:
-        "The full name is Kataastaasan, Kagalanggalangang Katipunan ng mga Anak ng Bayan.",
+        "Ang buong pangalan ay Kataastaasan, Kagalanggalangang Katipunan ng mga Anak ng Bayan.",
     },
     {
       id: "ch6-q2",
-      prompt: "What was the main goal of the Katipunan?",
+      prompt: "Ano ang pangunahing layunin ng Katipunan?",
       options: [
-        "Independence from Spain",
-        "Friendship with the Spanish government",
-        "Free trade with China",
-        "Making Manila the capital of Spain",
+        "Ang kalayaan mula sa Espanya",
+        "Ang pakikipagkaibigan sa pamahalaang Kastila",
+        "Ang malayang kalakalan sa Tsina",
+        "Ang paggawang Maynila na kabisera ng Espanya",
       ],
       correctIndex: 0,
       explanation:
-        "The Katipunan aimed to end Spanish rule and gain independence for the Philippines.",
+        "Layunin ng Katipunan na wakasan ang pamamahala ng mga Kastila at makamit ang kalayaan ng Pilipinas.",
     },
     {
       id: "ch6-q3",
-      prompt: "Who wrote the Kartilya ng Katipunan?",
+      prompt: "Sino ang sumulat ng Kartilya ng Katipunan?",
       options: [
         "Emilio Jacinto",
         "Andres Bonifacio",
@@ -417,11 +444,11 @@ export const ACTIVITY_QUESTIONS = {
       ],
       correctIndex: 0,
       explanation:
-        "Emilio Jacinto wrote the Kartilya, which explained the duties and values of Katipunan members.",
+        "Isinulat ni Emilio Jacinto ang Kartilya, na nagpapaliwanag ng mga tungkulin at pagpapahalaga ng mga kasapi ng Katipunan.",
     },
     {
       id: "ch6-q4",
-      prompt: "Who was the Supremo of the Katipunan?",
+      prompt: "Sino ang Supremo ng Katipunan?",
       options: [
         "Andres Bonifacio",
         "Emilio Jacinto",
@@ -430,20 +457,20 @@ export const ACTIVITY_QUESTIONS = {
       ],
       correctIndex: 0,
       explanation:
-        "Andres Bonifacio served as the Supremo of the Katipunan.",
+        "Si Andres Bonifacio ang nagsilbing Supremo ng Katipunan.",
     },
     {
       id: "ch6-q5",
-      prompt: "What is remembered at the Cry of Pugad Lawin?",
+      prompt: "Ano ang naaalala sa Sigaw sa Pugad Lawin?",
       options: [
-        "Katipuneros tore their cedulas and declared revolt",
-        "Spain signed a peace treaty with the Philippines",
-        "The first Philippine Republic was founded",
-        "Jose Rizal returned from Europe",
+        "Pinunit ng mga Katipunero ang kanilang sedula at nagpahayag ng pag-aalsa",
+        "Pumirma ang Espanya ng kasunduan sa kapayapaan sa Pilipinas",
+        "Itinatag ang unang Republika ng Pilipinas",
+        "Bumalik si Jose Rizal mula sa Europa",
       ],
       correctIndex: 0,
       explanation:
-        "The Cry of Pugad Lawin is remembered as the moment Katipuneros tore their cedulas and began the revolution.",
+        "Ang Sigaw sa Pugad Lawin ay naaalala bilang sandaling pinunit ng mga Katipunero ang kanilang sedula at sinimulan ang rebolusyon.",
     },
   ],
 

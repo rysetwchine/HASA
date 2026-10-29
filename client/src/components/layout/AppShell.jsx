@@ -24,7 +24,6 @@ function ScrollToTop() {
   useEffect(() => {
     if (hash) {
       const id = decodeURIComponent(hash.slice(1));
-
       const target = document.getElementById(id);
 
       if (target) {
@@ -42,6 +41,14 @@ function ScrollToTop() {
   return null;
 }
 
+/**
+ * Balangkas ng app. Ang `<main>` ay flex-1 at `min-w-0`, kaya kailanman
+ * hindi ito lumalampas sa natitirang lapad katabi ng sidebar (na may
+ * `shrink-0`). Ito ang pumipigil sa horizontal scrolling.
+ *
+ * Padding: 16px sa mobile, 24px sa tablet, 32–40px sa desktop. Dati
+ * 48–56px ito, na nagiging sobrang laki sa 1366×768.
+ */
 export default function AppShell({ children }) {
   const { pathname } = useLocation();
   const isAuthPage = AUTH_ROUTES.has(pathname);
@@ -62,12 +69,11 @@ export default function AppShell({ children }) {
       <ScrollToTop />
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* Ang Topbar ay sa mga pahina ng app; sa mobile gamit ang MobileNav */}
         <main
           id="nilalaman"
-          className="flex-1 px-4 pb-8 pt-5 sm:px-6 xl:px-12 xl:pt-7 2xl:px-14"
+          className="min-w-0 flex-1 px-4 pb-8 pt-4 sm:px-6 xl:px-8 xl:pt-5 2xl:px-10"
         >
-          <div className="mx-auto w-full max-w-[1240px]">
+          <div className="mx-auto w-full max-w-[1180px]">
             <Topbar />
             {children}
           </div>
