@@ -60,7 +60,7 @@ export default function LoginPage() {
     if (!username.trim()) {
       next.username = isTeacher
         ? "Ilagay ang ID o username ng guro."
-        : "Ilagay ang iyong username o student ID.";
+        : "Ilagay ang iyong username o ID ng mag-aaral.";
     } else if (username.trim().length < 3) {
       next.username = "Gumamit ng hindi bababa sa 3 letra.";
     }
@@ -199,7 +199,7 @@ export default function LoginPage() {
                   htmlFor="login-username"
                   className="block text-[14px] font-medium text-ink"
                 >
-                  Username o Student ID
+                  Username o ID ng Mag-aaral
                 </label>
                 <div className="relative mt-2">
                   <img

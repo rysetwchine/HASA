@@ -551,7 +551,7 @@ describe("login at registration", () => {
     );
 
     expect(
-      screen.getByText(/Ilagay ang iyong username o student ID/i),
+      screen.getByText(/Ilagay ang iyong username o ID ng mag-aaral/i),
     ).toBeInTheDocument();
     expect(
       screen.getByText(/Ilagay ang iyong password/i),
@@ -566,7 +566,7 @@ describe("login at registration", () => {
     renderAt("/login");
 
     await user.type(
-      screen.getByLabelText(/Username o Student ID/i),
+      screen.getByLabelText(/Username o ID ng Mag-aaral/i),
       "estudyante1",
     );
     await user.type(screen.getByLabelText(/^Password/i), "halimbawa123");

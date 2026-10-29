@@ -84,15 +84,16 @@ for real AI output carries an explicit Tagalog disclaimer.
 
 | Path | Page |
 |---|---|
-| `/` | Dashboard |
-| `/mga-aralin` | Lessons |
-| `/login` | Mag-log in |
+| `/` | Dashboard (Pangunahing Pahina) |
+| `/mga-aralin` | Mga Aralin |
+| `/mga-aralin/:lessonId` | Detalye ng Aralin + pagsusulit |
+| `/login` | Mag-log in (may demo na daan papasok) |
 | `/register` | Magrehistro |
-| `/pasimplehin` | AI Simplifier |
-| `/aktibidad` | Practice |
+| `/pasimplehin` | AI Tagapagpasimple |
+| `/aktibidad` | Pagsasanay |
 | `/misyon` | Misyon |
-| `/mga-nakamit` | Rewards |
-| `/pag-unlad` | Progress |
+| `/mga-nakamit` | Mga Gantimpala |
+| `/pag-unlad` | Aking Pag-unlad |
 | `/guro` | Tanawan ng Guro |
 | `/pagsasanay` | alias → `/aktibidad` |
 | `/mga-gantimpala` | alias → `/mga-nakamit` |
@@ -100,7 +101,9 @@ for real AI output carries an explicit Tagalog disclaimer.
 
 XP, streak, best scores and badges are stored in `localStorage` under
 `hasa:progress:v1` (Temporary local persistence — no backend). The Progress page can reset
-that record. See `docs/REVIEW.md` for the current state of the codebase and the open issues.
+that record. The demo session flag lives in `hasa:demo-session:v1`, so "Mag-logout" really
+does send you back to `/login`. See `docs/REVIEW.md` for the current state of the codebase
+and `docs/DEPLOYMENT.md` for the Vercel setup (SPA rewrites, no environment variables).
 
 The reading levels live in exactly one place:
 `client/src/utils/readingLevels.js`.
