@@ -295,7 +295,7 @@ export default function TeacherPage() {
         to="/"
         className={buttonClasses({ variant: "secondary", size: "sm" })}
       >
-        Bumalik sa student dashboard
+        Bumalik sa dashboard ng mag-aaral
       </Link>
     </div>
   );

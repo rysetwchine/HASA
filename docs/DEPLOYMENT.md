@@ -134,3 +134,55 @@ files and all 25 URLs referenced from the built CSS resolve to a real file (0 mi
   (`vercel.json`, `client/vercel.json`, `.vercelignore`) plus this document.
 - A failed deploy is fixed by reverting `vercel.json`; `git revert <commit>` restores the
   previous state without touching app code.
+
+---
+
+## Live deployment (verified)
+
+**URL:** https://hasa-xtg1.vercel.app
+**Vercel project:** `proctoristab/hasa-xtg1`, production branch `main`
+**Trigger:** the GitHub → Vercel integration rebuilds on every push to `main`
+(a push took ~1 minute to appear on the alias).
+
+Checks performed against the live alias after merging the fixes:
+
+| Path | Before the rewrite | After |
+|---|---|---|
+| `/` | 200, but the old English dashboard | 200, Filipino dashboard |
+| `/mga-aralin` | **404 NOT_FOUND** | 200, Filipino lessons page |
+| `/mga-aralin/lesson-1-5` | **404 NOT_FOUND** | 200, lesson content + key terms |
+| `/pag-unlad` | **404 NOT_FOUND** | 200, Aking Pag-unlad |
+| `/login` | **404 NOT_FOUND** | 200, login screen |
+| `/aktibidad` | **404 NOT_FOUND** | 200, Pagsasanay |
+| `/guro` | **404 NOT_FOUND** | 200, Tanawan ng Guro |
+
+Assets load from the same origin: hashed images under `/assets/*.png`
+(`banner-lessons-B3jTj1xq.png`, `thumb-1-BfaWg_qz.png`, `logo-hasa-BNuvbmDi.png`, …),
+the JS/CSS bundles under `/assets/index-*.js|css`, the 25 self-hosted fonts under
+`/fonts/*.woff2`, and `/favicon.png`. Every page renders with the app shell, sidebar and
+Topbar, so the CSS bundle and fonts are being served correctly.
+
+> Note for re-testing right after a deploy: Vercel’s edge keeps the previous response for a
+> short while. Append a throwaway query string (`/mga-aralin?nc=1`) to force a fresh render
+> before concluding that something is still broken — that is exactly what made the first
+> post-deploy check look stale here.
+
+### Verified in this deploy
+
+- Client-side routing survives a hard refresh on every route listed above.
+- The dashboard banner reads from real progress (no hard-coded 35 %).
+- Lessons search, difficulty filters, grid/list toggle, and the six lesson cards render;
+  each card links to `/mga-aralin/<id>`.
+- The lesson page shows sections, Mahahalagang Salita, and the draft-content notice.
+- Login page shows “AI Tagapagpasimple”, “Ipakita”, and the demo notice.
+- Teacher page renders the sample class table.
+
+### Not verified on the live URL
+
+- Pixel-perfect rendering at 1366×768 / 1440×900 / 1920×1080 and on tablet/phone: no
+  browser engine could be installed in the build sandbox (APT and the Playwright CDN are
+  blocked). Layout was verified through the DOM tests and the CSS, not screenshots.
+  Fast manual pass: open the four routes above at 100 % zoom and check for a horizontal
+  scrollbar, then repeat at 390 px width (bottom nav should replace the sidebar).
+- Interactions that need a real browser session (opening a quiz, submitting answers, XP
+  updating, logout) are covered by the 65 unit/DOM tests locally, not by the live check.
