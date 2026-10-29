@@ -111,7 +111,7 @@ describe("pag-reset ng lokal na pag-unlad", () => {
 });
 
 describe("password visibility", () => {
-  it("nagpapalit ng Show/Hide sa login", async () => {
+  it("nagpapalit ng Ipakita/Itago sa login", async () => {
     const user = userEvent.setup();
     renderAt("/login");
 
@@ -124,7 +124,7 @@ describe("password visibility", () => {
     expect(password).toHaveAttribute("type", "text");
     expect(
       screen.getByRole("button", { name: /Itago ang password/i }),
-    ).toHaveTextContent(/Hide/i);
+    ).toHaveTextContent(/Itago/i);
 
     await user.click(
       screen.getByRole("button", { name: /Itago ang password/i }),

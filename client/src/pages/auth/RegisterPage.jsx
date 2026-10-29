@@ -232,7 +232,7 @@ export default function RegisterPage() {
                     ) : (
                       <Eye className="h-4 w-4" aria-hidden="true" />
                     )}
-                    {showPassword ? "Hide" : "Show"}
+                    {showPassword ? "Itago" : "Ipakita"}
                   </button>
                 </div>
                 {errors.password ? (

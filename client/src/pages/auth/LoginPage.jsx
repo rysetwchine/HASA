@@ -119,8 +119,8 @@ export default function LoginPage() {
             </h1>
             <p className="mt-3 max-w-[520px] text-[14px] leading-snug text-white 2xl:text-[16px]">
               Matuto ng Araling Panlipunan sa mas madali at masayang paraan
-              gamit ang AI Simplifier, interactive na gawain, at educational
-              games
+              gamit ang AI Tagapagpasimple, mga interaktibong gawain, at mga
+              larong pang-edukasyon
             </p>
 
             <ul className="mt-8 max-w-[470px] space-y-4">
@@ -276,7 +276,7 @@ export default function LoginPage() {
                     ) : (
                       <Eye className="h-4 w-4" aria-hidden="true" />
                     )}
-                    {showPassword ? "Hide" : "Show"}
+                    {showPassword ? "Itago" : "Ipakita"}
                   </button>
                 </div>
               </div>
