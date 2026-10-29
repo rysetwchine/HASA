@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Environment / secrets — never commit real keys
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# SQLite databases (local data, not source)
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+server/data/
+
+# Uploads are never persisted by design; ignore any stray copies
+uploads/
+temp/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor / OS noise
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Test artifacts
+.vitest/
+playwright-report/
+test-results/

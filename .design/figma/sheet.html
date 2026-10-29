@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body { font-family: sans-serif; background: #fff0d9; margin: 0; padding: 16px; }
+      .grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 12px; }
+      figure { margin: 0; background: #fff; padding: 8px; border-radius: 8px; text-align: center; }
+      img { max-width: 100%; max-height: 90px; display: block; margin: 0 auto; }
+      figcaption { font-size: 10px; margin-top: 4px; color: #333; word-break: break-all; }
+    </style>
+  </head>
+  <body>
+    <div class="grid" id="grid"></div>
+    <script>
+      const names = [
+        "logo-books","nav-dashboard","nav-lessons","nav-ai","nav-practice","nav-rewards","nav-progress","icon-logout",
+        "icon-bell","mascot-hello","icon-trophy","icon-medal","icon-megaphone","icon-book","icon-new","logo-hasa",
+        "feat-xp","feat-ai","feat-track","input-user","input-lock","role-student","role-teacher","banner-lessons",
+        "icon-header-lessons","icon-header-practice","icon-header-rewards","search","view-grid","view-list","thumb-1","thumb-2",
+        "thumb-3","thumb-4","thumb-5","thumb-6","diff-easy","diff-medium","diff-hard","action-review",
+        "action-star","tip-icon","streak-fire","practice-trophy","practice-sparkle","practice-badge","practice-q","practice-xp",
+        "practice-play","challenge-check","challenge-1","challenge-2","challenge-3","challenge-4","challenge-5","challenge-6"
+      ];
+      document.getElementById("grid").innerHTML = names
+        .map((n) => `<figure><img src="crops/${n}.png" alt="${n}"><figcaption>${n}</figcaption></figure>`)
+        .join("");
+    </script>
+  </body>
+</html>

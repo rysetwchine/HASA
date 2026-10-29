@@ -1,0 +1,491 @@
+
+
+========== LOGIN (1:1048) ==========
+FRAME 1:1048 [-2160,-3058 1646x1176] login page bg:#ffffff
+  RECTANGLE 4:2 [-2160,-3058 739x1176] Rectangle 1 bg:#3e3e75
+  RECTANGLE 4:58 [-1421,-3094 907x1259] Rectangle 2 bg:#fff0d9
+  TEXT 26:58 [-1267,-2375 187x25] Username / Student I’D "Username / Student I’D" Roboto 500 18px lh25 bg:#000000
+  TEXT 26:59 [-1268,-2273 80x25] Password "Password" Roboto 500 18px lh25 bg:#000000
+  TEXT 26:87 [-802,-2179 121x25] Forgot password? "Forgot password?" Roboto 500 15px lh25 bg:#8a38f5
+  VECTOR 4:56 [-1631,-3146 303x262] Ellipse 1 bg:#fff0d9
+  VECTOR 4:60 [-2211,-3125 366x362] Ellipse 2 bg:#8b8bba
+  VECTOR 4:62 [-1709,-2195 288x409] Ellipse 2 bg:#8b8bba
+  TEXT 4:84 [-2080,-2714 633x128] HASA: TARA, MATUTO AT MAHASA! "HASA: TARA, MATUTO AT MAHASA!" Roboto 700 55px lh64 bg:#ffffff stroke:#f2f2f2/1
+  TEXT 6:87 [-2080,-2579 588x91] Matuto ng Araling Panlipunan sa mas madali at masayang paraan gamit ang AI Simplifier, interactive na gawain, at educational games "Matuto ng Araling Panlipunan sa mas madali at masayang paraan gamit an" Roboto 400 20px lh23 bg:#ffffff
+  TEXT 11:120 [-1284,-2571 406x23] Magbasa, matuto, at mahasa sa bawat aralin. "Magbasa, matuto, at mahasa sa bawat aralin." Roboto 400 20px lh23 bg:#000000
+  GROUP 6:99 [-2081,-2454 72x72] Group 1 r:20
+    RECTANGLE 6:94 [-2081,-2454 72x72] Rectangle 3 bg:#000000@0.6700000166893005 r:20
+    RECTANGLE 6:96 [-2071,-2444 52x48] image 3 bg:IMG r:20
+  TEXT 8:106 [-1990,-2441 482x37] Earn XP, Badges, and level up as you learn "Earn XP, Badges, and level up as you learn " Roboto 600 22px lh26 bg:#ffffff
+  TEXT 8:111 [-1987,-2335 482x37] AI Simplifier turns hard topics into easy one "AI Simplifier turns hard topics into easy one  " Roboto 600 22px lh26 bg:#ffffff
+  TEXT 8:117 [-1989,-2232 482x37] Track your progress lesson by lesson "Track your progress lesson by lesson " Roboto 600 22px lh26 bg:#ffffff
+  GROUP 8:107 [-2081,-2350 72x72] Group 2 r:20
+    RECTANGLE 8:108 [-2081,-2350 72x72] Rectangle 3 bg:#000000@0.6700000166893005 r:20
+    RECTANGLE 8:109 [-2071,-2340 52x48] image 3 bg:IMG r:20
+  GROUP 8:113 [-2081,-2247 72x72] Group 3 r:20
+    RECTANGLE 8:114 [-2081,-2247 72x72] Rectangle 3 bg:#000000@0.6700000166893005 r:20
+    RECTANGLE 8:115 [-2071,-2237 52x48] image 3 bg:IMG r:20
+  TEXT 10:119 [-1284,-2624 783x48] Welcome to Hasa! "Welcome to Hasa!" Playfair Display 800 38px lh51 bg:#000000
+  RECTANGLE 26:11 [-1175,-3045 457x351] image 2 bg:IMG
+  RECTANGLE 26:85 [-1276,-2176 16x15] Rectangle 6 bg:#fff0d9 r:5 stroke:#3e3e75/2
+  TEXT 26:86 [-1254,-2181 98x25] Remember me "Remember me" Roboto 300 15px lh25 bg:#8a38f5
+  TEXT 41:20 [-786,-2238 111x25] Remember reme "Remember reme" Roboto 300 15px lh25 bg:#8a38f5
+  GROUP 31:14 [-1111,-2111 327x42] Group 5 r:20
+    RECTANGLE 26:89 [-1111,-2111 327x42] Rectangle 7 bg:#3e3e75 r:20
+    TEXT 31:13 [-1013,-2100 144x19] Log in as Student "Log in as Student" Inter 700 16px lh19 bg:#fff0d9
+  VECTOR 31:17 [-1300,-2042 321x0] Line 1 stroke:#bdbdbd/1
+  VECTOR 31:18 [-939,-2042 338x0] Line 1 stroke:#bdbdbd/1
+  TEXT 31:19 [-965,-2053 19x20] or "or" Inter 400 16px lh19 bg:#000000
+  RECTANGLE 31:21 [-1049,-2025 204x36] Rectangle 8 bg:#8b8bba r:15
+  TEXT 31:20 [-1017,-2017 164x28] Create an Account "Create an Account" Inter 500 15px lh18 bg:#fff0d9
+  TEXT 41:15 [-2086,-1982 808x19] © 2026 HASA — Grade 8 Araling Panlipunan "© 2026 HASA — Grade 8 Araling Panlipunan" Roboto 500 16px lh19 bg:#ffffff@0.5600000023841858
+  RECTANGLE 41:17 [-1284,-2241 621x50] Rectangle 9 bg:#fff0d9 r:15 stroke:#9d9d9d/1
+  RECTANGLE 41:18 [-1284,-2342 621x50] Rectangle 10 bg:#fff0d9 r:15 stroke:#9d9d9d/1
+  TEXT 41:23 [-730,-2230 70x19] Show "Show" Roboto 500 15px lh25 bg:#8a38f5
+  RECTANGLE 41:28 [-1267,-2230 28x28] image 4 bg:IMG
+  TEXT 41:33 [-1231,-2225 118x22] •••••••• "••••••••" Roboto 100 30px lh25 bg:#000000@0.7200000286102295
+  RECTANGLE 42:35 [-1268,-2331 28x28] image 5 bg:IMG
+  TEXT 42:37 [-1223,-2328 223x25] 2026-08421 (e.g. Juan Dela Cruz) "2026-08421  (e.g. Juan Dela Cruz)" Roboto 300 15px lh25 bg:#717171
+  RECTANGLE 42:39 [-1288,-2489 256x46] Rectangle 11 bg:#fff0d9 r:11 stroke:#c4c4c4/1
+  RECTANGLE 42:46 [-937,-2489 256x46] Rectangle 12 bg:#fff0d9 r:11
+  RECTANGLE 42:41 [-1216,-2483 33x33] image 6 bg:IMG
+  TEXT 42:44 [-1174,-2477 91x20] Student "Student" Roboto 500 18px lh25 bg:#8a38f5
+  TEXT 42:49 [-822,-2476 84x31] Teacher "Teacher" Roboto 500 18px lh25 bg:#000000@0.7200000286102295
+  RECTANGLE 42:51 [-862,-2483 33x33] image 7 bg:IMG
+
+
+========== DASHBOARD (42:107) ==========
+FRAME 42:107 [-2160,-1739 1658x1354] dashboard bg:#fff0d9
+  RECTANGLE 42:108 [-2230,-1768 490x1423] Rectangle 13 bg:#3e3e75 stroke:#8b8bba/10
+  TEXT 43:4 [-1981,-1607 102x27] STUDENT "STUDENT" Inter 600 20px lh24 bg:#d5d5d5
+  TEXT 43:11 [-1984,-1668 120x65] HASA "HASA" IBM Plex Mono 700 50px lh65 bg:#000000
+  RECTANGLE 43:10 [-2125,-1467 328x79] Rectangle 14 bg:#8b8bba@0.6700000166893005 r:15
+  TEXT 43:5 [-2015,-1440 218x31] Dashboard "Dashboard" Inter 500 25px lh30 bg:#5106b3
+  RECTANGLE 43:7 [-2076,-1453 48x48] image 9 bg:IMG
+  RECTANGLE 43:16 [-2132,-1353 358x79] Rectangle 15 bg:#3e3e75 r:15
+  TEXT 43:17 [-2015,-1326 218x31] Lessons "Lessons" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 43:18 [-2076,-1339 48x48] image 11 bg:IMG
+  RECTANGLE 43:27 [-2132,-1006 358x79] Rectangle 18 bg:#3e3e75 r:15
+  TEXT 43:28 [-2015,-979 218x31] Rewards "Rewards" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 43:37 [-2071,-990 48x48] image 16 bg:IMG
+  RECTANGLE 43:30 [-2132,-889 358x79] Rectangle 19 bg:#3e3e75 r:15
+  TEXT 43:31 [-2015,-862 218x31] Progress "Progress" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 43:32 [-2076,-875 48x48] image 15 bg:IMG
+  RECTANGLE 43:20 [-2132,-1239 358x79] Rectangle 16 bg:#3e3e75 r:15
+  TEXT 43:21 [-2015,-1212 218x31] AI Simplifier "AI Simplifier" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 43:22 [-2076,-1225 48x48] image 12 bg:IMG
+  RECTANGLE 43:23 [-2132,-1123 358x79] Rectangle 17 bg:#3e3e75 r:15
+  TEXT 43:24 [-2015,-1096 218x31] Practice "Practice" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 43:25 [-2076,-1109 48x48] image 13 bg:IMG
+  RECTANGLE 43:13 [-2125,-1677 129x129] image 10 bg:IMG
+  LINE 43:15 [-2006,-1571 210x1] Line 2 stroke:#000000/3
+  RECTANGLE 43:40 [-2040,-490 40x40] image 17 bg:IMG
+  TEXT 43:44 [-1991,-484 81x29] Logout "Logout" Inter 500 24px lh29 bg:#fff0d9
+  TEXT 44:46 [-1689,-1614 500x73] Welcome back, Siri! "Welcome back, Siri! " Playfair Display 700 55px lh73 bg:#000000
+  RECTANGLE 44:54 [-1189,-1622 104x104] image 18 bg:IMG
+  VECTOR 44:56 [-1682,-1481 1142x364] Rectangle 20 bg:#3e3e75 r:30
+  RECTANGLE 44:59 [-1639,-1449 220x24] Rectangle 21 bg:#8b8bba r:12
+  TEXT 44:57 [-1603,-1444 226x39] CONTINUE LEARNING "CONTINUE LEARNING" Inter 600 12px lh15 bg:#000000
+  TEXT 44:62 [-1639,-1396 951x116] MODULE 3: Rise of Nationalism in the Philippines "MODULE 3: Rise of Nationalism in the Philippines  " Inter 700 48px lh58 bg:#ffffff
+  TEXT 44:63 [-1639,-1267 479x28] Lesson 3 - Cause of the Philippine Revolution "Lesson 3 - Cause of the Philippine Revolution " Roboto 400 24px lh28 bg:#c8c8c8
+  RECTANGLE 44:65 [-1639,-1214 768x15] Rectangle 22 bg:#2e2e53 r:5
+  RECTANGLE 44:66 [-1639,-1214 280x15] Rectangle 23 bg:#fff0d9 r:5
+  TEXT 44:68 [-1632,-1178 151x28] 35% complete "35% complete" Roboto 400 24px lh28 bg:#ffffff
+  GROUP 44:72 [-809,-1239 223x64] Group 6 r:23
+    RECTANGLE 44:70 [-809,-1239 223x64] Rectangle 24 bg:#8b8bba r:23
+    TEXT 44:69 [-779,-1221 157x26] Resume Lesson "Resume Lesson" Roboto 500 22px lh26 bg:#000000
+  TEXT 44:73 [-1685,-1544 995x52] Let’s continue your learning journey today "Let’s continue your learning journey today" Inter 300 20px lh24 bg:#000000
+  TEXT 44:77 [-637,-1694 32x24] Siri "Siri" Inter 600 20px lh24 bg:#000000
+  VECTOR 44:74 [-705,-1705 55x55] Ellipse 3 bg:#8b8bba
+  TEXT 44:76 [-687,-1696 32x45] S "S" Inter 700 30px lh36 bg:#fff0d9
+  TEXT 44:79 [-638,-1670 80x15] Grade 8 -Rizal "Grade 8 -Rizal" Inter 300 12px lh15 bg:#000000
+  RECTANGLE 44:85 [-755,-1691 29x29] image 19 bg:IMG
+  TEXT 44:87 [-1617,-1668 165x15] 1,200 / 1,500 XP to level 5 "1,200 / 1,500 XP to level 5" Inter 500 12px lh15 bg:#000000
+  ELLIPSE 44:88 [-1684,-1699 55x55] Ellipse 4 bg:#fff0d9 stroke:#aeaec4/5
+  TEXT 44:89 [-1662,-1689 12x19] 4 "4" Inter 800 16px lh19 bg:#3e3e75
+  TEXT 44:90 [-1670,-1672 28x13] Level "Level" Inter 400 11px lh13 bg:#000000
+  RECTANGLE 44:93 [-1618,-1682 150x8] Rectangle 25 bg:#c4c4c4 r:5
+  RECTANGLE 44:99 [-1618,-1682 120x8] Rectangle 26 bg:#3e3e75 r:5
+  TEXT 46:103 [-1594,-1077 243x27] Recent Achievements "Recent Achievements " Inter 900 22px lh27 RIGHT bg:#000000
+  TEXT 48:150 [-1607,-719 173x27] Announcement "Announcement" Inter 900 22px lh27 RIGHT bg:#000000
+  RECTANGLE 47:104 [-1675,-1024 1125x230] Rectangle 27 bg:#fff0d9 r:25 stroke:#000000/1
+  RECTANGLE 48:148 [-1687,-668 1125x200] Rectangle 32 bg:#fff0d9 r:25 stroke:#000000/1
+  RECTANGLE 48:106 [-1639,-1084 41x41] image 20 bg:IMG
+  TEXT 48:130 [-1561,-951 176x18] Scored 85% on Module 3 "Scored 85% on Module 3" Inter 300 15px lh18 bg:#000000
+  TEXT 48:142 [-1556,-845 354x18] Completed Module 2: Spanish Colonial Rule Recap "Completed Module 2: Spanish Colonial Rule Recap" Inter 300 15px lh18 bg:#000000
+  TEXT 48:131 [-700,-984 103x30] +250 XP "+250 XP" Inter 500 25px lh30 bg:#8a38f5
+  TEXT 48:144 [-699,-881 100x30] +100 XP "+100 XP" Inter 500 25px lh30 bg:#8a38f5
+  TEXT 48:132 [-664,-951 51x18] TODAY "TODAY" Inter 500 15px lh18 bg:#000000
+  TEXT 48:146 [-693,-845 88x18] YESTERDAY "YESTERDAY" Inter 500 15px lh18 bg:#000000
+  RECTANGLE 48:134 [-1627,-987 54x56] Rectangle 30 bg:#d7d1eb@0.5099999904632568 r:5 stroke:#000000/1
+  RECTANGLE 48:163 [-1640,-643 54x56] Rectangle 35 bg:#ebe0e2 r:5 stroke:#000000/1
+  RECTANGLE 48:165 [-1640,-547 54x56] Rectangle 36 bg:#a591d8@0.5099999904632568 r:5 stroke:#000000/1
+  RECTANGLE 48:137 [-1627,-881 54x56] Rectangle 31 bg:#f2e3a9@0.5099999904632568 r:5 stroke:#000000/1
+  TEXT 48:129 [-1559,-985 145x30] Quiz Master "Quiz Master" Inter 500 25px lh30 bg:#000000
+  TEXT 48:140 [-1556,-881 224x30] Lesson Completed "Lesson Completed" Inter 500 25px lh30 bg:#000000
+  RECTANGLE 48:135 [-1619,-977 40x40] image 23 bg:IMG
+  RECTANGLE 48:127 [-1620,-875 44x44] image 22 bg:IMG
+  RECTANGLE 48:154 [-1653,-730 41x41] image 24 bg:IMG
+  RECTANGLE 48:161 [-1539,-1262 512x512] image 25 
+  TEXT 48:171 [-1633,-531 43x22] NEW "NEW" Inter 700 18px lh22 RIGHT bg:#8a38f5
+  TEXT 48:173 [-1571,-640 179x22] Weekend Challenge! "Weekend Challenge!" Inter 600 18px lh22 RIGHT bg:#000000
+  TEXT 48:180 [-1571,-544 191x22] New Lesson Released "New Lesson Released" Inter 600 18px lh22 RIGHT bg:#000000
+  TEXT 48:176 [-1573,-616 313x16] Completed a quiz this weekend and earn bonus XP! "Completed a quiz this weekend and earn bonus XP!" Inter 300 13px lh16 RIGHT bg:#000000
+  TEXT 48:182 [-1571,-521 278x16] Module 4 is now available. Start learning now! "Module 4 is now available. Start learning now!" Inter 300 13px lh16 RIGHT bg:#000000
+  TEXT 48:177 [-1572,-597 73x11] August 17, 2026 "August 17, 2026" Inter 500 10px lh11 RIGHT bg:#000000
+  TEXT 48:184 [-1570,-502 76x11] August 24, 2026 "August 24, 2026" Inter 500 10px lh11 RIGHT bg:#000000
+  TEXT 50:186 [-648,-1061 56x18] View all "View all" Inter 500 15px lh18 bg:#6d2cc7
+  TEXT 50:187 [-665,-708 57x18] View all "View all" Inter 600 15px lh18 bg:#6d2cc7
+
+
+========== LESSONS (50:189) ==========
+FRAME 50:189 [-2160,-294 1658x1354] Lessons bg:#fff0d9
+  RECTANGLE 53:237 [-1982,-295 2304x288] image 35 bg:IMG stroke:#ffffff/3
+  RECTANGLE 50:190 [-2227,-330 490x1423] Rectangle 37 bg:#3e3e75 stroke:#8b8bba/10
+  TEXT 50:191 [-1978,-169 102x27] STUDENT "STUDENT" Inter 600 20px lh24 bg:#d5d5d5
+  TEXT 50:192 [-1981,-230 120x65] HASA "HASA" IBM Plex Mono 700 50px lh65 bg:#000000
+  TEXT 50:194 [-2012,-2 218x31] Dashboard "Dashboard" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 50:195 [-2073,-15 48x48] image 26 bg:IMG
+  RECTANGLE 50:196 [-2129,85 358x79] Rectangle 39 bg:#3e3e75 r:15
+  RECTANGLE 50:193 [-2114,85 328x79] Rectangle 38 bg:#8b8bba@0.6700000166893005 r:15
+  TEXT 50:197 [-2008,112 218x31] Lessons "Lessons" Inter 500 25px lh30 bg:#5106b3
+  RECTANGLE 50:198 [-2073,99 48x48] image 27 bg:IMG
+  RECTANGLE 50:199 [-2129,432 358x79] Rectangle 40 bg:#3e3e75 r:15
+  TEXT 50:200 [-2012,459 218x31] Rewards "Rewards" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 50:201 [-2068,448 48x48] image 28 bg:IMG
+  RECTANGLE 50:202 [-2129,549 358x79] Rectangle 41 bg:#3e3e75 r:15
+  TEXT 50:203 [-2012,576 218x31] Progress "Progress" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 50:204 [-2073,563 48x48] image 29 bg:IMG
+  RECTANGLE 50:205 [-2129,199 358x79] Rectangle 42 bg:#3e3e75 r:15
+  TEXT 50:206 [-2012,226 218x31] AI Simplifier "AI Simplifier" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 50:207 [-2073,213 48x48] image 30 bg:IMG
+  RECTANGLE 50:208 [-2129,315 358x79] Rectangle 43 bg:#3e3e75 r:15
+  TEXT 50:209 [-2012,342 218x31] Practice "Practice" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 50:210 [-2073,329 48x48] image 31 bg:IMG
+  RECTANGLE 50:211 [-2122,-239 129x129] image 32 bg:IMG
+  LINE 50:212 [-2003,-133 210x1] Line 3 stroke:#000000/3
+  RECTANGLE 50:213 [-2037,948 40x40] image 33 bg:IMG
+  TEXT 50:214 [-1988,954 81x29] Logout "Logout" Inter 500 24px lh29 bg:#fff0d9
+  TEXT 50:216 [-635,-247 32x24] Siri "Siri" Inter 600 20px lh24 bg:#000000
+  VECTOR 50:217 [-703,-258 55x55] Ellipse 3 bg:#8b8bba
+  TEXT 50:218 [-685,-249 32x45] S "S" Inter 700 30px lh36 bg:#fff0d9
+  TEXT 50:219 [-636,-223 80x15] Grade 8 -Rizal "Grade 8 -Rizal" Inter 300 12px lh15 bg:#000000
+  RECTANGLE 50:220 [-759,-244 29x29] image 19 bg:IMG
+  TEXT 53:228 [-1681,-192 547x58] ARALING PANLIPUNAN "ARALING PANLIPUNAN" Inter 900 48px lh58 bg:#000000 stroke:#000000/1
+  TEXT 53:229 [-1679,-112 93x30] HI, SIRI! "HI, SIRI!" Inter 600 25px lh30 bg:#000000
+  RECTANGLE 53:231 [-1584,-121 45x45] image 34 bg:IMG
+  TEXT 53:233 [-1681,-69 403x22] Continue your lesson and learn something new. "Continue your lesson and learn something new." Inter 400 18px lh22 bg:#000000
+  RECTANGLE 53:239 [-1709,37 1175x55] Rectangle 44 bg:#9e9eba@0.6899999976158142 r:15 stroke:#717171/1
+  RECTANGLE 53:240 [-1692,48 486x32] Rectangle 45 bg:#9e9eba@0.8500000238418579 r:11
+  RECTANGLE 55:6 [-1089,48 91x32] Rectangle 46 bg:#3e3e75 r:15
+  VECTOR 55:36 [-837,140 140x43] Rectangle 47 bg:#3e3e75 r:20
+  RECTANGLE 55:3 [-1682,54 20x20] image 36 bg:IMG
+  TEXT 55:5 [-1659,58 86x13] Search lessons.. "Search lessons.." Inter 500 11px lh13 bg:#1e1e1e@0.8500000238418579
+  TEXT 55:8 [-1070,56 51x16] All units "All units" Inter 600 13px lh16 bg:#fff0d9
+  TEXT 55:9 [-945,56 30x16] Easy "Easy" Inter 600 13px lh16 bg:#1e1e1e@0.7400000095367432
+  TEXT 55:11 [-859,56 51x16] Medium "Medium" Inter 600 13px lh16 bg:#1e1e1e@0.7400000095367432
+  TEXT 55:15 [-655,56 70x16] Completed "Completed" Inter 600 13px lh16 bg:#1e1e1e@0.7400000095367432
+  TEXT 55:13 [-747,56 31x16] Hard "Hard" Inter 600 13px lh16 bg:#1e1e1e@0.7400000095367432
+  LINE 55:17 [-1156,47 0x35] Line 4 stroke:#000000/1.7999999523162842
+  TEXT 55:31 [-1624,159 138x30] All Lessons "All Lessons" Inter 600 25px lh30 bg:#000000@0.8399999737739563
+  RECTANGLE 55:33 [-1675,148 41x41] image 37 bg:IMG
+  RECTANGLE 55:39 [-815,151 21x21] image 38 bg:IMG
+  TEXT 55:41 [-788,153 70x18] Grid View "Grid View" Inter 500 15px lh18 bg:#fff0d9
+  TEXT 55:43 [-624,156 57x16] List View "List View" Inter 500 13px lh16 bg:#a2a2a2
+  RECTANGLE 55:46 [-655,152 22x22] image 39 bg:IMG
+  RECTANGLE 55:50 [-1666,233 296x308] Rectangle 49 bg:#fff0d9 r:25 stroke:#bdbdbd/1
+  RECTANGLE 56:58 [-1649,247 261x188] image 40 bg:IMG r:15
+  GROUP 56:60 [-1638,257 52x27] Group 7 r:10
+    RECTANGLE 55:51 [-1638,257 45x25] Rectangle 50 bg:#2b8320@0.7200000286102295 r:10
+    TEXT 55:52 [-1627,261 41x23] 1.5 "1.5\n" Inter 900 14px lh17 bg:#fff0d9
+  RECTANGLE 56:62 [-1473,259 72x20] Rectangle 51 bg:#2b8320@0.7200000286102295 r:12
+  TEXT 56:64 [-1463,263 50x11] Completed "Completed" Inter 900 9px lh11 bg:#0e4007
+  TEXT 57:65 [-1643,465 251x18] Cause of the Philippine Revolution "Cause of the Philippine Revolution" Inter 700 15px lh18 bg:#000000
+  TEXT 57:66 [-1641,447 91x26] Lesson 1.5 "Lesson 1.5\n" Inter 500 11px lh13 bg:#555555
+  RECTANGLE 57:68 [-1640,504 14x14] image 41 bg:IMG
+  TEXT 57:70 [-1622,503 29x15] Easy "Easy" Inter 700 12px lh15 bg:#2b8320
+  RECTANGLE 57:75 [-1476,497 85x27] Rectangle 52 bg:#2b8320@0.7200000286102295 r:10 stroke:#0e4007/1
+  RECTANGLE 57:77 [-1462,502 15x15] image 42 bg:IMG
+  TEXT 57:79 [-1443,503 39x13] Review "Review" Inter 600 11px lh13 bg:#0e4007
+  RECTANGLE 58:83 [-1285,234 296x308] Rectangle 54 bg:#fff0d9 r:25 stroke:#bdbdbd/1
+  RECTANGLE 58:84 [-1285,234 296x308] Rectangle 55 bg:#fff0d9 r:25 stroke:#bdbdbd/1
+  RECTANGLE 58:85 [-1268,248 261x188] image 43 bg:IMG r:15
+  GROUP 58:86 [-1257,258 52x27] Group 8 r:10
+    RECTANGLE 58:87 [-1257,258 45x25] Rectangle 50 bg:#832020@0.6000000238418579 r:10
+    TEXT 58:88 [-1246,262 41x23] 2.3 "2.3\n" Inter 900 14px lh17 bg:#fff0d9
+  RECTANGLE 58:89 [-1092,260 72x20] Rectangle 56 bg:#fff0d9@0.6000000238418579 r:12 stroke:#832020/1
+  TEXT 58:90 [-1081,264 52x11] Not Started "Not Started" Inter 900 9px lh11 bg:#832020
+  TEXT 58:91 [-1262,466 227x18] Katipunan and the Call to Arms "Katipunan and the Call to Arms" Inter 700 15px lh18 bg:#000000
+  TEXT 58:92 [-1260,448 91x26] Lesson 2.3 "Lesson 2.3\n" Inter 500 11px lh13 bg:#555555
+  RECTANGLE 58:93 [-1259,505 14x14] image 44 bg:IMG
+  TEXT 58:94 [-1241,504 29x15] Hard "Hard" Inter 700 12px lh15 bg:#832020
+  RECTANGLE 58:95 [-1095,498 85x27] Rectangle 57 bg:#fff0d9 r:10 stroke:#832020/1
+  REGULAR_POLYGON 58:103 [-1082,500 20x23] Polygon 1 bg:#832020 r:3
+  TEXT 58:97 [-1058,504 27x13] Start "Start" Inter 600 11px lh13 bg:#832020
+  RECTANGLE 58:108 [-886,233 296x308] Rectangle 59 bg:#fff0d9 r:25 stroke:#bdbdbd/1
+  RECTANGLE 58:109 [-869,247 261x188] image 45 bg:IMG r:15
+  TEXT 58:115 [-863,465 208x18] Spanish Colonial Rule Recap "Spanish Colonial Rule Recap" Inter 700 15px lh18 bg:#000000
+  TEXT 58:116 [-861,447 91x26] Lesson 3 "Lesson 3\n" Inter 500 11px lh13 bg:#555555
+  RECTANGLE 58:117 [-860,504 14x14] image 46 bg:IMG
+  TEXT 58:118 [-842,503 29x15] Easy "Easy" Inter 700 12px lh15 bg:#2b8320
+  RECTANGLE 58:140 [-1665,575 296x308] Rectangle 63 bg:#fff0d9 r:25 stroke:#bdbdbd/1
+  RECTANGLE 58:141 [-1648,588 261x188] image 47 bg:IMG r:15
+  GROUP 58:142 [-1637,598 52x27] Group 10 r:10
+    RECTANGLE 58:143 [-1637,598 45x25] Rectangle 50 bg:#f0b511@0.7799999713897705 r:10
+    TEXT 58:144 [-1626,602 41x23] 3.3 "3.3" Inter 900 14px lh17 bg:#fff0d9
+  RECTANGLE 58:145 [-1472,600 72x20] Rectangle 64 bg:#f0b511@0.699999988079071 r:12
+  TEXT 58:146 [-1462,604 51x11] In Progress "In Progress" Inter 900 9px lh11 bg:#503d0a
+  TEXT 58:147 [-1642,806 205x18] Key Figure of the Revolution "Key Figure of the Revolution" Inter 700 15px lh18 bg:#000000
+  TEXT 58:148 [-1640,788 91x26] Lesson 3.3 "Lesson 3.3\n" Inter 500 11px lh13 bg:#555555
+  RECTANGLE 58:149 [-1637,845 14x14] image 48 bg:IMG
+  TEXT 58:150 [-1620,847 48x15] Medium "Medium" Inter 700 12px lh15 bg:#f0b511
+  RECTANGLE 58:151 [-1483,838 85x27] Rectangle 65 bg:#ffffff r:10 stroke:#f0b511/1
+  REGULAR_POLYGON 58:210 [-1475,840 20x23] Polygon 5 bg:#f0b511 r:3
+  TEXT 58:153 [-1455,845 49x13] Continue "Continue" Inter 600 11px lh13 bg:#503d0a
+  RECTANGLE 58:154 [-1284,575 296x308] Rectangle 66 bg:#fff0d9 r:25 stroke:#bdbdbd/1
+  RECTANGLE 58:155 [-1284,575 296x308] Rectangle 67 bg:#fff0d9 r:25 stroke:#bdbdbd/1
+  RECTANGLE 58:156 [-1267,589 261x188] image 50 bg:IMG r:15
+  GROUP 58:157 [-1256,599 52x27] Group 11 r:10
+    RECTANGLE 58:158 [-1256,599 45x25] Rectangle 50 bg:#832020@0.6000000238418579 r:10
+    TEXT 58:159 [-1245,603 41x23] 1.1 "1.1" Inter 900 14px lh17 bg:#fff0d9
+  RECTANGLE 58:160 [-1091,601 72x20] Rectangle 68 bg:#fff0d9@0.6000000238418579 r:12 stroke:#832020/1
+  TEXT 58:161 [-1080,605 52x11] Not Started "Not Started" Inter 900 9px lh11 bg:#832020
+  TEXT 58:162 [-1261,807 177x18] The Battle of Manila Bay "The Battle of Manila Bay" Inter 700 15px lh18 bg:#000000
+  TEXT 58:163 [-1259,789 91x18] Lesson 1.1 "Lesson 1.1\n" Inter 500 11px lh13 bg:#555555
+  RECTANGLE 58:164 [-1258,846 14x14] image 51 bg:IMG
+  TEXT 58:165 [-1240,845 29x15] Hard "Hard" Inter 700 12px lh15 bg:#832020
+  RECTANGLE 58:166 [-1094,839 85x27] Rectangle 69 bg:#fff0d9 r:10 stroke:#832020/1
+  REGULAR_POLYGON 58:167 [-1081,841 20x23] Polygon 3 bg:#832020 r:3
+  TEXT 58:168 [-1057,845 27x13] Start "Start" Inter 600 11px lh13 bg:#832020
+  RECTANGLE 58:169 [-885,574 296x308] Rectangle 70 bg:#fff0d9 r:25 stroke:#bdbdbd/1
+  RECTANGLE 58:170 [-885,574 296x308] Rectangle 71 bg:#fff0d9 r:25 stroke:#bdbdbd/1
+  RECTANGLE 58:171 [-868,588 261x188] image 52 bg:IMG r:15
+  GROUP 58:172 [-857,598 52x27] Group 12 r:10
+    RECTANGLE 58:173 [-857,598 45x25] Rectangle 50 bg:#832020@0.6000000238418579 r:10
+    TEXT 58:174 [-846,602 41x23] 3.5 "3.5" Inter 900 14px lh17 bg:#fff0d9
+  RECTANGLE 58:175 [-692,600 72x20] Rectangle 72 bg:#fff0d9@0.6000000238418579 r:12 stroke:#832020/1
+  TEXT 58:176 [-681,604 52x11] Not Started "Not Started" Inter 900 9px lh11 bg:#832020
+  TEXT 58:177 [-862,806 212x18] Declaration of Independence "Declaration of Independence " Inter 700 15px lh18 bg:#000000
+  TEXT 58:178 [-860,788 91x26] Lesson 3.5 "Lesson 3.5\n" Inter 500 11px lh13 bg:#555555
+  RECTANGLE 58:179 [-859,845 14x14] image 53 bg:IMG
+  TEXT 58:180 [-841,844 29x15] Hard "Hard" Inter 700 12px lh15 bg:#832020
+  RECTANGLE 58:181 [-695,838 85x27] Rectangle 73 bg:#fff0d9 r:10 stroke:#832020/1
+  REGULAR_POLYGON 58:182 [-682,840 20x23] Polygon 4 bg:#832020 r:3
+  TEXT 58:183 [-658,844 27x13] Start "Start" Inter 600 11px lh13 bg:#832020
+  LINE 57:80 [-1673,201 201x0] Line 10 stroke:#3e3e75/4
+  RECTANGLE 58:192 [-697,497 85x27] Rectangle 74 bg:#2b8320@0.7200000286102295 r:10 stroke:#0e4007/1
+  TEXT 58:194 [-664,503 39x13] Review "Review" Inter 600 11px lh13 bg:#0e4007
+  GROUP 58:196 [-860,259 58x27] Group 13 r:10
+    RECTANGLE 58:197 [-860,259 45x25] Rectangle 50 bg:#2b8320@0.7200000286102295 r:10
+    TEXT 58:198 [-843,263 41x23] 3 "3" Inter 900 14px lh17 bg:#fff0d9
+  RECTANGLE 58:199 [-695,261 72x20] Rectangle 75 bg:#2b8320@0.7200000286102295 r:12
+  TEXT 58:200 [-685,265 50x11] Completed "Completed" Inter 900 9px lh11 bg:#0e4007
+  RECTANGLE 58:204 [-683,502 15x15] image 55 bg:IMG
+  RECTANGLE 58:228 [-1665,933 1075x101] Rectangle 76 bg:#fbe49d@0.5400000214576721 r:20 stroke:#717171/1
+  TEXT 58:229 [-1564,949 106x27] Study Tip "Study Tip" Inter 900 22px lh27 bg:#000000
+  TEXT 58:230 [-1607,1003 283x12] Take your time—you don't have to finish everything at once. "Take your time—you don't have to finish everything at once." Inter 400 10px lh12 bg:#000000
+  RECTANGLE 58:231 [-1605,944 33x33] image 56 bg:IMG
+  TEXT 58:232 [-1605,982 210x17] Learn one small topic at a time. "Learn one small topic at a time." Inter 600 14px lh17 bg:#000000
+
+
+========== PRACTICE (65:5) ==========
+FRAME 65:5 [-462,-294 1658x1354] practice bg:#fff0d9
+  RECTANGLE 65:7 [-517,-311 490x1423] Rectangle 37 bg:#3e3e75 stroke:#8b8bba/10
+  TEXT 65:8 [-280,-169 102x27] STUDENT "STUDENT" Inter 600 20px lh24 bg:#d5d5d5
+  TEXT 65:9 [-283,-230 120x65] HASA "HASA" IBM Plex Mono 700 50px lh65 bg:#000000
+  TEXT 65:10 [-314,-2 218x31] Dashboard "Dashboard" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 65:11 [-375,-15 48x48] image 26 bg:IMG
+  RECTANGLE 65:12 [-431,85 358x79] Rectangle 39 bg:#3e3e75 r:15
+  RECTANGLE 65:13 [-416,201 328x79] Rectangle 38 bg:#8b8bba@0.6700000166893005 r:15
+  TEXT 65:14 [-310,112 218x31] Lessons "Lessons" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 65:15 [-375,99 48x48] image 27 bg:IMG
+  TEXT 65:17 [-312,346 218x31] Rewards "Rewards" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 65:18 [-368,335 48x48] image 28 bg:IMG
+  TEXT 65:20 [-312,463 218x31] Progress "Progress" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 65:21 [-373,450 48x48] image 29 bg:IMG
+  TEXT 65:26 [-312,229 218x31] Practice "Practice" Inter 500 25px lh30 bg:#5106b3
+  RECTANGLE 65:27 [-373,216 48x48] image 31 bg:IMG
+  RECTANGLE 65:28 [-424,-239 129x129] image 32 bg:IMG
+  LINE 65:29 [-305,-133 210x1] Line 3 stroke:#000000/3
+  RECTANGLE 65:30 [-339,948 40x40] image 33 bg:IMG
+  TEXT 65:31 [-290,954 81x29] Logout "Logout" Inter 500 24px lh29 bg:#fff0d9
+  TEXT 65:32 [1063,-247 32x24] Siri "Siri" Inter 600 20px lh24 bg:#000000
+  VECTOR 65:33 [995,-258 55x55] Ellipse 3 bg:#8b8bba
+  TEXT 65:34 [1013,-249 32x45] S "S" Inter 700 30px lh36 bg:#fff0d9
+  TEXT 65:35 [1062,-223 80x15] Grade 8 -Rizal "Grade 8 -Rizal" Inter 300 12px lh15 bg:#000000
+  RECTANGLE 65:36 [939,-244 29x29] image 19 bg:IMG
+  TEXT 65:40 [253,-46 541x22] Play your way through Araling Panlipunan and build your streak. "Play your way through Araling Panlipunan and build your streak." Inter 400 18px lh22 bg:#000000
+  TEXT 65:38 [251,-124 314x73] PRACTICE "PRACTICE " Inter 900 60px lh73 bg:#000000
+  RECTANGLE 66:157 [64,-135 168x137] Rectangle 77 bg:#aaa9d5 r:15
+  RECTANGLE 66:154 [97,-119 100x100] image 58 bg:IMG
+  TEXT 66:160 [253,-161 164x28] Practice Arena "Practice Arena" Inter 600 23px lh28 bg:#8a38f5
+  RECTANGLE 66:161 [21,63 552x335] Rectangle 78 bg:#dcd7eb r:20
+  RECTANGLE 66:162 [605,61 552x335] Rectangle 79 bg:#291f47 r:20
+  TEXT 66:221 [637,230 293x45] Can you answer 5 questions before the timer runs out? "Can you answer 5 questions before the timer runs out?\n" Inter 400 12px lh15 bg:#ffffff
+  VECTOR 66:177 [954,176 217x233] Ellipse 5 bg:GRAD r:2
+  VECTOR 66:179 [887,104 289x309] Ellipse 6 bg:GRAD r:2
+  RECTANGLE 66:188 [639,120 57x55] Rectangle 80 bg:#f4c95d r:10
+  RECTANGLE 66:190 [653,131 32x32] image 59 bg:IMG
+  RECTANGLE 66:232 [774,279 20x20] image 61 bg:IMG
+  TEXT 66:192 [639,196 236x29] HISTORY HOT SEAT "HISTORY HOT SEAT" Inter 900 24px lh29 bg:#f4c95d
+  RECTANGLE 66:226 [639,277 23x23] image 60 bg:IMG
+  TEXT 66:228 [667,281 64x13] 5 Questions "5 Questions" Inter 600 11px lh13 bg:#f4c95d
+  TEXT 66:234 [799,282 40x13] +50 XP "+50 XP" Inter 600 11px lh13 bg:#f4c95d
+  RECTANGLE 66:235 [639,330 213x31] Rectangle 81 bg:#f4c95d r:10
+  TEXT 66:236 [655,339 114x12] Play featured challange "Play featured challange" Inter 600 10px lh12 bg:#3e3e75
+  RECTANGLE 66:239 [828,341 10x10] image 62 bg:IMG
+  RECTANGLE 66:281 [828,341 10x10] image 66 bg:IMG
+  RECTANGLE 66:244 [447,65 126x126] image 63 bg:IMG
+  RECTANGLE 66:246 [427,93 52x52] image 64 bg:IMG
+  TEXT 66:248 [94,103 144x15] DAILY STREAK 4 DAYS "DAILY STREAK     4 DAYS" Inter 700 12px lh15 bg:#4c427c
+  RECTANGLE 66:250 [71,103 15x15] image 65 bg:IMG
+  TEXT 66:253 [64,152 339x96] Ready for a quick brain boost? "Ready for a quick brain boost?" Inter 700 40px lh48 bg:#000000
+  TEXT 66:254 [64,257 379x16] Pick a challenge, earn XP, and keep your learning streak alive. "Pick a challenge, earn XP, and keep your learning streak alive." Inter 400 13px lh16 bg:#74747d
+  TEXT 66:256 [492,331 57x10] 1,200 XP "1,200 XP" Inter 700 8px lh10 bg:#8a38f5
+  RECTANGLE 66:257 [380,345 150x8] Rectangle 37 bg:#c4c4c4 r:5
+  RECTANGLE 66:258 [380,345 120x8] Rectangle 38 bg:#3e3e75 r:5
+  TEXT 66:260 [383,331 28x10] Level 4 "Level 4" Inter 700 8px lh10 bg:#8b8bba
+  TEXT 66:261 [465,358 65x10] 300 XP to level 5 "300 XP to level 5" Inter 400 8px lh10 bg:#555555
+  RECTANGLE 66:262 [814,432 317x60] Rectangle 82 bg:#d5d5d5 r:15
+  RECTANGLE 66:263 [831,443 110x40] Rectangle 83 bg:#8b8bba r:10 stroke:#4c427c/1
+  TEXT 66:264 [844,455 85x15] All Challenges "All Challenges" Inter 700 12px lh15 bg:#ffffff
+  TEXT 66:265 [976,455 27x15] Quiz "Quiz " Inter 700 12px lh15 bg:#74747d
+  TEXT 66:267 [1057,455 46x15] Skill lab "Skill lab" Inter 700 12px lh15 bg:#74747d
+  RECTANGLE 66:269 [27,537 299x185] Rectangle 84 bg:#4c427c r:25
+  RECTANGLE 66:270 [27,544 299x178] Rectangle 85 bg:#ffffff r:25 stroke:#3e3e75/1
+  TEXT 66:273 [70,454 265x28] Choose your next move "Choose your next move" Inter 700 23px lh28 bg:#3e3e75
+  ELLIPSE 66:274 [41,456 25x25] Ellipse 7 bg:IMG stroke:#000000/2
+  TEXT 66:275 [50,624 110x22] Time Builder "Time Builder" Inter 600 18px lh22 bg:#000000
+  TEXT 66:276 [50,609 25x13] Quiz "Quiz" Inter 700 11px lh13 bg:#8a38f5
+  TEXT 66:277 [50,648 122x12] 5 quick questions · 25 XP "5 quick questions · 25 XP" Inter 600 10px lh12 bg:#555555
+  RECTANGLE 66:278 [201,674 88x25] Rectangle 86 bg:#cccceb r:7
+  TEXT 66:279 [212,680 44x12] Play now "Play now" Inter 700 10px lh12 bg:#4c427c
+  TEXT 66:287 [51,678 31x12] Ready "Ready" Inter 600 10px lh12 bg:#8b8bba
+  RECTANGLE 67:292 [50,560 42x36] Rectangle 87 bg:#cccceb@0.5899999737739563 r:6
+  RECTANGLE 67:295 [57,564 28x28] image 71 bg:IMG
+  RECTANGLE 67:297 [434,543 299x185] Rectangle 88 bg:#78777f r:25
+  RECTANGLE 67:298 [434,550 299x178] Rectangle 89 bg:#ffffff r:25 stroke:#78777f/1
+  RECTANGLE 67:299 [457,566 42x36] Rectangle 90 bg:#cccceb@0.5899999737739563 r:6
+  RECTANGLE 67:300 [464,570 28x28] image 72 bg:IMG
+  TEXT 67:301 [457,615 25x13] Quiz "Quiz" Inter 700 11px lh13 bg:#555555
+  TEXT 67:302 [457,630 215x22] Heroes of the Revolution "Heroes of the Revolution" Inter 600 18px lh22 bg:#000000
+  TEXT 67:303 [457,654 122x12] 5 quick questions · 25 XP "5 quick questions · 25 XP" Inter 600 10px lh12 bg:#555555
+  RECTANGLE 67:304 [608,680 88x25] Rectangle 91 bg:#78777f@0.5600000023841858 r:7
+  TEXT 67:305 [458,684 31x12] Ready "Ready" Inter 600 10px lh12 bg:#8b8bba
+  TEXT 67:306 [619,686 44x12] Play now "Play now" Inter 700 10px lh12 bg:#565657
+  RECTANGLE 67:311 [841,539 299x185] Rectangle 92 bg:#bc7c63 r:25 stroke:#bc7c63/1
+  RECTANGLE 67:312 [841,546 299x178] Rectangle 93 bg:#ffffff r:25 stroke:#bc7c63/1
+  RECTANGLE 67:313 [864,562 42x36] Rectangle 94 bg:#cccceb@0.5899999737739563 r:6
+  RECTANGLE 67:314 [871,566 28x28] image 73 bg:IMG
+  TEXT 67:315 [864,611 45x13] Skill Lab "Skill Lab" Inter 700 11px lh13 bg:#bc7c63
+  TEXT 67:316 [864,626 150x22] Source Detective "Source Detective" Inter 600 18px lh22 bg:#000000
+  TEXT 67:317 [864,650 150x24] Read between the lines · 35 XP "Read between the lines · 35 XP\n" Inter 600 10px lh12 bg:#555555
+  RECTANGLE 67:318 [1015,676 88x25] Rectangle 95 bg:#bc7c63@0.550000011920929 r:7
+  TEXT 67:319 [865,680 31x12] Ready "Ready" Inter 600 10px lh12 bg:#555555@0.6000000238418579
+  TEXT 67:320 [1026,682 44x12] Play now "Play now" Inter 700 10px lh12 bg:#39251e
+  RECTANGLE 67:325 [26,778 299x185] Rectangle 96 bg:#6a974a r:25
+  RECTANGLE 67:326 [840,780 299x185] Rectangle 97 bg:#000000 r:25
+  RECTANGLE 67:327 [433,784 299x185] Rectangle 98 bg:#d82e3d r:25
+  RECTANGLE 67:328 [26,785 299x178] Rectangle 99 bg:#ffffff r:25 stroke:#6a974a/1
+  RECTANGLE 67:329 [840,787 299x178] Rectangle 100 bg:#ffffff r:25 stroke:#3e3e75/1
+  RECTANGLE 67:330 [433,791 299x178] Rectangle 101 bg:#ffffff r:25 stroke:#d82e3d/1
+  RECTANGLE 67:331 [49,801 42x36] Rectangle 102 bg:#cccceb@0.5899999737739563 r:6
+  RECTANGLE 67:332 [863,803 42x36] Rectangle 103 bg:#cccceb@0.5899999737739563 r:6
+  RECTANGLE 67:333 [56,805 28x28] image 74 bg:IMG
+  RECTANGLE 67:334 [456,807 42x36] Rectangle 104 bg:#cccceb@0.5899999737739563 r:6
+  RECTANGLE 67:335 [870,807 28x28] image 75 bg:IMG
+  RECTANGLE 67:336 [463,811 28x28] image 76 bg:IMG
+  TEXT 67:337 [49,850 48x13] Skill Lab "Skill  Lab" Inter 700 11px lh13 bg:#6a974a
+  TEXT 67:338 [863,852 25x13] Quiz "Quiz" Inter 700 11px lh13 bg:#555555
+  TEXT 67:339 [456,856 25x13] Quiz "Quiz" Inter 700 11px lh13 bg:#d82e3d
+  TEXT 67:340 [49,865 226x22] Who Am I? History Edition "Who Am I? History Edition" Inter 600 18px lh22 bg:#000000
+  TEXT 67:341 [863,867 181x22] Katipunan Challenge "Katipunan Challenge" Inter 600 18px lh22 bg:#000000
+  TEXT 67:342 [456,871 134x22] Fact or Fiction? "Fact or Fiction?" Inter 600 18px lh22 bg:#000000
+  TEXT 67:343 [49,889 122x12] 5 quick questions · 25 XP "5 quick questions · 25 XP" Inter 600 10px lh12 bg:#555555
+  TEXT 67:344 [863,891 122x12] 5 quick questions · 25 XP "5 quick questions · 25 XP" Inter 600 10px lh12 bg:#555555
+  TEXT 67:345 [456,895 122x12] 5 quick questions · 25 XP "5 quick questions · 25 XP" Inter 600 10px lh12 bg:#555555
+  RECTANGLE 67:346 [200,915 88x25] Rectangle 105 bg:#6a974a@0.7799999713897705 r:7
+  RECTANGLE 67:347 [1014,917 88x25] Rectangle 106 bg:#717171@0.3100000023841858 r:7
+  TEXT 67:348 [50,919 31x12] Ready "Ready" Inter 600 10px lh12 bg:#555555
+  TEXT 67:349 [211,921 44x12] Play now "Play now" Inter 700 10px lh12 bg:#0e4007
+  RECTANGLE 67:350 [607,921 88x25] Rectangle 107 bg:#d82e3d@0.7799999713897705 r:7
+  TEXT 67:351 [864,921 31x12] Ready "Ready" Inter 600 10px lh12 bg:#565657
+  TEXT 67:352 [1025,923 44x12] Play now "Play now" Inter 700 10px lh12 bg:#555555
+  TEXT 67:353 [457,925 31x12] Ready "Ready" Inter 600 10px lh12 bg:#555555
+  TEXT 67:354 [618,927 44x12] Play now "Play now" Inter 700 10px lh12 bg:#721b1b
+  TEXT 67:355 [289,803 16x18] ★ "★" Inter 600 15px lh18 bg:#555555
+  TEXT 67:356 [1103,805 16x18] ★ "★" Inter 600 15px lh18 bg:#555555
+  TEXT 67:357 [696,809 16x18] ★ "★" Inter 600 15px lh18 bg:#555555
+  RECTANGLE 67:358 [272,923 10x10] image 71 bg:IMG
+  RECTANGLE 67:359 [1086,925 10x10] image 72 bg:IMG
+  RECTANGLE 67:360 [679,929 10x10] image 73 bg:IMG
+
+
+========== REWARDS (74:628) ==========
+FRAME 74:628 [-462,-1739 1658x1354] rewards bg:#fff0d9
+  RECTANGLE 74:629 [-517,-1756 490x1423] Rectangle 37 bg:#3e3e75 stroke:#8b8bba/10
+  TEXT 74:630 [-280,-1614 102x27] STUDENT "STUDENT" Inter 600 20px lh24 bg:#d5d5d5
+  TEXT 74:631 [-283,-1675 120x65] HASA "HASA" IBM Plex Mono 700 50px lh65 bg:#000000
+  TEXT 74:632 [-314,-1447 218x31] Dashboard "Dashboard" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 74:633 [-375,-1460 48x48] image 26 bg:IMG
+  RECTANGLE 74:634 [-431,-1360 358x79] Rectangle 39 bg:#3e3e75 r:15
+  RECTANGLE 74:635 [-416,-1123 328x79] Rectangle 38 bg:#8b8bba@0.6700000166893005 r:15
+  TEXT 74:636 [-310,-1333 218x31] Lessons "Lessons" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 74:637 [-375,-1346 48x48] image 27 bg:IMG
+  TEXT 74:638 [-312,-1099 218x31] Rewards "Rewards" Inter 500 25px lh30 bg:#5106b3
+  RECTANGLE 74:639 [-368,-1110 48x48] image 28 bg:IMG
+  TEXT 74:640 [-312,-982 218x31] Progress "Progress" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 74:641 [-373,-995 48x48] image 29 bg:IMG
+  TEXT 74:642 [-312,-1216 218x31] Practice "Practice" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 74:761 [-375,-1230 48x48] image 77 bg:IMG
+  RECTANGLE 74:644 [-424,-1684 129x129] image 32 bg:IMG
+  LINE 74:645 [-305,-1578 210x1] Line 3 stroke:#000000/3
+  RECTANGLE 74:646 [-339,-497 40x40] image 33 bg:IMG
+  TEXT 74:647 [-290,-491 81x29] Logout "Logout" Inter 500 24px lh29 bg:#fff0d9
+  TEXT 74:648 [1063,-1692 32x24] Siri "Siri" Inter 600 20px lh24 bg:#000000
+  VECTOR 74:649 [995,-1703 55x55] Ellipse 3 bg:#8b8bba
+  TEXT 74:650 [1013,-1694 32x45] S "S" Inter 700 30px lh36 bg:#fff0d9
+  TEXT 74:651 [1062,-1668 80x15] Grade 8 -Rizal "Grade 8 -Rizal" Inter 300 12px lh15 bg:#000000
+  RECTANGLE 74:652 [939,-1689 29x29] image 19 bg:IMG
+  TEXT 74:653 [253,-1491 419x44] Celebrate the milestones you earn while learning. "Celebrate the milestones you earn while learning.\n" Inter 400 18px lh22 bg:#000000
+  TEXT 74:654 [251,-1569 310x73] REWARDS "REWARDS" Inter 900 60px lh73 bg:#000000
+  RECTANGLE 74:655 [64,-1580 168x137] Rectangle 77 bg:#aaa9d5 r:15
+  RECTANGLE 74:656 [97,-1564 100x100] image 58 bg:IMG
+  RECTANGLE 74:765 [-368,-1110 48x48] image 79 bg:IMG
+  TEXT 74:657 [253,-1606 221x56] YOUR COLLECTION "YOUR COLLECTION\n" Inter 700 23px lh28 bg:#8a38f5
+  RECTANGLE 74:769 [64,-1383 1015x273] Rectangle 108 bg:#d9d9d9 r:18 stroke:#555555/1
+
+
+========== PROGRESS (80:2) ==========
+FRAME 80:2 [-462,-3147 1658x1354] Progresss bg:#fff0d9
+  RECTANGLE 80:3 [-517,-3164 490x1423] Rectangle 37 bg:#3e3e75 stroke:#8b8bba/10
+  TEXT 80:4 [-280,-3022 102x27] STUDENT "STUDENT" Inter 600 20px lh24 bg:#d5d5d5
+  TEXT 80:5 [-283,-3083 120x65] HASA "HASA" IBM Plex Mono 700 50px lh65 bg:#000000
+  TEXT 80:6 [-314,-2855 218x31] Dashboard "Dashboard" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 80:7 [-375,-2868 48x48] image 26 bg:IMG
+  RECTANGLE 80:8 [-431,-2768 358x79] Rectangle 39 bg:#3e3e75 r:15
+  RECTANGLE 80:9 [-416,-2531 328x79] Rectangle 38 bg:#8b8bba@0.6700000166893005 r:15
+  TEXT 80:10 [-310,-2741 218x31] Lessons "Lessons" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 80:11 [-375,-2754 48x48] image 27 bg:IMG
+  TEXT 80:12 [-312,-2507 218x31] Rewards "Rewards" Inter 500 25px lh30 bg:#5106b3
+  RECTANGLE 80:13 [-368,-2518 48x48] image 28 bg:IMG
+  TEXT 80:14 [-312,-2390 218x31] Progress "Progress" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 80:15 [-373,-2403 48x48] image 29 bg:IMG
+  TEXT 80:16 [-312,-2624 218x31] Practice "Practice" Inter 500 25px lh30 bg:#fff0d9
+  RECTANGLE 80:17 [-375,-2638 48x48] image 77 bg:IMG
+  RECTANGLE 80:18 [-424,-3092 129x129] image 32 bg:IMG
+  LINE 80:19 [-305,-2986 210x1] Line 3 stroke:#000000/3
+  RECTANGLE 80:20 [-339,-1905 40x40] image 33 bg:IMG
+  TEXT 80:21 [-290,-1899 81x29] Logout "Logout" Inter 500 24px lh29 bg:#fff0d9
+  TEXT 80:22 [1063,-3100 32x24] Siri "Siri" Inter 600 20px lh24 bg:#000000
+  VECTOR 80:23 [995,-3111 55x55] Ellipse 3 bg:#8b8bba
+  TEXT 80:24 [1013,-3102 32x45] S "S" Inter 700 30px lh36 bg:#fff0d9
+  TEXT 80:25 [1062,-3076 80x15] Grade 8 -Rizal "Grade 8 -Rizal" Inter 300 12px lh15 bg:#000000
+  RECTANGLE 80:26 [939,-3097 29x29] image 19 bg:IMG
+  TEXT 80:27 [253,-2899 419x44] Celebrate the milestones you earn while learning. "Celebrate the milestones you earn while learning.\n" Inter 400 18px lh22 bg:#000000
+  TEXT 80:28 [251,-2977 504x73] PROGRESS "PROGRESS" Inter 900 60px lh73 bg:#000000
+  RECTANGLE 80:29 [64,-2988 168x137] Rectangle 77 bg:#aaa9d5 r:15
+  RECTANGLE 80:30 [97,-2972 100x100] image 58 bg:IMG
+  RECTANGLE 80:31 [-368,-2518 48x48] image 79 bg:IMG
+  TEXT 80:32 [253,-3014 221x56] YOUR COLLECTION "YOUR COLLECTION\n" Inter 700 23px lh28 bg:#8a38f5
+  RECTANGLE 80:33 [64,-2791 1015x273] Rectangle 108 bg:#d9d9d9 r:18 stroke:#555555/1
