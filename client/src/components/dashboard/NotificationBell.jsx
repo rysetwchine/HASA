@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { Bell, X } from "lucide-react";
 import { demoAnnouncements } from "../../data/demoData.js";
+import bellIcon from "../../assets/images/layout/icon-bell.png";
+import { cx } from "../../utils/cx.js";
 
 /**
  * Bell na may popover. Walang announcement data sa prototype kaya
  * malinaw na empty state ang ipinapakita, hindi gawa-gawang anunsyo.
+ * Ang `bare` ay para sa Topbar upang mapanatili ang dating itsura.
  */
-export default function NotificationBell() {
+export default function NotificationBell({ bare = false }) {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef(null);
 
@@ -40,9 +43,23 @@ export default function NotificationBell() {
         aria-expanded={open}
         aria-controls="notification-panel"
         aria-label="Mga abiso"
-        className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-white text-ink shadow-sm hover:bg-cream-50"
+        className={cx(
+          "inline-flex items-center justify-center rounded-xl text-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2",
+          bare
+            ? "h-10 w-10 hover:bg-white/50"
+            : "h-11 w-11 border border-line bg-white shadow-sm hover:bg-cream-50",
+        )}
       >
-        <Bell className="h-5 w-5" aria-hidden="true" />
+        {bare ? (
+          <img
+            src={bellIcon}
+            alt=""
+            className="h-[30px] w-[30px] opacity-90"
+            aria-hidden="true"
+          />
+        ) : (
+          <Bell className="h-5 w-5" aria-hidden="true" />
+        )}
       </button>
 
       {open ? (

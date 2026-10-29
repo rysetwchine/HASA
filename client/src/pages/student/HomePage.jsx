@@ -1,13 +1,17 @@
+import { useState } from "react";
 import { Link } from "react-router";
 import DemoNotice from "../../components/ui/DemoNotice.jsx";
+import Alert from "../../components/ui/Alert.jsx";
+import Modal from "../../components/ui/Modal.jsx";
 import { cx } from "../../utils/cx.js";
+import { useProgress } from "../../app/ProgressProvider.jsx";
 import {
   demoStudent,
   demoLearningProgress,
-  demoRecentAchievements,
   demoFigmaAnnouncements,
   getLevelProgress,
 } from "../../data/demoData.js";
+import { localDateKey } from "../../services/progressStore.js";
 
 import mascotHello from "../../assets/images/dashboard/mascot-hello.png";
 import iconRosette from "../../assets/images/dashboard/icon-trophy.png";
@@ -27,8 +31,46 @@ const ACHIEVEMENT_ICONS = {
 
 const ACHIEVEMENT_HEADER = { src: iconRosette };
 
+const DATE_FORMAT = new Intl.DateTimeFormat("en-PH", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});
+
+function relativeDay(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const today = localDateKey();
+  const yesterdayDate = new Date();
+  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+  const yesterday = localDateKey(yesterdayDate);
+  const key = localDateKey(date);
+
+  if (key === today) return "TODAY";
+  if (key === yesterday) return "YESTERDAY";
+  return DATE_FORMAT.format(date);
+}
+
 export default function HomePage() {
-  const progress = getLevelProgress(demoStudent.points);
+  const { progress } = useProgress();
+  const levelProgress = getLevelProgress(progress.xp);
+  const [announcementsOpen, setAnnouncementsOpen] = useState(false);
+
+  const recentActivities = [...progress.history]
+    .slice(-2)
+    .reverse()
+    .map((entry) => ({
+      id: entry.id,
+      icon: entry.passed ? "trophy" : "medal",
+      title: entry.title,
+      detail: `${entry.correct}/${entry.total} correct · ${entry.percent}%${
+        entry.xpAwarded > 0 ? "" : " · walang bagong XP"
+      }`,
+      xpLabel: entry.xpAwarded > 0 ? `+${entry.xpAwarded} XP` : "No XP",
+      when: relativeDay(entry.completedAt),
+    }));
 
   return (
     <div className="space-y-6 pt-2">
@@ -130,46 +172,65 @@ export default function HomePage() {
         </div>
 
         <div className="rounded-[25px] border border-ink bg-canvas px-6 py-7 shadow-card sm:px-10">
-          <ul className="divide-ink/0">
-            {demoRecentAchievements.map((item, index) => {
-              const icon = ACHIEVEMENT_ICONS[item.icon] ?? ACHIEVEMENT_ICONS.trophy;
-              return (
-                <li
-                  key={item.id}
-                  className={cx(
-                    "flex items-center gap-5 py-4",
-                    index > 0 && "mt-2",
-                  )}
-                >
-                  <span
+          {recentActivities.length > 0 ? (
+            <ul className="divide-ink/0">
+              {recentActivities.map((item, index) => {
+                const icon =
+                  ACHIEVEMENT_ICONS[item.icon] ?? ACHIEVEMENT_ICONS.trophy;
+                return (
+                  <li
+                    key={item.id}
                     className={cx(
-                      "flex h-[56px] w-[54px] shrink-0 items-center justify-center rounded-[5px] border border-ink",
-                      icon.tile,
+                      "flex items-center gap-5 py-4",
+                      index > 0 && "mt-2",
                     )}
-                    aria-hidden="true"
                   >
-                    <img src={icon.src} alt="" className="h-[40px] w-[40px]" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[21px] font-medium leading-tight text-ink sm:text-[25px]">
-                      {item.title}
-                    </p>
-                    <p className="mt-0.5 text-[15px] font-light text-ink">
-                      {item.detail}
-                    </p>
-                  </div>
-                  <div className="shrink-0 text-right">
-                    <p className="text-[21px] font-medium text-accent sm:text-[25px]">
-                      {item.xpLabel}
-                    </p>
-                    <p className="mt-0.5 text-[13px] font-medium 2xl:text-[15px]">
-                      {item.when}
-                    </p>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+                    <span
+                      className={cx(
+                        "flex h-[56px] w-[54px] shrink-0 items-center justify-center rounded-[5px] border border-ink",
+                        icon.tile,
+                      )}
+                      aria-hidden="true"
+                    >
+                      <img src={icon.src} alt="" className="h-[40px] w-[40px]" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[21px] font-medium leading-tight text-ink sm:text-[25px]">
+                        {item.title}
+                      </p>
+                      <p className="mt-0.5 text-[15px] font-light text-ink">
+                        {item.detail}
+                      </p>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <p className="text-[21px] font-medium text-accent sm:text-[25px]">
+                        {item.xpLabel}
+                      </p>
+                      <p className="mt-0.5 text-[13px] font-medium 2xl:text-[15px]">
+                        {item.when}
+                      </p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <div className="rounded-[15px] border border-dashed border-ink/30 bg-white/40 px-5 py-8 text-center">
+              <p className="text-[19px] font-semibold text-ink">
+                Wala pang natapos na aktibidad
+              </p>
+              <p className="mx-auto mt-1 max-w-md text-sm leading-relaxed text-muted">
+                Pumili ng challenge sa Practice. Lalabas dito ang tunay na
+                resulta at XP mula sa browser na ito.
+              </p>
+              <Link
+                to="/aktibidad"
+                className="mt-4 inline-flex rounded-[15px] bg-plum-800 px-5 py-2.5 text-sm font-semibold text-canvas transition-colors hover:bg-plum-900"
+              >
+                Pumunta sa Practice
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 
@@ -192,9 +253,8 @@ export default function HomePage() {
           </div>
           <button
             type="button"
-            disabled
-            title="Wala pang pahina ang mga anunsyo sa prototype"
-            className="cursor-not-allowed text-[15px] font-semibold text-accent-strong/60"
+            onClick={() => setAnnouncementsOpen(true)}
+            className="text-[15px] font-semibold text-accent-strong hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
           >
             View all
           </button>
@@ -236,13 +296,47 @@ export default function HomePage() {
       </section>
 
       <p className="text-[11px] leading-relaxed text-muted">
-        {/* Ipinapakita rin ang XP bilang halimbawa. */}
-        Antas {progress.level} · {progress.xpIntoLevel.toLocaleString()} /{" "}
-        {progress.xpForNextLevel.toLocaleString()} XP — halimbawa lamang lahat ng
-        datos sa pahinang ito at hindi totoong datos ng mag-aaral.
+        Antas {levelProgress.level} ·{" "}
+        {levelProgress.xpIntoLevel.toLocaleString()} /{" "}
+        {levelProgress.xpForNextLevel.toLocaleString()} XP — panimulang demo
+        XP kasama ang mga aktibidad na natapos sa browser na ito. Hindi ito
+        totoong rekord ng mag-aaral.
       </p>
 
       <DemoNotice />
+
+      <Modal
+        open={announcementsOpen}
+        onClose={() => setAnnouncementsOpen(false)}
+        title="Announcement"
+        eyebrow="Prototype"
+        size="md"
+      >
+        <Alert variant="info" title="Walang live announcement feed">
+          Walang notification system o guro-message backend sa prototype. Ang
+          mga nasa ibaba ay halimbawang nilalaman mula sa Figma, hindi tunay na
+          anunsyo.
+        </Alert>
+
+        <ul className="mt-4 space-y-3">
+          {demoFigmaAnnouncements.map((item) => (
+            <li
+              key={item.id}
+              className="rounded-2xl border border-line bg-canvas/60 p-4"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-sm font-bold text-ink">{item.title}</p>
+                <span className="text-[10px] font-medium text-muted">
+                  {item.date}
+                </span>
+              </div>
+              <p className="mt-1 text-sm leading-relaxed text-muted">
+                {item.detail}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </Modal>
     </div>
   );
 }

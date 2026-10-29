@@ -188,7 +188,7 @@ export default function SimplifyPage() {
 
           <div className="mt-5 flex flex-wrap items-center gap-2.5">
             <Link
-              to="/aktibidad"
+              to="/aktibidad?activity=reading-water"
               className={buttonClasses({ variant: "primary" })}
             >
               <ClipboardCheck className="h-4 w-4" aria-hidden="true" />

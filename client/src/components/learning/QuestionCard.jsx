@@ -4,7 +4,8 @@ const LETTERS = ["A", "B", "C", "D", "E"];
 
 /**
  * Presentational na tanong na multiple choice.
- * Sa Stage 1 ay walang pagsusuri — ang backend ang magsasabi kung tama.
+ * Ang `revealAnswer` ay ginagamit pagkatapos ng submit upang ipakita
+ * ang tama at mali nang hindi nawawala ang dating anyo ng card.
  */
 export default function QuestionCard({
   question,
@@ -12,6 +13,7 @@ export default function QuestionCard({
   onSelect,
   disabled = false,
   number,
+  revealAnswer = false,
 }) {
   return (
     <fieldset className="rounded-2xl border border-line bg-white p-5 shadow-card sm:p-6">
@@ -36,16 +38,23 @@ export default function QuestionCard({
         {question.options.map((option, index) => {
           const id = `${question.id}-option-${index}`;
           const checked = selectedIndex === index;
+          const isCorrectOption = revealAnswer && question.correctIndex === index;
+          const isWrongSelection = revealAnswer && checked && !isCorrectOption;
+
           return (
             <label
               key={id}
               htmlFor={id}
               className={cx(
                 "flex cursor-pointer items-start gap-3 rounded-xl border px-3.5 py-3 text-sm transition-colors",
-                checked
-                  ? "border-brand-500 bg-brand-50/70 ring-1 ring-brand-500"
-                  : "border-line bg-white hover:border-brand-200 hover:bg-cream-50",
-                disabled ? "cursor-not-allowed opacity-70" : "",
+                isCorrectOption
+                  ? "border-emerald-300 bg-emerald-50/80 ring-1 ring-emerald-300"
+                  : isWrongSelection
+                    ? "border-rose-300 bg-rose-50/80 ring-1 ring-rose-300"
+                    : checked
+                      ? "border-brand-500 bg-brand-50/70 ring-1 ring-brand-500"
+                      : "border-line bg-white hover:border-brand-200 hover:bg-cream-50",
+                disabled ? "cursor-not-allowed opacity-80" : "",
               )}
             >
               <input
@@ -60,15 +69,30 @@ export default function QuestionCard({
               <span
                 className={cx(
                   "flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[10px] font-bold",
-                  checked
-                    ? "bg-brand-600 text-white"
-                    : "bg-cream-100 text-muted",
+                  isCorrectOption
+                    ? "bg-emerald-600 text-white"
+                    : isWrongSelection
+                      ? "bg-rose-600 text-white"
+                      : checked
+                        ? "bg-brand-600 text-white"
+                        : "bg-cream-100 text-muted",
                 )}
                 aria-hidden="true"
               >
                 {LETTERS[index] ?? index + 1}
               </span>
-              <span className="leading-relaxed text-ink/80">{option}</span>
+              <span className="min-w-0 flex-1 leading-relaxed text-ink/80">
+                {option}
+                {isCorrectOption ? (
+                  <span className="ml-1.5 text-[10px] font-bold uppercase tracking-wide text-emerald-700">
+                    Tamang sagot
+                  </span>
+                ) : isWrongSelection ? (
+                  <span className="ml-1.5 text-[10px] font-bold uppercase tracking-wide text-rose-700">
+                    Napili mo
+                  </span>
+                ) : null}
+              </span>
             </label>
           );
         })}

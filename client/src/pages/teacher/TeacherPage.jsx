@@ -1,6 +1,8 @@
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import {
   BookOpen,
+  Check,
   Copy,
   GraduationCap,
   ShieldCheck,
@@ -16,7 +18,61 @@ import ReadingLevelLabel from "../../components/learning/ReadingLevelLabel.jsx";
 import { buttonClasses } from "../../components/ui/Button.jsx";
 import { demoRoster, demoStudent } from "../../data/demoData.js";
 
+const CLASS_CODE = "HASA-8A";
+
+function fallbackCopy(text) {
+  if (typeof document === "undefined") return false;
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.select();
+
+  let copied = false;
+  try {
+    copied = document.execCommand?.("copy") ?? false;
+  } catch {
+    copied = false;
+  }
+
+  document.body.removeChild(textarea);
+  return copied;
+}
+
 export default function TeacherPage() {
+  const [copyState, setCopyState] = useState("idle");
+  const resetTimer = useRef(null);
+
+  useEffect(
+    () => () => {
+      window.clearTimeout(resetTimer.current);
+    },
+    [],
+  );
+
+  async function copyClassCode() {
+    setCopyState("copying");
+
+    let copied = false;
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(CLASS_CODE);
+        copied = true;
+      } catch {
+        copied = false;
+      }
+    }
+
+    if (!copied) copied = fallbackCopy(CLASS_CODE);
+
+    setCopyState(copied ? "copied" : "error");
+    window.clearTimeout(resetTimer.current);
+    resetTimer.current = window.setTimeout(() => setCopyState("idle"), 2500);
+  }
+
   return (
     <div className="mx-auto max-w-5xl space-y-5">
       <PageHeader
@@ -25,10 +81,19 @@ export default function TeacherPage() {
         description="Pamahalaan ang klase, tingnan ang pag-unlad ng mga mag-aaral, at magtalaga ng materyal. Prototype lamang ang mga aksyon."
         actions={
           <>
-            <Button variant="secondary" disabled>
+            <Button
+              variant="secondary"
+              disabled
+              title="Kailangan ng backend at teacher authentication bago makagawa ng klase"
+            >
               Gumawa ng klase
             </Button>
-            <Button disabled>Magtalaga ng materyal</Button>
+            <Button
+              disabled
+              title="Kailangan ng backend upang makapagtalaga ng materyal sa klase"
+            >
+              Magtalaga ng materyal
+            </Button>
           </>
         }
       />
@@ -52,12 +117,30 @@ export default function TeacherPage() {
               </p>
               <div className="mt-2 flex flex-wrap items-center gap-3">
                 <code className="rounded-lg bg-brand-50 px-3 py-2 text-lg font-bold tracking-widest text-brand-800">
-                  HASA-8A
+                  {CLASS_CODE}
                 </code>
-                <span className="inline-flex items-center gap-1 text-xs text-muted">
-                  <Copy className="h-4 w-4" aria-hidden="true" />
-                  Ibahagi sa mga mag-aaral
-                </span>
+                <button
+                  type="button"
+                  onClick={copyClassCode}
+                  disabled={copyState === "copying"}
+                  aria-label={`Kopyahin ang kodigo ng klase ${CLASS_CODE}`}
+                  className="inline-flex items-center gap-1 rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs font-semibold text-muted transition-colors hover:border-line-dark hover:text-ink disabled:cursor-wait disabled:opacity-60"
+                >
+                  {copyState === "copied" ? (
+                    <Check className="h-4 w-4 text-emerald-600" aria-hidden="true" />
+                  ) : (
+                    <Copy className="h-4 w-4" aria-hidden="true" />
+                  )}
+                  <span aria-live="polite">
+                    {copyState === "copied"
+                      ? "Nakopya!"
+                      : copyState === "error"
+                        ? "Hindi makopya"
+                        : copyState === "copying"
+                          ? "Kinokopya…"
+                          : "Kopyahin ang kodigo"}
+                  </span>
+                </button>
               </div>
             </div>
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent text-brand-700">

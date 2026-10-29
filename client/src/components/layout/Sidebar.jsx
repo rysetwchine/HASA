@@ -42,7 +42,6 @@ export default function Sidebar({ onNavigate }) {
                 to={to}
                 end={end}
                 onClick={onNavigate}
-                aria-current={undefined}
                 className={({ isActive }) =>
                   cx(
                     "flex min-h-[66px] items-center gap-4 rounded-[15px] px-5 text-[23px] font-medium transition-colors",
@@ -65,7 +64,7 @@ export default function Sidebar({ onNavigate }) {
             type="button"
             disabled
             aria-disabled="true"
-            title="Hindi pa available sa prototype"
+            title="Walang authentication sa prototype, kaya hindi pa available ang logout"
             className="flex cursor-not-allowed items-center gap-4 text-[23px] font-medium text-canvas/70"
           >
             <img src={logoutIcon} alt="" className="h-10 w-10 opacity-60" aria-hidden="true" />

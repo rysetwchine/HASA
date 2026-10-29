@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import DemoNotice from "../../components/ui/DemoNotice.jsx";
+import Alert from "../../components/ui/Alert.jsx";
 import { cx } from "../../utils/cx.js";
 import { demoFigmaLessons } from "../../data/demoData.js";
 
@@ -119,7 +120,7 @@ function LessonCard({ lesson }) {
           <button
             type="button"
             disabled
-            title="Hindi pa available ang pagbukas ng aralin sa prototype"
+            title="Wala pang lesson detail content sa prototype, kaya hindi pa mabubuksan ang aralin"
             className={cx(
               "flex h-[27px] cursor-not-allowed items-center gap-1.5 rounded-[10px] px-3 text-[11.5px] font-semibold",
               lesson.action === "Review"
@@ -181,6 +182,13 @@ export default function LessonsPage() {
           className="w-full object-cover"
         />
       </div>
+
+      <Alert variant="info" title="Hindi pa mabubuksan ang mga aralin">
+        Gumagana ang search, filters, at grid/list view. Wala pang aktwal na
+        lesson detail content sa prototype, kaya nananatiling disabled ang
+        Start, Review, at Continue. Hindi ito dinadaan sa pekeng alert o
+        gawa-gawang aralin.
+      </Alert>
 
       {/* Bar ng mga filter */}
       <div className="flex flex-col gap-3 rounded-[15px] border border-line-dark bg-lav-500/70 p-3 sm:flex-row sm:items-center lg:gap-5">

@@ -93,19 +93,50 @@ describe("katapatan ng prototype", () => {
     ).toBeInTheDocument();
   });
 
-  it("hindi nagbibigay ng puntos sa Practice", () => {
+  it("nagbubukas ng totoong activity mula sa Practice", async () => {
+    const user = userEvent.setup();
     renderAt("/aktibidad");
 
-    // Naka-disable lahat ng laruan sa prototype — walang puntos na
-    // ibinibigay at walang laro na talagang nagaganap.
     const playButtons = screen.getAllByRole("button", { name: /Play now/i });
-    expect(playButtons.length).toBeGreaterThan(0);
+    expect(playButtons.length).toBe(6);
     for (const button of playButtons) {
-      expect(button).toBeDisabled();
+      expect(button).toBeEnabled();
     }
+
+    await user.click(
+      screen.getByRole("button", { name: /Play featured challange/i }),
+    );
+
     expect(
-      screen.getByText(/Halimbawa lamang ang nilalaman/i),
+      screen.getByRole("dialog", { name: /HISTORY HOT SEAT/i }),
     ).toBeInTheDocument();
+    expect(
+      screen.getAllByText(
+        /Which group fought for Philippine independence from Spain in 1896/i,
+      ).length,
+    ).toBeGreaterThan(0);
+    expect(screen.getByRole("timer")).toBeInTheDocument();
+  });
+
+  it("nagfi-filter ng Quiz at Skill Lab sa Practice", async () => {
+    const user = userEvent.setup();
+    renderAt("/aktibidad");
+
+    await user.click(screen.getByRole("button", { name: "Skill lab" }));
+    expect(
+      screen.getByRole("heading", { name: "Source Detective" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Time Builder" }),
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Quiz" }));
+    expect(
+      screen.getByRole("heading", { name: "Time Builder" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Source Detective" }),
+    ).not.toBeInTheDocument();
   });
 });
 
@@ -152,10 +183,37 @@ describe("dashboard", () => {
     );
   });
 
-  it("hindi nagpapanggap na may abiso ang prototype", () => {
+  it("nagpapakita ng tapat na empty state sa mga abiso", async () => {
+    const user = userEvent.setup();
     renderAt("/");
 
-    expect(screen.getByRole("button", { name: /Abiso/i })).toBeDisabled();
+    const bell = screen.getByRole("button", { name: /Mga abiso/i });
+    expect(bell).toBeEnabled();
+
+    await user.click(bell);
+
+    expect(screen.getByText(/Wala pang anunsyo/i)).toBeInTheDocument();
+    expect(screen.getByText(/0 anunsyo/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Hindi nag-imbento ng anunsyo ang prototype/i),
+    ).toBeInTheDocument();
+  });
+
+  it("nagbubukas ng announcement list", async () => {
+    const user = userEvent.setup();
+    renderAt("/");
+
+    await user.click(screen.getByRole("button", { name: /^View all$/i }));
+
+    expect(
+      screen.getByRole("dialog", { name: "Announcement" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Walang live announcement feed/i),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText(/Weekend Challenge!/i).length).toBeGreaterThan(
+      0,
+    );
   });
 });
 
@@ -338,17 +396,35 @@ describe("login at registration", () => {
 });
 
 describe("mga nakamit", () => {
-  it("nagpapakita ng placeholder at paalala ng halimbawang datos", () => {
+  it("nagpapakita ng tunay na badge state at local persistence notice", () => {
     renderAt("/mga-nakamit");
 
     expect(
       screen.getByRole("heading", { level: 1, name: "REWARDS" }),
     ).toBeInTheDocument();
+    expect(screen.getByText(/0 \/ 3 nakamit/i)).toBeInTheDocument();
+    expect(screen.getByText("Unang Hakbang")).toBeInTheDocument();
+    expect(screen.getAllByText("Nakakandado").length).toBeGreaterThan(0);
     expect(
-      screen.getByRole("img", { name: /Mga gantimpala/i }),
+      screen.getByText(/Temporary local persistence/i),
     ).toBeInTheDocument();
     expect(
       screen.getByText(/Halimbawa lamang ang nilalaman/i),
+    ).toBeInTheDocument();
+  });
+});
+
+describe("pag-unlad", () => {
+  it("nagpapakita ng XP, streak, at walang gawa-gawang history", () => {
+    renderAt("/pag-unlad");
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "PROGRESS" }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText(/Level 4/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Wala pang natapos na aktibidad/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Temporary local persistence/i),
     ).toBeInTheDocument();
   });
 });
@@ -395,5 +471,15 @@ describe("nabigasyon", () => {
     renderAt("/");
 
     expect(screen.getByRole("button", { name: /Logout/i })).toBeDisabled();
+  });
+
+  it("naka-highlight ang aktibong item sa nabigasyon", () => {
+    renderAt("/mga-aralin");
+
+    const activeLinks = screen
+      .getAllByRole("link", { name: "Lessons" })
+      .filter((link) => link.getAttribute("aria-current") === "page");
+
+    expect(activeLinks.length).toBeGreaterThan(0);
   });
 });

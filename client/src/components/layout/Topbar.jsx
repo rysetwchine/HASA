@@ -3,14 +3,17 @@ import {
   DEMO_STUDENT_LABEL,
   getLevelProgress,
 } from "../../data/demoData.js";
-import bellIcon from "../../assets/images/layout/icon-bell.png";
+import NotificationBell from "../dashboard/NotificationBell.jsx";
+import { useProgress } from "../../app/ProgressProvider.jsx";
 
 /**
  * Ang upuan sa itaas ng nilalaman ay hango sa Figma: antas ng XP sa kaliwa,
- * kampanilya at silweta ng mag-aaral sa kanan.
+ * kampanilya at silweta ng mag-aaral sa kanan. Ang XP ay lokal na
+ * naka-save at nagbabago kapag may natapos na aktibidad.
  */
 export default function Topbar() {
-  const progress = getLevelProgress(demoStudent.points);
+  const { progress: savedProgress } = useProgress();
+  const progress = getLevelProgress(savedProgress.xp);
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-4 pb-2">
@@ -51,16 +54,7 @@ export default function Topbar() {
 
       {/* Kampanilya + silweta */}
       <div className="flex items-center gap-5">
-        <button
-          type="button"
-          disabled
-          aria-disabled="true"
-          title="Wala pang abiso sa prototype"
-          className="cursor-not-allowed"
-        >
-          <img src={bellIcon} alt="" className="h-[30px] w-[30px] opacity-90" aria-hidden="true" />
-          <span className="sr-only">Abiso</span>
-        </button>
+        <NotificationBell bare />
 
         <div className="flex items-center gap-3">
           <span

@@ -1,8 +1,21 @@
 import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router";
 import PageHeader from "../../components/ui/PageHeader.jsx";
 import DemoNotice from "../../components/ui/DemoNotice.jsx";
+import Alert from "../../components/ui/Alert.jsx";
+import ActivityPlayer from "../../components/practice/ActivityPlayer.jsx";
 import { cx } from "../../utils/cx.js";
-import { demoChallenges } from "../../data/demoData.js";
+import { useProgress } from "../../app/ProgressProvider.jsx";
+import {
+  demoFeaturedChallenge,
+  getLevelProgress,
+} from "../../data/demoData.js";
+import {
+  FEATURED_ACTIVITY,
+  PRACTICE_ACTIVITIES,
+  getActivity,
+} from "../../data/activityCatalog.js";
+import { PROGRESS_STORAGE_NOTE } from "../../services/progressStore.js";
 
 import iconHeaderPractice from "../../assets/images/practice/icon-header-practice.png";
 import streakFire from "../../assets/images/practice/streak-fire.png";
@@ -40,14 +53,20 @@ const FILTERS = [
  * Daily Streak card (#dcd7eb r20), featured na "HISTORY HOT SEAT"
  * (#291f47 r20 na may gintong accent), at anim na challenge card.
  */
-function ChallengeCard({ challenge, showReadyLavender }) {
+function ChallengeCard({ challenge, showReadyLavender, completion, onOpen }) {
   const icon = CHALLENGE_ICONS[challenge.icon] ?? challenge1;
   const isDarkAccent = challenge.accent === "#3e3e75";
   const band = isDarkAccent ? "#000000" : challenge.accent;
+  const statusLabel = completion?.completed
+    ? `Best ${completion.bestCorrect}/${completion.total}`
+    : completion?.attempts
+      ? `Retry · best ${completion.bestCorrect}/${completion.total}`
+      : "Ready";
 
   return (
     <article
-      className="rounded-[25px] px-0 pt-[7px] shadow-card"
+      onClick={() => onOpen(challenge.id)}
+      className="cursor-pointer rounded-[25px] px-0 pt-[7px] shadow-card transition-transform motion-safe:hover:-translate-y-0.5"
       style={{
         backgroundColor: band,
         boxShadow: `0 0 0 1px ${challenge.accent}`,
@@ -91,19 +110,22 @@ function ChallengeCard({ challenge, showReadyLavender }) {
               showReadyLavender ? "text-lav-400" : "text-[#555555]",
             )}
           >
-            Ready
+            {statusLabel}
           </span>
           <button
             type="button"
-            disabled
-            title="Hindi pa available ang mga laro sa prototype"
-            className="flex h-[25px] cursor-not-allowed items-center gap-1 rounded-[7px] px-3 text-[10.5px] font-bold"
+            onClick={(event) => {
+              event.stopPropagation();
+              onOpen(challenge.id);
+            }}
+            className="flex h-[25px] items-center gap-1 rounded-[7px] px-3 text-[10.5px] font-bold transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
             style={{
               backgroundColor: isDarkAccent ? "rgb(113 113 113 / 0.31)" : `${challenge.accent}8c`,
               color: challenge.accent,
             }}
           >
             Play now
+            <span className="sr-only"> — {challenge.title}</span>
             {challenge.starred ? (
               <img src={playArrow} alt="" className="h-[10px] w-[10px]" aria-hidden="true" />
             ) : null}
@@ -116,16 +138,40 @@ function ChallengeCard({ challenge, showReadyLavender }) {
 
 export default function ActivityPage() {
   const [filter, setFilter] = useState("all");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { progress } = useProgress();
+  const level = getLevelProgress(progress.xp);
+  const xpPercent = Math.min(
+    100,
+    Math.round((level.xpIntoLevel / level.xpForNextLevel) * 100),
+  );
+
+  const selectedId = searchParams.get("activity");
+  const selectedActivity = getActivity(selectedId);
 
   const challenges = useMemo(() => {
     if (filter === "quiz") {
-      return demoChallenges.filter((c) => c.kind === "Quiz");
+      return PRACTICE_ACTIVITIES.filter((activity) => activity.kind === "Quiz");
     }
     if (filter === "skill") {
-      return demoChallenges.filter((c) => c.kind === "Skill Lab");
+      return PRACTICE_ACTIVITIES.filter(
+        (activity) => activity.kind === "Skill Lab",
+      );
     }
-    return demoChallenges;
+    return PRACTICE_ACTIVITIES;
   }, [filter]);
+
+  function openActivity(activityId) {
+    const next = new URLSearchParams(searchParams);
+    next.set("activity", activityId);
+    setSearchParams(next);
+  }
+
+  function closeActivity() {
+    const next = new URLSearchParams(searchParams);
+    next.delete("activity");
+    setSearchParams(next, { replace: true });
+  }
 
   return (
     <div className="space-y-6 pt-1">
@@ -135,6 +181,22 @@ export default function ActivityPage() {
         title="PRACTICE"
         description="Play your way through Araling Panlipunan and build your streak."
       />
+
+      {selectedId && !selectedActivity ? (
+        <Alert variant="warning" title="Hindi mahanap ang aktibidad">
+          <p>
+            Wala sa prototype ang aktibidad na “{selectedId}”. Pumili na lang
+            mula sa mga card sa ibaba.
+          </p>
+          <button
+            type="button"
+            onClick={closeActivity}
+            className="mt-2 rounded-lg border border-gold-strong/50 bg-white px-3 py-1.5 text-xs font-semibold text-brown hover:bg-gold-soft/40"
+          >
+            Isara ang mensahe
+          </button>
+        </Alert>
+      ) : null}
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* DAILY STREAK card */}
@@ -154,7 +216,7 @@ export default function ActivityPage() {
               aria-hidden="true"
             />
             DAILY STREAK
-            <span className="pl-3">4 DAYS</span>
+            <span className="pl-3">{progress.streak} DAYS</span>
           </p>
 
           <h2 className="mt-4 max-w-[420px] text-[34px] font-bold leading-[1.15] tracking-tight text-plum-700 sm:text-[40px]">
@@ -170,21 +232,28 @@ export default function ActivityPage() {
           <div className="mt-8 flex justify-end">
             <div className="w-[240px]">
               <div className="flex items-end justify-between">
-                <span className="text-[10px] font-bold text-lav-400">Level 4</span>
-                <span className="text-[10px] font-bold text-accent">1,200 XP</span>
+                <span className="text-[10px] font-bold text-lav-400">
+                  Level {level.level}
+                </span>
+                <span className="text-[10px] font-bold text-accent">
+                  {level.xpIntoLevel.toLocaleString()} XP
+                </span>
               </div>
               <div
                 className="mt-1 h-2 overflow-hidden rounded-[5px] bg-[#c4c4c4]"
                 role="progressbar"
-                aria-valuenow={80}
+                aria-valuenow={xpPercent}
                 aria-valuemin={0}
                 aria-valuemax={100}
-                aria-label="XP sa antas 5"
+                aria-label={`XP sa antas ${level.level + 1}`}
               >
-                <div className="h-full rounded-[5px] bg-plum-800" style={{ width: "80%" }} />
+                <div
+                  className="h-full rounded-[5px] bg-plum-800 transition-[width] duration-500 motion-reduce:transition-none"
+                  style={{ width: `${xpPercent}%` }}
+                />
               </div>
               <p className="mt-1 text-right text-[10px] text-[#555555]">
-                300 XP to level 5
+                {level.xpToNext} XP to level {level.level + 1}
               </p>
             </div>
           </div>
@@ -220,10 +289,10 @@ export default function ActivityPage() {
           />
 
           <h2 className="mt-6 text-[24px] font-black tracking-tight text-gold">
-            HISTORY HOT SEAT
+            {FEATURED_ACTIVITY.title}
           </h2>
           <p className="mt-2 max-w-[300px] text-[12.5px] leading-relaxed text-white">
-            Can you answer 5 questions before the timer runs out?
+            {FEATURED_ACTIVITY.description}
           </p>
 
           <div className="mt-4 flex flex-wrap items-center gap-6">
@@ -235,7 +304,7 @@ export default function ActivityPage() {
                 aria-hidden="true"
               />
               <span className="text-[11.5px] font-semibold text-gold">
-                5 Questions
+                {FEATURED_ACTIVITY.questions.length} Questions
               </span>
             </span>
             <span className="flex items-center gap-1.5">
@@ -245,17 +314,18 @@ export default function ActivityPage() {
                 className="h-[18px] w-[18px]"
                 aria-hidden="true"
               />
-              <span className="text-[11.5px] font-semibold text-gold">+50 XP</span>
+              <span className="text-[11.5px] font-semibold text-gold">
+                +{FEATURED_ACTIVITY.xp} XP
+              </span>
             </span>
           </div>
 
           <button
             type="button"
-            disabled
-            title="Hindi pa available ang mga laro sa prototype"
-            className="mt-7 flex h-[31px] cursor-not-allowed items-center justify-between rounded-[10px] bg-gold px-4 text-[11px] font-semibold text-plum-800"
+            onClick={() => openActivity(FEATURED_ACTIVITY.id)}
+            className="mt-7 flex h-[31px] items-center justify-between gap-3 rounded-[10px] bg-gold px-4 text-[11px] font-semibold text-plum-800 transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-plum-950"
           >
-            Play featured challange
+            {demoFeaturedChallenge.card.cta}
             <img src={playArrow} alt="" className="h-2.5 w-2.5" aria-hidden="true" />
           </button>
         </section>
@@ -304,13 +374,27 @@ export default function ActivityPage() {
           <li key={challenge.id}>
             <ChallengeCard
               challenge={challenge}
+              completion={progress.completions[challenge.id]}
               showReadyLavender={filter === "all" && index < 2}
+              onOpen={openActivity}
             />
           </li>
         ))}
       </ul>
 
+      <p className="text-[11px] leading-relaxed text-muted">
+        {PROGRESS_STORAGE_NOTE}
+      </p>
+
       <DemoNotice />
+
+      {selectedActivity ? (
+        <ActivityPlayer
+          key={selectedActivity.id}
+          activity={selectedActivity}
+          onClose={closeActivity}
+        />
+      ) : null}
     </div>
   );
 }

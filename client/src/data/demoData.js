@@ -142,33 +142,35 @@ export const demoQuestions = [
 ];
 
 /**
- * DEMONSTRASYON LAMANG. Ang XP at petsa ay halimbawa upang maipakita
- * ang anyo ng talaan; hindi ito totoong nakamit ng sinumang mag-aaral.
- * Ang 70 + 50 XP ng dalawang nakamit na sagisag ay tumutugma sa
- * 120 puntos ng halimbawang mag-aaral.
+ * DEMONSTRASYON LAMANG. Ang mga sagisag ay nakakandado sa simula at
+ * binubuksan ng mga aktibidad na natapos sa browser na ito. Ang XP ng
+ * sagisag ay ibinibigay nang isang beses lamang kapag naunlock ito.
  */
 export const demoBadges = [
   {
     id: "b1",
     name: "Unang Hakbang",
-    description: "Nakumpleto ang unang aktibidad sa pag-unawa.",
+    description: "Nakumpleto ang unang aktibidad sa Practice.",
     xp: 70,
-    earned: true,
-    earnedAt: "2026-10-18",
+    criteria: { type: "completed", target: 1 },
+    earned: false,
+    earnedAt: null,
   },
   {
     id: "b2",
     name: "Mausisang Mambabasa",
-    description: "Nagtanong ng paliwanag sa limang mahirap na salita.",
+    description: "Nakumpleto ang tatlong aktibidad sa Practice.",
     xp: 50,
-    earned: true,
-    earnedAt: "2026-10-20",
+    criteria: { type: "completed", target: 3 },
+    earned: false,
+    earnedAt: null,
   },
   {
     id: "b3",
     name: "Bayani ng Misyon",
-    description: "Natapos ang unang misyon nang buo.",
+    description: "Nakumpleto ang limang aktibidad sa Practice.",
     xp: 100,
+    criteria: { type: "completed", target: 5 },
     earned: false,
     earnedAt: null,
   },
@@ -466,6 +468,9 @@ export const demoChallenges = [
     kindKey: "violet",
     title: "Time Builder",
     detail: "5 quick questions · 25 XP",
+    xp: 25,
+    passPercent: 60,
+    timerSeconds: 120,
     ready: true,
     starred: false,
     icon: "challenge-1",
@@ -477,6 +482,9 @@ export const demoChallenges = [
     kindKey: "grey",
     title: "Heroes of the Revolution",
     detail: "5 quick questions · 25 XP",
+    xp: 25,
+    passPercent: 60,
+    timerSeconds: null,
     ready: true,
     starred: false,
     icon: "challenge-2",
@@ -488,6 +496,9 @@ export const demoChallenges = [
     kindKey: "terracotta",
     title: "Source Detective",
     detail: "Read between the lines · 35 XP",
+    xp: 35,
+    passPercent: 60,
+    timerSeconds: null,
     ready: true,
     starred: false,
     icon: "challenge-3",
@@ -499,6 +510,9 @@ export const demoChallenges = [
     kindKey: "leaf",
     title: "Who Am I? History Edition",
     detail: "5 quick questions · 25 XP",
+    xp: 25,
+    passPercent: 60,
+    timerSeconds: null,
     ready: true,
     starred: true,
     icon: "challenge-4",
@@ -510,6 +524,9 @@ export const demoChallenges = [
     kindKey: "red",
     title: "Fact or Fiction?",
     detail: "5 quick questions · 25 XP",
+    xp: 25,
+    passPercent: 60,
+    timerSeconds: null,
     ready: true,
     starred: true,
     icon: "challenge-5",
@@ -521,6 +538,9 @@ export const demoChallenges = [
     kindKey: "ink",
     title: "Katipunan Challenge",
     detail: "5 quick questions · 25 XP",
+    xp: 25,
+    passPercent: 60,
+    timerSeconds: null,
     ready: true,
     starred: true,
     icon: "challenge-6",
@@ -543,10 +563,14 @@ export const demoFeaturedChallenge = {
   title: "PRACTICE",
   description: "Play your way through Araling Panlipunan and build your streak.",
   card: {
+    id: "featured-hot-seat",
     title: "HISTORY HOT SEAT",
     detail: "Can you answer 5 questions before the timer runs out?",
     questions: "5 Questions",
+    xp: 50,
     xpLabel: "+50 XP",
+    passPercent: 60,
+    timerSeconds: 90,
     cta: "Play featured challange",
   },
   streakLabel: "DAILY STREAK     4 DAYS",

@@ -1,4 +1,5 @@
 import AppShell from "../components/layout/AppShell.jsx";
+import { ProgressProvider } from "./ProgressProvider.jsx";
 import AppRoutes from "./router.jsx";
 
 /**
@@ -8,8 +9,10 @@ import AppRoutes from "./router.jsx";
  */
 export default function App() {
   return (
-    <AppShell>
-      <AppRoutes />
-    </AppShell>
+    <ProgressProvider>
+      <AppShell>
+        <AppRoutes />
+      </AppShell>
+    </ProgressProvider>
   );
 }
