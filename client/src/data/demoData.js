@@ -367,7 +367,7 @@ export const demoFigmaAnnouncements = [
     icon: "megaphone",
     title: "Hamon ng Katapusan ng Linggo!",
     detail: "Tapusin ang isang pagsusulit ngayong katapusan ng linggo at makakuha ng bonus XP!",
-    date: "August 17, 2026",
+    date: "Agosto 17, 2026",
     isNew: false,
   },
   {
@@ -375,9 +375,9 @@ export const demoFigmaAnnouncements = [
     icon: "book",
     title: "May Bagong Aralin",
     detail: "Available na ang Modyul 4. Simulan nang mag-aral ngayon!",
-    date: "August 24, 2026",
+    date: "Agosto 24, 2026",
     isNew: true,
-    tag: "NEW",
+    tag: "BAGO",
   },
 ];
 
