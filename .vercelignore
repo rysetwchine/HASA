@@ -1,0 +1,12 @@
+# Harangin ang mga bagay na hindi kailangan sa build ng frontend.
+# Ang client/ ang tanging bahagi ng repo na kailangan ng Vercel.
+.design/
+docs/
+server/
+.git/
+client/dist/
+client/node_modules/
+**/*.test.js
+**/*.test.jsx
+**/test/
+*.log
