@@ -8,7 +8,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import Chip from "../ui/Chip.jsx";
-import { cx } from "../../lib/cx.js";
+import { cx } from "../../utils/cx.js";
 
 const BADGE_ICONS = [Footprints, BookOpenCheck, Compass, Sparkles, Award];
 

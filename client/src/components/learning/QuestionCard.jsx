@@ -1,4 +1,4 @@
-import { cx } from "../../lib/cx.js";
+import { cx } from "../../utils/cx.js";
 
 const LETTERS = ["A", "B", "C", "D", "E"];
 

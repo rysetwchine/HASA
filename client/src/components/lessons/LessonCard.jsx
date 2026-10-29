@@ -12,7 +12,7 @@ import Card from "../ui/Card.jsx";
 import Chip from "../ui/Chip.jsx";
 import ProgressBar from "../ui/ProgressBar.jsx";
 import { buttonClasses } from "../ui/Button.jsx";
-import { cx } from "../../lib/cx.js";
+import { cx } from "../../utils/cx.js";
 
 const ICONS = {
   book: BookOpen,

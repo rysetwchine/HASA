@@ -1,5 +1,5 @@
 import Card from "../ui/Card.jsx";
-import { cx } from "../../lib/cx.js";
+import { cx } from "../../utils/cx.js";
 
 const TONES = {
   brand: "bg-brand-50 text-brand-600",

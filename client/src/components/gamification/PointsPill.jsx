@@ -1,5 +1,5 @@
 import { Star } from "lucide-react";
-import { cx } from "../../lib/cx.js";
+import { cx } from "../../utils/cx.js";
 
 export default function PointsPill({ points = 0, compact = false }) {
   return (

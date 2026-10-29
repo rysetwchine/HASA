@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import App from "../App.jsx";
-import { READING_LEVELS } from "../lib/readingLevels.js";
+import App from "../app/App.jsx";
+import { READING_LEVELS } from "../utils/readingLevels.js";
 
 function renderAt(path) {
   return render(

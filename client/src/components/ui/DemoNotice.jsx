@@ -1,6 +1,6 @@
 import { FlaskConical } from "lucide-react";
-import { cx } from "../../lib/cx.js";
-import { DEMO_NOTICE } from "../../features/demo/demoData.js";
+import { cx } from "../../utils/cx.js";
+import { DEMO_NOTICE } from "../../data/demoData.js";
 
 /**
  * Siksik na paalala para sa mga pahinang puno ng halimbawang datos.

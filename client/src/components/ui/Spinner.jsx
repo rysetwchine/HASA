@@ -1,4 +1,4 @@
-import { cx } from "../../lib/cx.js";
+import { cx } from "../../utils/cx.js";
 
 /**
  * Pabagu-bagong spinner. Dekorasyon lamang ito (aria-hidden), kaya ang

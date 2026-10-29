@@ -66,11 +66,16 @@ HASA/
 │  └─ TAGALOG-GLOSSARY.md
 ├─ client/                     # public
 │  └─ src/
-│     ├─ pages/                # Login, Home, Simplify, Activity, Quest, Progress, Teacher
-│     ├─ components/           # Button, Card, LevelPicker, BadgeChip, QuestCard
-│     ├─ features/             # simplifier, activities, gamification, progress, teacher
-│     ├─ lib/                  # api.js (fetch wrapper), session.js
-│     └─ styles/
+│     ├─ app/                  # App.jsx, router.jsx
+│     ├─ assets/images/        # brand, layout, auth, dashboard, lessons, practice, rewards
+│     ├─ components/           # layout, ui, learning, lessons, gamification, dashboard
+│     ├─ config/               # navigation.js
+│     ├─ data/                 # demoData.js
+│     ├─ pages/                # auth/, student/, teacher/, NotFoundPage.jsx
+│     ├─ services/             # api.js (fetch wrapper)
+│     ├─ styles/               # fonts.css, index.css
+│     ├─ utils/                # cx.js, readingLevels.js
+│     └─ test/                 # setup.js, smoke.test.jsx
 ├─ server/                     # private
 │  └─ src/
 │     ├─ config/env.js         # validates env at startup

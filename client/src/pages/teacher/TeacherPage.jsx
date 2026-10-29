@@ -6,15 +6,15 @@ import {
   ShieldCheck,
   Users,
 } from "lucide-react";
-import PageHeader from "../components/ui/PageHeader.jsx";
-import Card from "../components/ui/Card.jsx";
-import Alert from "../components/ui/Alert.jsx";
-import Button from "../components/ui/Button.jsx";
-import Chip from "../components/ui/Chip.jsx";
-import DemoNotice from "../components/ui/DemoNotice.jsx";
-import ReadingLevelLabel from "../components/learning/ReadingLevelLabel.jsx";
-import { buttonClasses } from "../components/ui/Button.jsx";
-import { demoRoster, demoStudent } from "../features/demo/demoData.js";
+import PageHeader from "../../components/ui/PageHeader.jsx";
+import Card from "../../components/ui/Card.jsx";
+import Alert from "../../components/ui/Alert.jsx";
+import Button from "../../components/ui/Button.jsx";
+import Chip from "../../components/ui/Chip.jsx";
+import DemoNotice from "../../components/ui/DemoNotice.jsx";
+import ReadingLevelLabel from "../../components/learning/ReadingLevelLabel.jsx";
+import { buttonClasses } from "../../components/ui/Button.jsx";
+import { demoRoster, demoStudent } from "../../data/demoData.js";
 
 export default function TeacherPage() {
   return (

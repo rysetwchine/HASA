@@ -1,6 +1,6 @@
 import { CalendarDays } from "lucide-react";
 import Card from "../ui/Card.jsx";
-import { demoWeeklyActivity } from "../../features/demo/demoData.js";
+import { demoWeeklyActivity } from "../../data/demoData.js";
 
 export default function WeeklyActivityCard() {
   const maxMinutes = Math.max(

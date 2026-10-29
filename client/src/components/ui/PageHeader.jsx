@@ -1,4 +1,4 @@
-import { cx } from "../../lib/cx.js";
+import { cx } from "../../utils/cx.js";
 
 /**
  * Bagong pahina ng ulo, eksakto gaya ng Figma:

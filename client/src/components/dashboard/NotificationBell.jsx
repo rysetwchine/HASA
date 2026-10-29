@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Bell, X } from "lucide-react";
-import { demoAnnouncements } from "../../features/demo/demoData.js";
+import { demoAnnouncements } from "../../data/demoData.js";
 
 /**
  * Bell na may popover. Walang announcement data sa prototype kaya

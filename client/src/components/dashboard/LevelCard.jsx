@@ -1,6 +1,6 @@
 import { Flame, Sparkles } from "lucide-react";
-import { cx } from "../../lib/cx.js";
-import { demoStudent, getLevelProgress } from "../../features/demo/demoData.js";
+import { cx } from "../../utils/cx.js";
+import { demoStudent, getLevelProgress } from "../../data/demoData.js";
 
 /**
  * Antas/XP banner para sa dashboard.

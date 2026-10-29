@@ -1,7 +1,7 @@
 import { Link, NavLink } from "react-router";
-import { LOGO_IMAGE, PRIMARY_NAV_ITEMS } from "./navigation.js";
-import logoutIcon from "../../assets/figma/icon-logout.png";
-import { cx } from "../../lib/cx.js";
+import { LOGO_IMAGE, PRIMARY_NAV_ITEMS } from "../../config/navigation.js";
+import logoutIcon from "../../assets/images/layout/icon-logout.png";
+import { cx } from "../../utils/cx.js";
 
 /**
  * Ang sidebar ay batay sa frame "dashboard" ng Figma:

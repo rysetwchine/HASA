@@ -1,4 +1,4 @@
-import { cx } from "../../lib/cx.js";
+import { cx } from "../../utils/cx.js";
 
 export default function WorkspaceStep({
   number,

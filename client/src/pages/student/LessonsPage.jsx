@@ -1,25 +1,25 @@
 import { useMemo, useState } from "react";
-import DemoNotice from "../components/ui/DemoNotice.jsx";
-import { cx } from "../lib/cx.js";
-import { demoFigmaLessons } from "../features/demo/demoData.js";
+import DemoNotice from "../../components/ui/DemoNotice.jsx";
+import { cx } from "../../utils/cx.js";
+import { demoFigmaLessons } from "../../data/demoData.js";
 
-import bannerLessons from "../assets/figma/banner-lessons.png";
-import searchIcon from "../assets/figma/search.png";
-import gridIcon from "../assets/figma/view-grid.png";
-import listIcon from "../assets/figma/view-list.png";
-import tipIcon from "../assets/figma/tip-icon.png";
-import booksIcon from "../assets/figma/icon-header-lessons.png";
-import diffEasy from "../assets/figma/diff-easy.png";
-import diffMedium from "../assets/figma/diff-medium.png";
-import diffHard from "../assets/figma/diff-hard.png";
-import actionReview from "../assets/figma/action-review.png";
+import bannerLessons from "../../assets/images/lessons/banner-lessons.png";
+import searchIcon from "../../assets/images/lessons/search.png";
+import gridIcon from "../../assets/images/lessons/view-grid.png";
+import listIcon from "../../assets/images/lessons/view-list.png";
+import tipIcon from "../../assets/images/lessons/tip-icon.png";
+import booksIcon from "../../assets/images/lessons/icon-header-lessons.png";
+import diffEasy from "../../assets/images/lessons/diff-easy.png";
+import diffMedium from "../../assets/images/lessons/diff-medium.png";
+import diffHard from "../../assets/images/lessons/diff-hard.png";
+import actionReview from "../../assets/images/lessons/action-review.png";
 
-import thumb1 from "../assets/figma/thumb-1.png";
-import thumb2 from "../assets/figma/thumb-2.png";
-import thumb3 from "../assets/figma/thumb-3.png";
-import thumb4 from "../assets/figma/thumb-4.png";
-import thumb5 from "../assets/figma/thumb-5.png";
-import thumb6 from "../assets/figma/thumb-6.png";
+import thumb1 from "../../assets/images/lessons/thumb-1.png";
+import thumb2 from "../../assets/images/lessons/thumb-2.png";
+import thumb3 from "../../assets/images/lessons/thumb-3.png";
+import thumb4 from "../../assets/images/lessons/thumb-4.png";
+import thumb5 from "../../assets/images/lessons/thumb-5.png";
+import thumb6 from "../../assets/images/lessons/thumb-6.png";
 
 const THUMBS = {
   "thumb-1": thumb1,

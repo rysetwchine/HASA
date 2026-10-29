@@ -1,6 +1,6 @@
-import PageHeader from "../components/ui/PageHeader.jsx";
-import DemoNotice from "../components/ui/DemoNotice.jsx";
-import iconHeaderRewards from "../assets/figma/icon-header-rewards.png";
+import PageHeader from "../../components/ui/PageHeader.jsx";
+import DemoNotice from "../../components/ui/DemoNotice.jsx";
+import iconHeaderRewards from "../../assets/images/rewards/icon-header-rewards.png";
 
 /**
  * Progress — eksakto sa Figma frame "Progresss" (80:2):

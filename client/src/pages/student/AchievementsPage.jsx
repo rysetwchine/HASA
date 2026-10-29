@@ -1,6 +1,6 @@
-import PageHeader from "../components/ui/PageHeader.jsx";
-import DemoNotice from "../components/ui/DemoNotice.jsx";
-import iconHeaderRewards from "../assets/figma/icon-header-rewards.png";
+import PageHeader from "../../components/ui/PageHeader.jsx";
+import DemoNotice from "../../components/ui/DemoNotice.jsx";
+import iconHeaderRewards from "../../assets/images/rewards/icon-header-rewards.png";
 
 /**
  * Rewards — eksakto sa Figma frame "rewards" (74:628):

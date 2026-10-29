@@ -77,7 +77,7 @@ npm test         # Vitest + Testing Library
 ```
 
 Nothing in Stage 1 calls the network. All screens use demonstration data from
-`client/src/features/demo/demoData.js`, and every screen that could be mistaken
+`client/src/data/demoData.js`, and every screen that could be mistaken
 for real AI output carries an explicit Tagalog disclaimer.
 
 ### Stage 1 routes
@@ -95,7 +95,7 @@ for real AI output carries an explicit Tagalog disclaimer.
 | `/guro` | Guro |
 
 The reading levels live in exactly one place:
-`client/src/lib/readingLevels.js`.
+`client/src/utils/readingLevels.js`.
 
 **Pending:** `docs/TAGALOG-GLOSSARY.md` is still a proposal and needs review by a
 Filipino or Reading teacher before the interface is used with real students.

@@ -11,7 +11,7 @@ import { Link } from "react-router";
 import Card from "../ui/Card.jsx";
 import Chip from "../ui/Chip.jsx";
 import { buttonClasses } from "../ui/Button.jsx";
-import { demoBadges } from "../../features/demo/demoData.js";
+import { demoBadges } from "../../data/demoData.js";
 
 const MONTHS = [
   "Ene",

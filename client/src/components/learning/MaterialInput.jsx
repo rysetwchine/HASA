@@ -3,7 +3,7 @@ import { ClipboardPaste, Info, Upload } from "lucide-react";
 import Alert from "../ui/Alert.jsx";
 import Chip from "../ui/Chip.jsx";
 import { fieldClasses } from "../ui/FormField.jsx";
-import { cx } from "../../lib/cx.js";
+import { cx } from "../../utils/cx.js";
 
 const TABS = [
   {

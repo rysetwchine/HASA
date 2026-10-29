@@ -6,24 +6,24 @@ import {
   ClipboardCheck,
   Sparkles,
 } from "lucide-react";
-import PageHeader from "../components/ui/PageHeader.jsx";
-import Alert from "../components/ui/Alert.jsx";
-import Button from "../components/ui/Button.jsx";
-import Chip from "../components/ui/Chip.jsx";
-import DemoNotice from "../components/ui/DemoNotice.jsx";
-import { buttonClasses } from "../components/ui/Button.jsx";
-import LevelPicker from "../components/learning/LevelPicker.jsx";
-import MaterialInput from "../components/learning/MaterialInput.jsx";
-import ReadingLevelLabel from "../components/learning/ReadingLevelLabel.jsx";
-import VocabularyItem from "../components/learning/VocabularyItem.jsx";
-import WorkspaceStep from "../components/learning/WorkspaceStep.jsx";
-import { DEFAULT_READING_LEVEL } from "../lib/readingLevels.js";
+import PageHeader from "../../components/ui/PageHeader.jsx";
+import Alert from "../../components/ui/Alert.jsx";
+import Button from "../../components/ui/Button.jsx";
+import Chip from "../../components/ui/Chip.jsx";
+import DemoNotice from "../../components/ui/DemoNotice.jsx";
+import { buttonClasses } from "../../components/ui/Button.jsx";
+import LevelPicker from "../../components/learning/LevelPicker.jsx";
+import MaterialInput from "../../components/learning/MaterialInput.jsx";
+import ReadingLevelLabel from "../../components/learning/ReadingLevelLabel.jsx";
+import VocabularyItem from "../../components/learning/VocabularyItem.jsx";
+import WorkspaceStep from "../../components/learning/WorkspaceStep.jsx";
+import { DEFAULT_READING_LEVEL } from "../../utils/readingLevels.js";
 import {
   DEMO_AI_NOTICE,
   demoMaterial,
   demoSimplified,
   demoVocabulary,
-} from "../features/demo/demoData.js";
+} from "../../data/demoData.js";
 
 const WORKSPACE_STEPS = [
   { number: "01", label: "Ilagay o i-upload ang materyal" },

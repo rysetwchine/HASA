@@ -1,15 +1,15 @@
 import { Routes, Route, Navigate } from "react-router";
-import HomePage from "./pages/HomePage.jsx";
-import LessonsPage from "./pages/LessonsPage.jsx";
-import LoginPage from "./pages/LoginPage.jsx";
-import RegisterPage from "./pages/RegisterPage.jsx";
-import SimplifyPage from "./pages/SimplifyPage.jsx";
-import ActivityPage from "./pages/ActivityPage.jsx";
-import QuestPage from "./pages/QuestPage.jsx";
-import ProgressPage from "./pages/ProgressPage.jsx";
-import AchievementsPage from "./pages/AchievementsPage.jsx";
-import TeacherPage from "./pages/TeacherPage.jsx";
-import NotFoundPage from "./pages/NotFoundPage.jsx";
+import HomePage from "../pages/student/HomePage.jsx";
+import LessonsPage from "../pages/student/LessonsPage.jsx";
+import LoginPage from "../pages/auth/LoginPage.jsx";
+import RegisterPage from "../pages/auth/RegisterPage.jsx";
+import SimplifyPage from "../pages/student/SimplifyPage.jsx";
+import ActivityPage from "../pages/student/ActivityPage.jsx";
+import QuestPage from "../pages/student/QuestPage.jsx";
+import ProgressPage from "../pages/student/ProgressPage.jsx";
+import AchievementsPage from "../pages/student/AchievementsPage.jsx";
+import TeacherPage from "../pages/teacher/TeacherPage.jsx";
+import NotFoundPage from "../pages/NotFoundPage.jsx";
 
 /**
  * Tagalog na mga ruta ayon sa aprubadong plano.

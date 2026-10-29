@@ -1,14 +1,14 @@
 import { Compass, Flag, Star } from "lucide-react";
 import { Link } from "react-router";
-import PageHeader from "../components/ui/PageHeader.jsx";
-import Card from "../components/ui/Card.jsx";
-import Alert from "../components/ui/Alert.jsx";
-import Chip from "../components/ui/Chip.jsx";
-import DemoNotice from "../components/ui/DemoNotice.jsx";
-import ProgressBar from "../components/ui/ProgressBar.jsx";
-import QuestCard from "../components/gamification/QuestCard.jsx";
-import { buttonClasses } from "../components/ui/Button.jsx";
-import { demoQuests } from "../features/demo/demoData.js";
+import PageHeader from "../../components/ui/PageHeader.jsx";
+import Card from "../../components/ui/Card.jsx";
+import Alert from "../../components/ui/Alert.jsx";
+import Chip from "../../components/ui/Chip.jsx";
+import DemoNotice from "../../components/ui/DemoNotice.jsx";
+import ProgressBar from "../../components/ui/ProgressBar.jsx";
+import QuestCard from "../../components/gamification/QuestCard.jsx";
+import { buttonClasses } from "../../components/ui/Button.jsx";
+import { demoQuests } from "../../data/demoData.js";
 
 export default function QuestPage() {
   const quest = demoQuests[0];

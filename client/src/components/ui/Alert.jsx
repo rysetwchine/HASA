@@ -1,5 +1,5 @@
 import { CheckCircle2, Info, AlertTriangle, XCircle } from "lucide-react";
-import { cx } from "../../lib/cx.js";
+import { cx } from "../../utils/cx.js";
 
 const VARIANTS = {
   info: {

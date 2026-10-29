@@ -45,7 +45,7 @@ for (const block of blocks) {
   );
 }
 
-await writeFile(path.resolve("client/src/fonts.css"), out.join("\n\n") + "\n");
+await writeFile(path.resolve("client/src/styles/fonts.css"), out.join("\n\n") + "\n");
 console.log(out.length, "font-face rules,", seen.size, "files");
 await readFile(path.join(PUB, [...seen.values()][0]));
 

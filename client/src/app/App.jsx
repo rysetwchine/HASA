@@ -1,4 +1,4 @@
-import AppShell from "./components/layout/AppShell.jsx";
+import AppShell from "../components/layout/AppShell.jsx";
 import AppRoutes from "./router.jsx";
 
 /**

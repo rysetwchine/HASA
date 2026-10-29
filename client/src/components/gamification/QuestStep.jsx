@@ -1,5 +1,5 @@
 import { Check, Star } from "lucide-react";
-import { cx } from "../../lib/cx.js";
+import { cx } from "../../utils/cx.js";
 
 export default function QuestStep({ step, number }) {
   return (

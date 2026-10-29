@@ -1,5 +1,5 @@
 import Spinner from "./Spinner.jsx";
-import { cx } from "../../lib/cx.js";
+import { cx } from "../../utils/cx.js";
 
 const BASE =
   "inline-flex items-center justify-center gap-2 rounded-[15px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none";

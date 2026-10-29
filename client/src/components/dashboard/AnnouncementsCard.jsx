@@ -2,7 +2,7 @@ import { Bell, CalendarDays } from "lucide-react";
 import Card from "../ui/Card.jsx";
 import Chip from "../ui/Chip.jsx";
 import EmptyState from "../ui/EmptyState.jsx";
-import { demoAnnouncements } from "../../features/demo/demoData.js";
+import { demoAnnouncements } from "../../data/demoData.js";
 
 /**
  * Walang announcement data sa prototype. Kapag walang laman ang

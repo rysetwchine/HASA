@@ -1,24 +1,24 @@
 import { useMemo, useState } from "react";
-import PageHeader from "../components/ui/PageHeader.jsx";
-import DemoNotice from "../components/ui/DemoNotice.jsx";
-import { cx } from "../lib/cx.js";
-import { demoChallenges } from "../features/demo/demoData.js";
+import PageHeader from "../../components/ui/PageHeader.jsx";
+import DemoNotice from "../../components/ui/DemoNotice.jsx";
+import { cx } from "../../utils/cx.js";
+import { demoChallenges } from "../../data/demoData.js";
 
-import iconHeaderPractice from "../assets/figma/icon-header-practice.png";
-import streakFire from "../assets/figma/streak-fire.png";
-import sparkleImg from "../assets/figma/practice-trophy.png";
-import featuredBadge from "../assets/figma/practice-badge.png";
-import questionIcon from "../assets/figma/practice-q.png";
-import xpIcon from "../assets/figma/practice-xp.png";
-import playArrow from "../assets/figma/practice-play.png";
-import moveToIcon from "../assets/figma/challenge-check.png";
+import iconHeaderPractice from "../../assets/images/practice/icon-header-practice.png";
+import streakFire from "../../assets/images/practice/streak-fire.png";
+import sparkleImg from "../../assets/images/practice/practice-trophy.png";
+import featuredBadge from "../../assets/images/practice/practice-badge.png";
+import questionIcon from "../../assets/images/practice/practice-q.png";
+import xpIcon from "../../assets/images/practice/practice-xp.png";
+import playArrow from "../../assets/images/practice/practice-play.png";
+import moveToIcon from "../../assets/images/practice/challenge-check.png";
 
-import challenge1 from "../assets/figma/challenge-1.png";
-import challenge2 from "../assets/figma/challenge-2.png";
-import challenge3 from "../assets/figma/challenge-3.png";
-import challenge4 from "../assets/figma/challenge-4.png";
-import challenge5 from "../assets/figma/challenge-5.png";
-import challenge6 from "../assets/figma/challenge-6.png";
+import challenge1 from "../../assets/images/practice/challenge-1.png";
+import challenge2 from "../../assets/images/practice/challenge-2.png";
+import challenge3 from "../../assets/images/practice/challenge-3.png";
+import challenge4 from "../../assets/images/practice/challenge-4.png";
+import challenge5 from "../../assets/images/practice/challenge-5.png";
+import challenge6 from "../../assets/images/practice/challenge-6.png";
 
 const CHALLENGE_ICONS = {
   "challenge-1": challenge1,

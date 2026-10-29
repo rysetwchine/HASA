@@ -13,7 +13,7 @@ import {
   demoBadges,
   demoQuests,
   demoWeeklyActivity,
-} from "../../features/demo/demoData.js";
+} from "../../data/demoData.js";
 
 export default function DashboardAside() {
   const quest = demoQuests[0];

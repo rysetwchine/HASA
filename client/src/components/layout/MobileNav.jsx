@@ -1,6 +1,6 @@
 import { NavLink } from "react-router";
-import { PRIMARY_NAV_ITEMS, EXTRA_NAV_ITEMS } from "./navigation.js";
-import { cx } from "../../lib/cx.js";
+import { PRIMARY_NAV_ITEMS, EXTRA_NAV_ITEMS } from "../../config/navigation.js";
+import { cx } from "../../utils/cx.js";
 
 function NavBottomItem({ item, onNavigate, end }) {
   return (

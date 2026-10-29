@@ -1,19 +1,19 @@
 import { Link } from "react-router";
-import DemoNotice from "../components/ui/DemoNotice.jsx";
-import { cx } from "../lib/cx.js";
+import DemoNotice from "../../components/ui/DemoNotice.jsx";
+import { cx } from "../../utils/cx.js";
 import {
   demoStudent,
   demoLearningProgress,
   demoRecentAchievements,
   demoFigmaAnnouncements,
   getLevelProgress,
-} from "../features/demo/demoData.js";
+} from "../../data/demoData.js";
 
-import mascotHello from "../assets/figma/mascot-hello.png";
-import iconRosette from "../assets/figma/icon-trophy.png";
-import iconTrophy from "../assets/figma/icon-medal.png";
-import iconBookSparkle from "../assets/figma/icon-megaphone.png";
-import iconMegaphone from "../assets/figma/icon-book.png";
+import mascotHello from "../../assets/images/dashboard/mascot-hello.png";
+import iconRosette from "../../assets/images/dashboard/icon-trophy.png";
+import iconTrophy from "../../assets/images/dashboard/icon-medal.png";
+import iconBookSparkle from "../../assets/images/dashboard/icon-megaphone.png";
+import iconMegaphone from "../../assets/images/dashboard/icon-book.png";
 
 /**
  * Dashboard — eksaktong anyo ng Figma frame "dashboard" (42:107):

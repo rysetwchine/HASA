@@ -2,8 +2,8 @@ import {
   demoStudent,
   DEMO_STUDENT_LABEL,
   getLevelProgress,
-} from "../../features/demo/demoData.js";
-import bellIcon from "../../assets/figma/icon-bell.png";
+} from "../../data/demoData.js";
+import bellIcon from "../../assets/images/layout/icon-bell.png";
 
 /**
  * Ang upuan sa itaas ng nilalaman ay hango sa Figma: antas ng XP sa kaliwa,

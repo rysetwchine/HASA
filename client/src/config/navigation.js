@@ -1,10 +1,10 @@
-import logoBooks from "../../assets/figma/logo-books.png";
-import navDashboard from "../../assets/figma/nav-dashboard.png";
-import navLessons from "../../assets/figma/nav-lessons.png";
-import navAi from "../../assets/figma/nav-ai.png";
-import navPractice from "../../assets/figma/nav-practice.png";
-import navRewards from "../../assets/figma/nav-rewards.png";
-import navProgress from "../../assets/figma/nav-progress.png";
+import logoBooks from "../assets/images/brand/logo-books.png";
+import navDashboard from "../assets/images/layout/nav-dashboard.png";
+import navLessons from "../assets/images/layout/nav-lessons.png";
+import navAi from "../assets/images/layout/nav-ai.png";
+import navPractice from "../assets/images/layout/nav-practice.png";
+import navRewards from "../assets/images/layout/nav-rewards.png";
+import navProgress from "../assets/images/layout/nav-progress.png";
 
 /**
  * Pangunahing nabigasyon ng mag-aaral — eksaktong anim na item mula sa

@@ -1,5 +1,5 @@
 import Chip from "../ui/Chip.jsx";
-import { getReadingLevelLabel } from "../../lib/readingLevels.js";
+import { getReadingLevelLabel } from "../../utils/readingLevels.js";
 
 const TONES = {
   independent: "success",

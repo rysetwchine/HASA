@@ -1,4 +1,4 @@
-import { cx } from "../../lib/cx.js";
+import { cx } from "../../utils/cx.js";
 
 const TONES = {
   neutral: "border-transparent bg-white/70 text-ink",

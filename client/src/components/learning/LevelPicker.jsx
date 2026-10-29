@@ -1,6 +1,6 @@
 import { BookOpen, Check } from "lucide-react";
-import { READING_LEVELS } from "../../lib/readingLevels.js";
-import { cx } from "../../lib/cx.js";
+import { READING_LEVELS } from "../../utils/readingLevels.js";
+import { cx } from "../../utils/cx.js";
 
 /**
  * Pinipili ng mag-aaral ang antas. HINDI ito sinusukat ng HASA,
