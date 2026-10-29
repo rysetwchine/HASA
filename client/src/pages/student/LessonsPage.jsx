@@ -1,13 +1,14 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router";
+import { LayoutGrid, List, Play, RotateCcw, Search } from "lucide-react";
 import DemoNotice from "../../components/ui/DemoNotice.jsx";
 import Alert from "../../components/ui/Alert.jsx";
 import { cx } from "../../utils/cx.js";
-import { demoFigmaLessons } from "../../data/demoData.js";
+import { useProgress } from "../../app/ProgressProvider.jsx";
+import { filterLessons, getLessons } from "../../services/lessonService.js";
+import { LESSON_CONTENT_STATUS } from "../../data/lessonContent.js";
 
 import bannerLessons from "../../assets/images/lessons/banner-lessons.png";
-import searchIcon from "../../assets/images/lessons/search.png";
-import gridIcon from "../../assets/images/lessons/view-grid.png";
-import listIcon from "../../assets/images/lessons/view-list.png";
 import tipIcon from "../../assets/images/lessons/tip-icon.png";
 import booksIcon from "../../assets/images/lessons/icon-header-lessons.png";
 import diffEasy from "../../assets/images/lessons/diff-easy.png";
@@ -32,29 +33,12 @@ const THUMBS = {
 };
 
 const FILTERS = [
-  { id: "all", label: "All units" },
-  { id: "easy", label: "Easy" },
-  { id: "medium", label: "Medium" },
-  { id: "hard", label: "Hard" },
-  { id: "completed", label: "Completed" },
+  { id: "all", label: "Lahat ng Yunit" },
+  { id: "easy", label: "Madali" },
+  { id: "medium", label: "Katamtaman" },
+  { id: "hard", label: "Mahirap" },
+  { id: "completed", label: "Natapos Na" },
 ];
-
-/**
- * Mga kulay ng status/chip mula sa Figma frame "Lessons":
- * completed = berde (#2b8320), hindi pa = pula (#832020),
- * sinisimulan pa lamang = dilaw (#f0b511).
- */
-const STATUS_STYLES = {
-  completed: {
-    badge: "bg-[#2b8320]/70 text-[#0e4007]",
-  },
-  "not-started": {
-    badge: "bg-canvas/60 border border-danger-deep text-danger-deep",
-  },
-  "in-progress": {
-    badge: "bg-gold-strong/70 text-brown",
-  },
-};
 
 const DIFFICULTY = {
   easy: { icon: diffEasy, label: "text-[#2b8320]" },
@@ -62,177 +46,225 @@ const DIFFICULTY = {
   hard: { icon: diffHard, label: "text-[#832020]" },
 };
 
+/** Maliit na chip para sa katayuan ng aralin. */
+function StatusChip({ state, className }) {
+  return (
+    <span
+      className={cx(
+        "inline-flex h-[22px] shrink-0 items-center justify-center whitespace-nowrap rounded-full border px-2 text-[10px] font-bold leading-none",
+        state.chip,
+        className,
+      )}
+    >
+      {state.label}
+    </span>
+  );
+}
+
+/** Pare-parehong sukat ng card sa grid: larawan, pamagat, meta, aksyon. */
 function LessonCard({ lesson }) {
-  const status = STATUS_STYLES[lesson.status] ?? STATUS_STYLES.completed;
   const diff = DIFFICULTY[lesson.difficultyKey] ?? DIFFICULTY.easy;
 
   return (
-    <article className="flex min-h-[308px] flex-col rounded-[25px] border border-line bg-canvas p-4 shadow-card">
+    <Link
+      to={lesson.to}
+      aria-label={`${lesson.label}: ${lesson.title} — ${lesson.state.action}`}
+      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-canvas shadow-card transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 motion-reduce:hover:translate-y-0"
+    >
       <div className="relative">
         <img
           src={THUMBS[lesson.thumb]}
           alt=""
           loading="lazy"
           decoding="async"
-          className="h-[188px] w-full rounded-[15px] object-cover"
+          className="aspect-[16/9] w-full object-cover"
           aria-hidden="true"
         />
-        {/* Bilang ng aralin (kaliwa) */}
         <span
           className={cx(
-            "absolute left-3 top-3 flex h-[25px] min-w-[45px] items-center justify-center rounded-[10px] px-2 text-[14px] font-black leading-none",
-            lesson.status === "completed"
-              ? "bg-[#2b8320]/70 text-canvas"
-              : lesson.status === "in-progress"
-                ? "bg-gold-strong/70 text-canvas"
-                : "bg-danger-deep/60 text-canvas",
+            "absolute left-2 top-2 flex h-[22px] min-w-[38px] items-center justify-center rounded-md px-1.5 text-[12px] font-black leading-none",
+            lesson.state.numberChip,
           )}
         >
           {lesson.no}
         </span>
-        {/* Estado (kanan) */}
-        <span
-          className={cx(
-            "absolute right-3 top-3 flex h-[20px] items-center justify-center rounded-[12px] px-2.5 text-[11px] font-black leading-none",
-            status.badge,
-          )}
-        >
-          {lesson.statusLabel}
-        </span>
+        <StatusChip
+          state={lesson.state}
+          className="absolute right-2 top-2 shadow-sm"
+        />
       </div>
 
-      <div className="mt-4 flex min-w-0 flex-1 flex-col">
-        <p className="text-[12px] font-medium text-muted">{lesson.label}</p>
-        <h3 className="mt-0.5 text-[15px] font-bold leading-snug text-ink">
+      <div className="flex min-w-0 flex-1 flex-col p-3.5">
+        <p className="text-[11px] font-medium text-muted">
+          Aralin {lesson.no}
+        </p>
+        {/* Ang line-clamp ay pumipigil sa paghaba ng card kapag mahaba
+            ang pamagat, kaya pantay-pantay ang taas sa grid. */}
+        <h3 className="mt-0.5 line-clamp-2 min-h-[2.4em] text-[14px] font-bold leading-snug text-ink">
           {lesson.title}
         </h3>
-        <div className="mt-auto flex items-center justify-between gap-2 pt-5">
-          <span className="flex items-center gap-1.5">
+
+        <div className="mt-auto flex items-center justify-between gap-2 pt-3">
+          <span className="flex min-w-0 items-center gap-1.5">
             <img
               src={diff.icon}
               alt=""
-              className="h-[14px] w-[14px]"
+              className="h-[13px] w-[13px]"
               aria-hidden="true"
             />
-            <span className={cx("text-[13px] font-bold", diff.label)}>
+            <span className={cx("truncate text-[11.5px] font-bold", diff.label)}>
               {lesson.difficulty}
             </span>
           </span>
 
-          <button
-            type="button"
-            disabled
-            title="Wala pang lesson detail content sa prototype, kaya hindi pa mabubuksan ang aralin"
-            className={cx(
-              "flex h-[27px] cursor-not-allowed items-center gap-1.5 rounded-[10px] px-3 text-[11.5px] font-semibold",
-              lesson.action === "Review"
-                ? "border border-[#0e4007] bg-[#2b8320]/70 text-[#0e4007]"
-                : lesson.status === "in-progress"
-                  ? "border border-gold-strong bg-white text-brown"
-                  : "border border-danger-deep bg-canvas text-danger-deep",
-            )}
-          >
-            {lesson.action === "Review" ? (
+          <span className="inline-flex h-[26px] shrink-0 items-center gap-1.5 rounded-lg bg-plum-800 px-2.5 text-[11px] font-semibold text-canvas transition-colors group-hover:bg-plum-900">
+            {lesson.state.key === "completed" ? (
               <img
                 src={actionReview}
                 alt=""
-                className="h-[15px] w-[15px]"
+                className="h-[13px] w-[13px]"
                 aria-hidden="true"
               />
             ) : (
-              <span
-                className={cx(
-                  "inline-block h-0 w-0 border-y-[5px] border-l-[8px] border-y-transparent",
-                  lesson.action === "Start" ? "border-l-danger-deep" : "border-l-gold-strong",
-                )}
-                aria-hidden="true"
-              />
+              <Play className="h-3 w-3 fill-current" aria-hidden="true" />
             )}
-            {lesson.action}
-          </button>
+            {lesson.state.action}
+          </span>
         </div>
+
+        {lesson.isRealProgress && lesson.bestPercent !== null ? (
+          <p className="mt-2 text-[10px] font-semibold text-muted">
+            Pinakamahusay: {lesson.bestPercent}%
+          </p>
+        ) : null}
       </div>
-    </article>
+    </Link>
+  );
+}
+
+/** Masikip na bersyon para sa list view: isang linya bawat aralin. */
+function LessonRow({ lesson }) {
+  const diff = DIFFICULTY[lesson.difficultyKey] ?? DIFFICULTY.easy;
+
+  return (
+    <Link
+      to={lesson.to}
+      aria-label={`${lesson.label}: ${lesson.title} — ${lesson.state.action}`}
+      className="group flex items-center gap-3 rounded-xl border border-line bg-canvas p-2.5 shadow-card transition-colors hover:border-line-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 sm:gap-4 sm:p-3"
+    >
+      <img
+        src={THUMBS[lesson.thumb]}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        className="h-16 w-24 shrink-0 rounded-lg object-cover sm:h-[72px] sm:w-32"
+        aria-hidden="true"
+      />
+
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span className="text-[11px] font-medium text-muted">
+            Aralin {lesson.no}
+          </span>
+          <StatusChip state={lesson.state} />
+        </div>
+        <h3 className="mt-0.5 line-clamp-2 text-[14px] font-bold leading-snug text-ink">
+          {lesson.title}
+        </h3>
+        <span className="mt-1 flex items-center gap-1.5">
+          <img
+            src={diff.icon}
+            alt=""
+            className="h-[12px] w-[12px]"
+            aria-hidden="true"
+          />
+          <span className={cx("text-[11px] font-bold", diff.label)}>
+            {lesson.difficulty}
+          </span>
+        </span>
+      </div>
+
+      <span className="hidden shrink-0 items-center gap-1.5 rounded-lg bg-plum-800 px-3 py-1.5 text-[11.5px] font-semibold text-canvas group-hover:bg-plum-900 sm:inline-flex">
+        <Play className="h-3 w-3 fill-current" aria-hidden="true" />
+        {lesson.state.action}
+      </span>
+    </Link>
   );
 }
 
 export default function LessonsPage() {
+  const { progress } = useProgress();
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("all");
   const [view, setView] = useState("grid");
 
-  const lessons = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return demoFigmaLessons.filter((lesson) => {
-      if (
-        q &&
-        !lesson.title.toLowerCase().includes(q) &&
-        !lesson.label.toLowerCase().includes(q)
-      ) {
-        return false;
-      }
-      if (filter === "all") return true;
-      if (filter === "completed") return lesson.status === "completed";
-      return lesson.difficultyKey === filter;
-    });
-  }, [query, filter]);
+  const lessons = useMemo(() => filterLessons(getLessons(progress), { query, filter }), [progress, query, filter]);
 
   return (
-    <div className="space-y-6">
-      <h1 className="sr-only">Araling Panlipunan</h1>
+    <div className="space-y-5">
+      <h1 className="sr-only">Mga Aralin sa Araling Panlipunan</h1>
 
-      {/*
-       * Banner na may nakaukit na pamagat mula sa Figma — huwag magdagdag
-       * ng teksto sa ibabaw para walang dobleng teksto.
-       * Full-bleed lamang sa gilid: dating may `-mt-5/-mt-7` din ito, na
-       * humihila sa banner pataas at nagpapatong dito sa Topbar.
-       */}
-      <div className="-mx-4 sm:-mx-6 xl:-mx-12 2xl:-mx-14">
+      {/* Banner ng Araling Panlipunan.
+          Dating iisang PNG ang pamagat at ang subtitle, kaya Ingles ang
+          nakalitaw na teksto at hindi ito maisasalin. Dito, tunay na DOM
+          text ang Filipino na kopya, at ang ilustrasyon (monumento at watawat)
+          na lamang ang galing sa umiiral na asset — naka-crop sa kanan gamit
+          ang object-position, walang absolute positioning. */}
+      <section
+        aria-labelledby="banner-araling-panlipunan"
+        className="-mx-4 flex items-center gap-4 overflow-hidden bg-[#fdf6e9] px-4 py-4 sm:-mx-6 sm:px-6 sm:py-5 xl:-mx-8 xl:px-8 2xl:-mx-10 2xl:px-10"
+      >
+        <div className="min-w-0 flex-1">
+          <p
+            id="banner-araling-panlipunan"
+            className="font-display text-[22px] font-black uppercase leading-none tracking-tight text-ink sm:text-[28px] xl:text-[34px]"
+          >
+            Araling Panlipunan
+          </p>
+          <p className="mt-2 text-[13.5px] font-bold text-ink sm:text-[15px]">
+            Kumusta, Siri!
+          </p>
+          <p className="mt-0.5 max-w-[420px] text-[12px] leading-relaxed text-ink/80 sm:text-[13px]">
+            Ipagpatuloy ang iyong aralin at may matututuhan kang bago.
+          </p>
+        </div>
+
         <img
           src={bannerLessons}
-          alt="Araling Panlipunan — Hi, Siri! Continue your lesson and learn something new."
+          alt=""
           width={2470}
           height={576}
           fetchPriority="high"
-          className="w-full object-cover"
+          aria-hidden="true"
+          className="hidden h-[104px] w-[240px] shrink-0 rounded-xl object-cover object-right md:block xl:h-[120px] xl:w-[300px] 2xl:w-[360px]"
         />
-      </div>
+      </section>
 
-      <Alert variant="info" title="Hindi pa mabubuksan ang mga aralin">
-        Gumagana ang search, filters, at grid/list view. Wala pang aktwal na
-        lesson detail content sa prototype, kaya nananatiling disabled ang
-        Start, Review, at Continue. Hindi ito dinadaan sa pekeng alert o
-        gawa-gawang aralin.
+      <Alert variant="info" title="Draft pa ang nilalaman ng mga aralin">
+        {LESSON_CONTENT_STATUS} Nabubuksan na ang bawat aralin at ang pagsusulit
+        nito, ngunit hindi pa ito naipasa sa pagsusuri ng guro.
       </Alert>
 
       {/* Bar ng mga filter */}
-      <div className="flex flex-col gap-3 rounded-[15px] border border-line-dark bg-lav-500/70 p-3 sm:flex-row sm:items-center lg:gap-5">
-        {/* Hanapin */}
+      <div className="flex flex-col gap-2.5 rounded-xl border border-line-dark bg-lav-500/70 p-2.5 sm:flex-row sm:items-center sm:gap-3">
         <label className="relative flex min-w-0 flex-1 items-center">
-          <img
-            src={searchIcon}
-            alt=""
-            className="pointer-events-none absolute left-3.5 h-[20px] w-[20px]"
+          <Search
+            className="pointer-events-none absolute left-3 h-4 w-4 text-ink/70"
             aria-hidden="true"
           />
-          <span className="sr-only">Search lessons</span>
+          <span className="sr-only">Maghanap ng Aralin</span>
           <input
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search lessons.."
-            className="h-9 w-full rounded-[11px] border-0 bg-lav-500 pl-11 pr-4 text-[13px] font-medium text-ink placeholder:text-ink/70 focus:outline-none focus:ring-2 focus:ring-plum-800/40"
+            placeholder="Maghanap ng aralin…"
+            className="h-9 w-full rounded-lg border-0 bg-white/80 pl-9 pr-3 text-[13px] font-medium text-ink placeholder:text-ink/60 focus:outline-none focus:ring-2 focus:ring-plum-800/40"
           />
         </label>
 
-        <span
-          className="hidden w-px self-stretch bg-[#000000]/30 lg:block"
-          aria-hidden="true"
-        />
-
         <div
           role="group"
-          aria-label="I-filter ang mga aralin"
+          aria-label="Salain ang mga aralin"
           className="flex flex-wrap items-center gap-1"
         >
           {FILTERS.map(({ id, label }) => (
@@ -242,10 +274,10 @@ export default function LessonsPage() {
               aria-pressed={filter === id}
               onClick={() => setFilter(id)}
               className={cx(
-                "rounded-[15px] px-3.5 py-1.5 text-[13px] font-semibold transition-colors",
+                "rounded-lg px-2.5 py-1.5 text-[12px] font-semibold transition-colors",
                 filter === id
                   ? "bg-plum-800 text-canvas"
-                  : "text-ink/75 hover:text-ink",
+                  : "text-ink/75 hover:bg-white/50 hover:text-ink",
               )}
             >
               {label}
@@ -256,80 +288,80 @@ export default function LessonsPage() {
 
       {/* Ulo ng listahan + view toggle */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-end gap-3">
+        <div className="flex items-center gap-2.5">
           <img
             src={booksIcon}
             alt=""
-            className="mb-1 h-[41px] w-[41px]"
+            className="h-8 w-8"
             aria-hidden="true"
           />
-          <h2 className="border-b-4 border-plum-800 pb-1 text-[25px] font-semibold text-ink/85">
-            All Lessons
+          <h2 className="border-b-[3px] border-plum-800 pb-0.5 text-[19px] font-semibold text-ink/85">
+            Lahat ng Aralin
           </h2>
+          <span className="text-[12px] font-medium text-muted">
+            ({lessons.length})
+          </span>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div
+          role="group"
+          aria-label="Ayos ng listahan"
+          className="flex items-center gap-1"
+        >
           <button
             type="button"
             aria-pressed={view === "grid"}
             onClick={() => setView("grid")}
             className={cx(
-              "flex items-center gap-2 rounded-[20px] px-4 py-2 text-[15px] font-medium transition-colors",
+              "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-medium transition-colors",
               view === "grid"
                 ? "bg-plum-800 text-canvas"
-                : "text-[#a2a2a2] hover:text-ink",
+                : "text-[#8a8a8a] hover:text-ink",
             )}
           >
-            <img
-              src={gridIcon}
-              alt=""
-              className="h-[19px] w-[19px]"
-              aria-hidden="true"
-            />
-            Grid View
+            <LayoutGrid className="h-4 w-4" aria-hidden="true" />
+            Grid na Ayos
           </button>
           <button
             type="button"
             aria-pressed={view === "list"}
             onClick={() => setView("list")}
             className={cx(
-              "flex items-center gap-2 rounded-[20px] px-4 py-2 text-[15px] font-medium transition-colors",
+              "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-medium transition-colors",
               view === "list"
                 ? "bg-plum-800 text-canvas"
-                : "text-[#a2a2a2] hover:text-ink",
+                : "text-[#8a8a8a] hover:text-ink",
             )}
           >
-            <img
-              src={listIcon}
-              alt=""
-              className="h-[21px] w-[21px]"
-              aria-hidden="true"
-            />
-            List View
+            <List className="h-4 w-4" aria-hidden="true" />
+            Listahang Ayos
           </button>
         </div>
       </div>
 
-      {/* Grid ng mga aralin */}
+      {/* Listahan ng mga aralin */}
       {lessons.length > 0 ? (
-        <ul
-          className={cx(
-            "grid gap-6",
-            view === "grid"
-              ? "sm:grid-cols-2 lg:grid-cols-3"
-              : "sm:grid-cols-1 lg:grid-cols-2",
-          )}
-        >
-          {lessons.map((lesson) => (
-            <li key={lesson.id}>
-              <LessonCard lesson={lesson} />
-            </li>
-          ))}
-        </ul>
+        view === "grid" ? (
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {lessons.map((lesson) => (
+              <li key={lesson.id} className="min-w-0">
+                <LessonCard lesson={lesson} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <ul className="space-y-2.5">
+            {lessons.map((lesson) => (
+              <li key={lesson.id}>
+                <LessonRow lesson={lesson} />
+              </li>
+            ))}
+          </ul>
+        )
       ) : (
-        <div className="rounded-[20px] border border-line bg-white/50 px-5 py-8 text-center">
-          <p className="text-[15px] text-muted">
-            Walang aralin na tugma sa hinanap o filter. Subukan ang ibang salita.
+        <div className="rounded-2xl border border-line bg-white/50 px-5 py-8 text-center">
+          <p className="text-[14px] text-muted">
+            Walang aralin na tumugma sa hinanap o sa napiling salaan.
           </p>
           <button
             type="button"
@@ -337,30 +369,30 @@ export default function LessonsPage() {
               setQuery("");
               setFilter("all");
             }}
-            className="mt-3 rounded-[12px] bg-plum-800 px-4 py-2 text-[13px] font-semibold text-canvas hover:bg-plum-900"
+            className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-plum-800 px-4 py-2 text-[13px] font-semibold text-canvas hover:bg-plum-900"
           >
-            I-reset ang mga filter
+            <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
+            I-reset ang mga salaan
           </button>
         </div>
       )}
 
-      {/* Study Tip card */}
-      <aside className="flex items-start gap-4 rounded-[20px] border border-line-dark bg-gold-soft/55 px-6 py-6 sm:px-10">
+      {/* Tip sa pag-aaral */}
+      <aside className="flex items-start gap-3 rounded-2xl border border-line-dark bg-gold-soft/55 px-4 py-4 sm:px-6">
         <img
           src={tipIcon}
           alt=""
-          className="mt-1 h-[33px] w-[33px] shrink-0"
+          className="mt-0.5 h-7 w-7 shrink-0"
           aria-hidden="true"
         />
         <div className="min-w-0">
-          <p className="text-[20px] font-black text-ink sm:text-[22px]">
-            Study Tip
+          <p className="text-[16px] font-black text-ink">Tip sa Pag-aaral</p>
+          <p className="mt-1 text-[13px] font-semibold text-ink">
+            Isang maliit na paksa lang muna sa bawat pagkakataon.
           </p>
-          <p className="mt-2 text-[14px] font-semibold text-ink">
-            Learn one small topic at a time.
-          </p>
-          <p className="mt-0.5 text-[11px] text-ink">
-            Take your time—you don&rsquo;t have to finish everything at once.
+          <p className="mt-0.5 text-[11px] leading-relaxed text-ink/80">
+            Maglaan ng sapat na oras. Hindi kailangang tapusin ang lahat nang
+            sabay-sabay.
           </p>
         </div>
       </aside>

@@ -46,7 +46,7 @@ describe("pag-reset ng lokal na pag-unlad", () => {
     lastActivityDate: "2026-10-29",
     completions: {
       ch1: {
-        title: "Time Builder",
+        title: "Tagabuo ng Oras",
         attempts: 1,
         bestCorrect: 5,
         bestPercent: 100,
@@ -62,7 +62,7 @@ describe("pag-reset ng lokal na pag-unlad", () => {
       {
         id: "ch1:1",
         activityId: "ch1",
-        title: "Time Builder",
+        title: "Tagabuo ng Oras",
         correct: 5,
         total: 5,
         percent: 100,
@@ -83,7 +83,7 @@ describe("pag-reset ng lokal na pag-unlad", () => {
 
     renderAt("/pag-unlad");
 
-    expect(screen.getAllByText(/Time Builder/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Tagabuo ng Oras/i).length).toBeGreaterThan(0);
 
     await user.click(
       screen.getByRole("button", { name: /I-reset ang pag-unlad/i }),
@@ -136,16 +136,16 @@ describe("password visibility", () => {
     const user = userEvent.setup();
     renderAt("/login");
 
-    const studentTab = screen.getByRole("tab", { name: /Student/i });
+    const studentTab = screen.getByRole("tab", { name: /Mag-aaral/i });
     studentTab.focus();
     await user.keyboard("{ArrowRight}");
 
-    expect(screen.getByRole("tab", { name: /Teacher/i })).toHaveAttribute(
+    expect(screen.getByRole("tab", { name: /Guro/i })).toHaveAttribute(
       "aria-selected",
       "true",
     );
     expect(
-      screen.getByRole("button", { name: /Log in as Teacher/i }),
+      screen.getByRole("button", { name: /Mag-log in bilang Guro/i }),
     ).toBeInTheDocument();
   });
 });

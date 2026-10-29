@@ -29,14 +29,14 @@ function renderAt(path) {
 async function answerReadingActivity(user, answers) {
   for (let index = 0; index < answers.length; index += 1) {
     await user.click(screen.getByRole("radio", { name: answers[index] }));
-    await user.click(screen.getByRole("button", { name: "Submit answer" }));
+    await user.click(screen.getByRole("button", { name: "Isumite ang sagot" }));
 
     if (index < answers.length - 1) {
-      await user.click(screen.getByRole("button", { name: "Next question" }));
+      await user.click(screen.getByRole("button", { name: "Susunod na tanong" }));
     }
   }
 
-  await user.click(screen.getByRole("button", { name: "See results" }));
+  await user.click(screen.getByRole("button", { name: "Tingnan ang resulta" }));
 }
 
 beforeEach(() => {
@@ -48,18 +48,20 @@ afterEach(() => {
 });
 
 describe("activity player", () => {
-  it("nagbubukas mula sa card click at may timer ang Time Builder", async () => {
+  it("nagbubukas mula sa card at may timer ang Tagabuo ng Oras", async () => {
     const user = userEvent.setup();
     renderAt("/aktibidad");
 
-    await user.click(screen.getByRole("heading", { name: "Time Builder" }));
+    await user.click(
+      screen.getByRole("button", { name: "Laruin ang Tagabuo ng Oras" }),
+    );
 
     expect(
-      screen.getByRole("dialog", { name: /Time Builder/i }),
+      screen.getByRole("dialog", { name: /Tagabuo ng Oras/i }),
     ).toBeInTheDocument();
     expect(screen.getByRole("timer")).toHaveTextContent("02:00");
     expect(
-      screen.getAllByText(/Which event happened first/i).length,
+      screen.getAllByText(/Aling pangyayari ang nauna/i).length,
     ).toBeGreaterThan(0);
   });
 
@@ -74,19 +76,19 @@ describe("activity player", () => {
     await answerReadingActivity(user, CORRECT_ANSWERS);
 
     expect(
-      screen.getByRole("heading", { name: "Activity complete!" }),
+      screen.getByRole("heading", { name: "Natapos ang aktibidad!" }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/3 \/ 3 correct/i)).toBeInTheDocument();
-    expect(screen.getByText(/You earned \+100 XP/i)).toBeInTheDocument();
+    expect(screen.getByText(/3 \/ 3 tamang sagot/i)).toBeInTheDocument();
+    expect(screen.getByText(/Nakakuha ka ng \+100 XP/i)).toBeInTheDocument();
     expect(screen.getByText("5 araw")).toBeInTheDocument();
     expect(
       screen.getAllByText(/1,300 \/ 1,500 XP/i).length,
     ).toBeGreaterThan(0);
 
-    await user.click(screen.getByRole("button", { name: "Try again" }));
+    await user.click(screen.getByRole("button", { name: "Subukan muli" }));
     await answerReadingActivity(user, CORRECT_ANSWERS);
 
-    expect(screen.getByText(/No new XP/i)).toBeInTheDocument();
+    expect(screen.getByText(/Walang bagong XP/i)).toBeInTheDocument();
     expect(
       screen.getAllByText(/1,300 \/ 1,500 XP/i).length,
     ).toBeGreaterThan(0);
@@ -104,7 +106,7 @@ describe("activity player", () => {
     expect(
       screen.getAllByText(/Ang Kahalagahan ng Tubig/i).length,
     ).toBeGreaterThan(0);
-    expect(screen.getAllByText(/2 attempts/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/2 pagtatangka/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText("100%").length).toBeGreaterThan(0);
   });
 
@@ -148,11 +150,11 @@ describe("activity player", () => {
     });
 
     expect(
-      screen.getByRole("heading", { name: "Keep practicing" }),
+      screen.getByRole("heading", { name: "Magpatuloy sa pagsasanay" }),
     ).toBeInTheDocument();
     expect(screen.getByText(/Naubos ang oras/i)).toBeInTheDocument();
-    expect(screen.getByText(/No XP this time/i)).toBeInTheDocument();
-    expect(screen.getByText(/0 \/ 1 correct/i)).toBeInTheDocument();
+    expect(screen.getByText(/Walang XP ngayon/i)).toBeInTheDocument();
+    expect(screen.getByText(/0 \/ 1 tamang sagot/i)).toBeInTheDocument();
   });
 
   it("hindi nagbibigay ng XP kapag bumagsak sa activity", async () => {
@@ -162,12 +164,12 @@ describe("activity player", () => {
     await answerReadingActivity(user, WRONG_ANSWERS);
 
     expect(
-      screen.getByRole("heading", { name: "Keep practicing" }),
+      screen.getByRole("heading", { name: "Magpatuloy sa pagsasanay" }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/No XP this time/i)).toBeInTheDocument();
+    expect(screen.getByText(/Walang XP ngayon/i)).toBeInTheDocument();
     expect(
       screen.getAllByText(/1,200 \/ 1,500 XP/i).length,
     ).toBeGreaterThan(0);
-    expect(screen.getByText("0 / 3 correct")).toBeInTheDocument();
+    expect(screen.getByText("0 / 3 tamang sagot")).toBeInTheDocument();
   });
 });

@@ -65,8 +65,8 @@ export default function ProgressPage() {
     <div className="space-y-6 pt-1">
       <PageHeader
         icon={<TrendingUp className="h-12 w-12" strokeWidth={2.5} />}
-        kicker="YOUR JOURNEY"
-        title="PROGRESS"
+        kicker="IYONG PAGLALAKBAY"
+        title="AKING PAG-UNLAD"
         description="Tingnan ang iyong XP, streak, at mga natapos na aktibidad."
       />
 
@@ -74,11 +74,11 @@ export default function ProgressPage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-brand-600">
-              Iyong antas
+              Iyong Antas
             </p>
             <div className="mt-1 flex flex-wrap items-baseline gap-3">
               <h2 className="font-display text-3xl font-bold tracking-tight text-ink">
-                Level {level.level}
+                Antas {level.level}
               </h2>
               <span className="text-sm font-semibold text-muted">
                 {level.xpIntoLevel.toLocaleString()} /{" "}
@@ -86,14 +86,14 @@ export default function ProgressPage() {
               </span>
             </div>
             <p className="mt-1 text-sm text-muted">
-              {level.xpToNext.toLocaleString()} XP pa para sa Level{" "}
+              {level.xpToNext.toLocaleString()} XP pa para sa Antas{" "}
               {level.level + 1}.
             </p>
           </div>
           <div className="flex flex-col items-start gap-2 sm:items-end">
             <Chip tone="brand">
               <Sparkles className="h-3 w-3" aria-hidden="true" />
-              +{xpBreakdown.activityXp + xpBreakdown.badgeXp} XP mula sa Practice
+              +{xpBreakdown.activityXp + xpBreakdown.badgeXp} XP mula sa Pagsasanay
             </Chip>
             <button
               type="button"
@@ -110,14 +110,14 @@ export default function ProgressPage() {
           className="mt-5"
           value={levelPercent}
           max={100}
-          label={`XP sa Level ${level.level}`}
+          label={`XP sa Antas ${level.level}`}
           tone="brand"
         />
 
         <div className="mt-5 grid gap-3 sm:grid-cols-3">
           <div className="rounded-xl border border-line bg-canvas/60 p-3">
             <p className="text-[10px] font-bold uppercase tracking-wide text-muted">
-              Panimulang demo XP
+              Panimulang Demo XP
             </p>
             <p className="mt-1 text-lg font-bold text-ink">
               {xpBreakdown.startingXp.toLocaleString()} XP
@@ -146,7 +146,7 @@ export default function ProgressPage() {
         <Card>
           <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-brand-600">
             <Flame className="h-4 w-4 text-gold-strong" aria-hidden="true" />
-            Daily streak
+            Sunod-sunod na Araw
           </p>
           <p className="mt-2 text-3xl font-black tracking-tight text-plum-800">
             {progress.streak} araw
@@ -166,7 +166,7 @@ export default function ProgressPage() {
             {completedActivities.length}
           </p>
           <p className="mt-1 text-xs leading-relaxed text-muted">
-            Natapos na aktibidad sa Practice. Ang retry ay hindi nagbibigay ng
+            Natapos na gawain sa Pagsasanay. Ang muling pagsubok ay hindi nagbibigay ng
             bagong XP.
           </p>
         </Card>
@@ -190,7 +190,7 @@ export default function ProgressPage() {
           id="best-scores-heading"
           className="font-display text-xl font-bold tracking-tight text-ink"
         >
-          Best scores
+          Pinakamahusay na Marka
         </h2>
 
         {completedActivities.length > 0 ? (
@@ -204,9 +204,8 @@ export default function ProgressPage() {
                         {completion.title}
                       </p>
                       <p className="mt-1 text-xs text-muted">
-                        {completion.attempts} attempt
-                        {completion.attempts === 1 ? "" : "s"} ·{" "}
-                        {completion.bestCorrect}/{completion.total} correct
+                        {completion.attempts} pagtatangka ·{" "}
+                        {completion.bestCorrect}/{completion.total} tamang sagot
                       </p>
                     </div>
                     <Chip tone="success">{completion.bestPercent}%</Chip>
@@ -226,14 +225,14 @@ export default function ProgressPage() {
                 Wala pang natapos na aktibidad
               </p>
               <p className="mt-1 max-w-md text-xs leading-relaxed text-muted">
-                Pumunta sa Practice at tapusin ang unang challenge para
+                Pumunta sa Pagsasanay at tapusin ang unang hamon para
                 lumabas dito ang best score mo.
               </p>
               <Link
                 to="/aktibidad"
                 className="mt-4 rounded-xl bg-plum-800 px-4 py-2 text-sm font-semibold text-canvas hover:bg-plum-900"
               >
-                Pumunta sa Practice
+                Pumunta sa Pagsasanay
               </Link>
             </div>
           </Card>
@@ -250,7 +249,7 @@ export default function ProgressPage() {
           </h2>
           <Chip tone="muted">
             <History className="h-3 w-3" aria-hidden="true" />
-            {history.length} attempt{history.length === 1 ? "" : "s"}
+            {history.length} pagtatangka
           </Chip>
         </div>
 
@@ -297,7 +296,7 @@ export default function ProgressPage() {
                     <Chip tone={entry.xpAwarded > 0 ? "brand" : "muted"}>
                       {entry.xpAwarded > 0
                         ? `+${entry.xpAwarded} XP`
-                        : "No new XP"}
+                        : "Walang bagong XP"}
                     </Chip>
                   </div>
                 </li>
@@ -314,7 +313,7 @@ export default function ProgressPage() {
         )}
       </section>
 
-      <Alert variant="info" title="Temporary local persistence">
+      <Alert variant="info" title="Pansamantalang lokal na pag-save">
         {PROGRESS_STORAGE_NOTE}
       </Alert>
 
@@ -328,7 +327,7 @@ export default function ProgressPage() {
         open={resetOpen}
         onClose={() => setResetOpen(false)}
         size="sm"
-        eyebrow="Browser storage"
+        eyebrow="Imbakan ng browser"
         title="I-reset ang pag-unlad?"
         subtitle="Pansamantala lamang ito para sa prototype. Walang server na maaapektuhan."
       >

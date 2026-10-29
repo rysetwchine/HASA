@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Eye, EyeOff } from "lucide-react";
 import AuthShell from "../../components/layout/AuthShell.jsx";
 import Alert from "../../components/ui/Alert.jsx";
@@ -12,13 +12,17 @@ import featTrack from "../../assets/images/auth/feat-track.png";
 import inputUser from "../../assets/images/auth/input-user.png";
 import inputLock from "../../assets/images/auth/input-lock.png";
 import RoleTabs from "../../components/auth/RoleTabs.jsx";
+import { useSession } from "../../app/SessionProvider.jsx";
 
 const REMEMBER_KEY = "hasa:remembered-username";
 
 const FEATURES = [
-  { icon: featXp, text: "Earn XP, Badges, and level up as you learn" },
-  { icon: featAi, text: "AI Simplifier turns hard topics into easy one" },
-  { icon: featTrack, text: "Track your progress lesson by lesson" },
+  { icon: featXp, text: "Kumita ng XP at sagisag, at umangat sa bawat pag-aaral" },
+  {
+    icon: featAi,
+    text: "Ginagawang madali ng AI Tagapagpasimple ang mahihirap na paksa",
+  },
+  { icon: featTrack, text: "Subaybayan ang iyong pag-unlad sa bawat aralin" },
 ];
 
 function readRememberedUsername() {
@@ -31,6 +35,8 @@ function readRememberedUsername() {
 
 export default function LoginPage() {
   const remembered = readRememberedUsername();
+  const { isSignedIn, signInAsDemo } = useSession();
+  const navigate = useNavigate();
   const [role, setRole] = useState("student");
   const [username, setUsername] = useState(remembered);
   const [password, setPassword] = useState("");
@@ -53,7 +59,7 @@ export default function LoginPage() {
 
     if (!username.trim()) {
       next.username = isTeacher
-        ? "Ilagay ang iyong teacher ID o username."
+        ? "Ilagay ang ID o username ng guro."
         : "Ilagay ang iyong username o student ID.";
     } else if (username.trim().length < 3) {
       next.username = "Gumamit ng hindi bababa sa 3 letra.";
@@ -93,7 +99,7 @@ export default function LoginPage() {
     <AuthShell>
       <div className="flex min-h-screen flex-col bg-canvas lg:flex-row">
         {/* Kaliwa: plum panel na may hugis-bilog na dekorasyon */}
-        <section className="relative flex min-h-[560px] flex-col overflow-hidden bg-plum-800 px-8 py-14 lg:w-[54.6%] lg:px-20 lg:py-24 2xl:px-24">
+        <section className="relative flex min-h-[560px] flex-col overflow-hidden bg-plum-800 px-7 py-12 lg:w-[52%] lg:px-14 lg:py-16 2xl:px-20">
           <span
             className="pointer-events-none absolute -left-24 -top-28 h-[340px] w-[360px] rounded-full bg-lav-400"
             aria-hidden="true"
@@ -108,50 +114,74 @@ export default function LoginPage() {
           />
 
           <div className="relative my-auto">
-            <h1 className="font-sans text-[40px] font-bold leading-[1.18] tracking-tight text-white 2xl:text-[55px]">
+            <h1 className="font-sans text-[28px] font-bold leading-[1.2] tracking-tight text-white lg:text-[34px] 2xl:text-[40px]">
               HASA: TARA, MATUTO AT MAHASA!
             </h1>
-            <p className="mt-4 max-w-[590px] text-[17px] leading-snug text-white 2xl:text-[20px]">
+            <p className="mt-3 max-w-[520px] text-[14px] leading-snug text-white 2xl:text-[16px]">
               Matuto ng Araling Panlipunan sa mas madali at masayang paraan
               gamit ang AI Simplifier, interactive na gawain, at educational
               games
             </p>
 
-            <ul className="mt-11 max-w-[540px] space-y-8">
+            <ul className="mt-8 max-w-[470px] space-y-4">
               {FEATURES.map(({ icon, text }) => (
                 <li key={text} className="flex items-center gap-5">
                   <span
-                    className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[20px] bg-black/60"
+                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-black/60"
                     aria-hidden="true"
                   >
-                    <img src={icon} alt="" className="h-12 w-[52px] object-contain" />
+                    <img src={icon} alt="" className="h-8 w-9 object-contain" />
                   </span>
-                  <p className="text-[18px] font-semibold text-white 2xl:text-[22px]">{text}</p>
+                  <p className="text-[14px] font-semibold text-white 2xl:text-[16px]">{text}</p>
                 </li>
               ))}
             </ul>
           </div>
 
-          <p className="relative mt-16 text-[14px] font-medium text-white/60 lg:mt-auto">
+          <p className="relative mt-10 text-[12px] font-medium text-white/60 lg:mt-auto">
             © 2026 HASA — Grade 8 Araling Panlipunan
           </p>
         </section>
 
         {/* Kanan: form ng pag-log in */}
-        <section className="relative flex flex-1 flex-col items-center overflow-hidden px-6 py-14 lg:px-16 lg:py-16">
+        <section className="relative flex flex-1 flex-col items-center overflow-hidden px-5 py-8 lg:px-10 lg:py-10">
           <img
             src={logoHasa}
             alt="HASA logo"
-            className="w-[300px] 2xl:w-[360px]"
+            className="w-[200px] 2xl:w-[240px]"
           />
 
-          <div className="w-full max-w-[560px]">
-            <h2 className="font-display mt-4 text-[32px] font-extrabold text-ink 2xl:text-[38px]">
-              Welcome to Hasa!
+          <div className="w-full max-w-[480px]">
+            <h2 className="font-display mt-3 text-[24px] font-extrabold text-ink 2xl:text-[28px]">
+              Maligayang pagdating sa HASA!
             </h2>
-            <p className="mt-1 text-[17px] text-ink 2xl:text-[20px]">
+            <p className="mt-1 text-[13.5px] text-ink 2xl:text-[15px]">
               Magbasa, matuto, at mahasa sa bawat aralin.
             </p>
+
+            {/* Kapag nag-logout, dito maaaring bumalik sa demo na dashboard.
+                Walang totoong session sa prototype. */}
+            {!isSignedIn ? (
+              <div className="mt-5 rounded-[15px] border border-line bg-white/70 px-4 py-3">
+                <p className="text-[13px] font-semibold text-ink">
+                  Naka-log out ka sa prototype.
+                </p>
+                <p className="mt-1 text-[12px] leading-relaxed text-muted">
+                  Walang totoong pagpapatunay ng account sa yugtong ito. Maaari
+                  mong buksan muli ang demo na dashboard ng mag-aaral.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    signInAsDemo();
+                    navigate("/");
+                  }}
+                  className="mt-2 rounded-lg bg-plum-800 px-3 py-1.5 text-[12.5px] font-semibold text-canvas transition-colors hover:bg-plum-900"
+                >
+                  Buksan ang demo na dashboard
+                </button>
+              </div>
+            ) : null}
 
             {/* Role tabs */}
             <RoleTabs value={role} onChange={selectRole} idPrefix="login" />
@@ -160,22 +190,22 @@ export default function LoginPage() {
               id="login-panel"
               role="tabpanel"
               aria-labelledby={`login-tab-${role}`}
-              className="mt-10 space-y-5"
+              className="mt-5 space-y-4"
               onSubmit={handleSubmit}
               noValidate
             >
               <div>
                 <label
                   htmlFor="login-username"
-                  className="block text-[18px] font-medium text-ink"
+                  className="block text-[14px] font-medium text-ink"
                 >
-                  Username / Student I'D
+                  Username o Student ID
                 </label>
                 <div className="relative mt-2">
                   <img
                     src={inputUser}
                     alt=""
-                    className="pointer-events-none absolute left-4 top-1/2 h-7 w-7 -translate-y-1/2"
+                    className="pointer-events-none absolute left-3.5 top-1/2 h-6 w-6 -translate-y-1/2"
                     aria-hidden="true"
                   />
                   <input
@@ -189,8 +219,8 @@ export default function LoginPage() {
                     aria-describedby={
                       errors.username ? "login-username-error" : undefined
                     }
-                    placeholder="2026-08421  (e.g. Juan Dela Cruz)"
-                    className="h-[50px] w-full rounded-[15px] border border-[#9d9d9d] bg-canvas pl-14 pr-4 text-[15px] text-ink placeholder:text-[#717171] focus:border-plum-800 focus:outline-none"
+                    placeholder="2026-08421  (hal. Juan Dela Cruz)"
+                    className="h-[44px] w-full rounded-[12px] border border-[#9d9d9d] bg-canvas pl-12 pr-3 text-[14px] text-ink placeholder:text-[#717171] focus:border-plum-800 focus:outline-none"
                   />
                 </div>
               </div>
@@ -207,7 +237,7 @@ export default function LoginPage() {
               <div>
                 <label
                   htmlFor="login-password"
-                  className="block text-[18px] font-medium text-ink"
+                  className="block text-[14px] font-medium text-ink"
                 >
                   Password
                 </label>
@@ -215,7 +245,7 @@ export default function LoginPage() {
                   <img
                     src={inputLock}
                     alt=""
-                    className="pointer-events-none absolute left-4 top-1/2 h-7 w-7 -translate-y-1/2"
+                    className="pointer-events-none absolute left-3.5 top-1/2 h-6 w-6 -translate-y-1/2"
                     aria-hidden="true"
                   />
                   <input
@@ -230,7 +260,7 @@ export default function LoginPage() {
                       errors.password ? "login-password-error" : undefined
                     }
                     placeholder="••••••••"
-                    className="h-[50px] w-full rounded-[15px] border border-[#9d9d9d] bg-canvas pl-14 pr-16 text-[15px] tracking-widest text-ink placeholder:text-ink/70 focus:border-plum-800 focus:outline-none"
+                    className="h-[44px] w-full rounded-[12px] border border-[#9d9d9d] bg-canvas pl-12 pr-16 text-[14px] tracking-widest text-ink placeholder:text-ink/70 focus:border-plum-800 focus:outline-none"
                   />
                   <button
                     type="button"
@@ -269,7 +299,7 @@ export default function LoginPage() {
                     onChange={(event) => setRemember(event.target.checked)}
                     className="h-4 w-4 shrink-0 rounded-[5px] border-2 border-plum-800 appearance-none bg-canvas checked:bg-plum-800"
                   />
-                  Remember me
+                  Tandaan ako
                 </label>
 
                 <button
@@ -279,7 +309,7 @@ export default function LoginPage() {
                   aria-controls="login-forgot-help"
                   className="text-[15px] font-medium text-accent hover:underline"
                 >
-                  Forgot password?
+                  Nakalimutan ang password?
                 </button>
               </div>
 
@@ -293,7 +323,7 @@ export default function LoginPage() {
                   </p>
                   <p className="mt-1">
                     {isTeacher
-                      ? "Hilingin sa school administrator na i-reset ang iyong teacher account kapag aktibo na ang backend."
+                      ? "Hilingin sa administrador ng paaralan na i-reset ang iyong teacher account kapag aktibo na ang backend."
                       : "Hilingin sa iyong guro na i-reset ang password. Hindi pa nakakonekta ang HASA sa email o database."}
                   </p>
                 </div>
@@ -301,14 +331,14 @@ export default function LoginPage() {
 
               <button
                 type="submit"
-                className="mt-6 flex h-[46px] w-full items-center justify-center rounded-[20px] bg-plum-800 text-[16px] font-bold text-canvas shadow-[0_4px_4px_rgba(0,0,0,0.25)] transition-colors hover:bg-plum-900"
+                className="mt-5 flex h-11 w-full items-center justify-center rounded-[14px] bg-plum-800 text-[14px] font-bold text-canvas shadow-[0_4px_4px_rgba(0,0,0,0.25)] transition-colors hover:bg-plum-900"
               >
-                Log in as {isTeacher ? "Teacher" : "Student"}
+                Mag-log in bilang {isTeacher ? "Guro" : "Mag-aaral"}
               </button>
 
-              <div className="flex items-center gap-4 pt-1" aria-hidden="true">
+              <div className="flex items-center gap-4 pt-0.5" aria-hidden="true">
                 <span className="h-px flex-1 bg-[#bdbdbd]" />
-                <span className="text-[16px] text-ink">or</span>
+                <span className="text-[16px] text-ink">o</span>
                 <span className="h-px flex-1 bg-[#bdbdbd]" />
               </div>
 
@@ -316,7 +346,7 @@ export default function LoginPage() {
                 to="/register"
                 className="mx-auto flex h-[38px] w-[220px] items-center justify-center rounded-[15px] bg-lav-400 text-[15px] font-medium text-canvas transition-colors hover:bg-[#7e7eb0]"
               >
-                Create an Account
+                Gumawa ng Account
               </Link>
 
               <p className="flex items-start gap-1.5 pt-4 text-[11px] leading-relaxed text-muted">

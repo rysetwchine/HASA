@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router";
 import HomePage from "../pages/student/HomePage.jsx";
 import LessonsPage from "../pages/student/LessonsPage.jsx";
+import LessonDetailPage from "../pages/student/LessonDetailPage.jsx";
 import LoginPage from "../pages/auth/LoginPage.jsx";
 import RegisterPage from "../pages/auth/RegisterPage.jsx";
 import SimplifyPage from "../pages/student/SimplifyPage.jsx";
@@ -12,7 +13,7 @@ import TeacherPage from "../pages/teacher/TeacherPage.jsx";
 import NotFoundPage from "../pages/NotFoundPage.jsx";
 
 /**
- * Tagalog na mga ruta ayon sa aprubadong plano.
+ * Filipino na mga ruta ayon sa aprubadong plano.
  * Ang /pagsasanay at /mga-gantimpala ay alias lamang ng umiiral na
  * /aktibidad at /mga-nakamit upang hindi masira ang mga lumang link.
  */
@@ -21,6 +22,7 @@ export default function AppRoutes() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/mga-aralin" element={<LessonsPage />} />
+      <Route path="/mga-aralin/:lessonId" element={<LessonDetailPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/pasimplehin" element={<SimplifyPage />} />

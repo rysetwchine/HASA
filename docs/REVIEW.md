@@ -1,5 +1,10 @@
 # HASA — Code Review and Improvement Log
 
+> **Superseded.** The current, final write-up for this branch is
+> [`docs/FINAL-REPORT.md`](./FINAL-REPORT.md). This file is kept as the earlier review
+> log from commit `ed6c4b0`; some of it describes the English UI that has since been
+> translated to Filipino.
+
 **Date:** 2026-10-29
 **Scope:** `client/` (React + Vite + Tailwind v4). No backend exists yet, so nothing in
 `server/` was touched.

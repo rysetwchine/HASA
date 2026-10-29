@@ -140,26 +140,26 @@ export default function ActivityPlayer({ activity, onClose }) {
       open
       onClose={onClose}
       size="lg"
-      eyebrow="Practice activity"
+      eyebrow="Aktibidad sa Pagsasanay"
       title={activity.title}
-      subtitle={`${totalQuestions} questions · pass mark ${passPercent}% · +${activity.xp} XP`}
+      subtitle={`${totalQuestions} tanong · pumasa sa ${passPercent}% · +${activity.xp} XP`}
     >
       {phase === "playing" ? (
         <div className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-accent-strong">
-                Question {current + 1} of {totalQuestions}
+                Tanong {current + 1} ng {totalQuestions}
               </p>
               <p className="mt-0.5 text-xs text-muted">
-                Sagutin ang bawat tanong at i-submit bago lumipat sa susunod.
+                Sagutin ang bawat tanong at isumite bago lumipat sa susunod.
               </p>
             </div>
 
             <div className="flex items-center gap-2">
               {completion?.completed ? (
                 <Chip tone="success">
-                  Best {completion.bestCorrect}/{completion.total}
+                  Pinakamahusay {completion.bestCorrect}/{completion.total}
                 </Chip>
               ) : null}
               {timeLeft !== null ? (
@@ -209,7 +209,7 @@ export default function ActivityPlayer({ activity, onClose }) {
           ) : (
             <Alert variant="warning" title="Walang tanong">
               Wala pang tanong ang aktibidad na ito. Bumalik na lang sa
-              Practice.
+              Pagsasanay.
             </Alert>
           )}
 
@@ -231,11 +231,11 @@ export default function ActivityPlayer({ activity, onClose }) {
                 disabled={selected === null || !question}
                 size="lg"
               >
-                Submit answer
+                Isumite ang sagot
               </Button>
             ) : (
               <Button onClick={goNext} size="lg">
-                {isLastQuestion ? "See results" : "Next question"}
+                {isLastQuestion ? "Tingnan ang resulta" : "Susunod na tanong"}
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Button>
             )}
@@ -262,7 +262,7 @@ export default function ActivityPlayer({ activity, onClose }) {
               )}
             </span>
             <h3 className="mt-3 font-display text-2xl font-bold tracking-tight text-ink">
-              {outcome.passed ? "Activity complete!" : "Keep practicing"}
+              {outcome.passed ? "Natapos ang aktibidad!" : "Magpatuloy sa pagsasanay"}
             </h3>
             <p className="mt-1 text-sm text-muted">
               {outcome.passed
@@ -282,7 +282,7 @@ export default function ActivityPlayer({ activity, onClose }) {
                 </p>
               </div>
               <p className="text-sm font-semibold text-ink">
-                {outcome.correct} / {outcome.total} correct
+                {outcome.correct} / {outcome.total} tamang sagot
               </p>
             </div>
             <ProgressBar
@@ -293,13 +293,13 @@ export default function ActivityPlayer({ activity, onClose }) {
             />
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <Chip tone={outcome.passed ? "success" : "warning"}>
-                {outcome.passed ? "Passed" : "Not passed"}
+                {outcome.passed ? "Pumasa" : "Hindi pumasa"}
               </Chip>
               <Chip tone="muted">
-                Attempt {outcome.attempts}
+                Pagtatangka {outcome.attempts}
               </Chip>
               <Chip tone="muted">
-                Best {outcome.bestCorrect}/{outcome.total}
+                Pinakamahusay {outcome.bestCorrect}/{outcome.total}
               </Chip>
             </div>
           </div>
@@ -314,7 +314,7 @@ export default function ActivityPlayer({ activity, onClose }) {
           {outcome.xpAwarded > 0 ? (
             <Alert
               variant="success"
-              title={`You earned +${outcome.xpAwarded} XP`}
+              title={`Nakakuha ka ng +${outcome.xpAwarded} XP`}
             >
               {outcome.activityXp > 0
                 ? `${outcome.activityXp} XP mula sa aktibidad.`
@@ -324,13 +324,13 @@ export default function ActivityPlayer({ activity, onClose }) {
                 : null}
             </Alert>
           ) : outcome.alreadyCompleted ? (
-            <Alert variant="info" title="No new XP">
+            <Alert variant="info" title="Walang bagong XP">
               Nakuha mo na ang XP para sa aktibidad na ito. Ang retry ay
               nagpapabuti lamang ng best score at hindi na nagbibigay ng
               panibagong XP.
             </Alert>
           ) : (
-            <Alert variant="warning" title="No XP this time">
+            <Alert variant="warning" title="Walang XP ngayon">
               Kailangan ng hindi bababa sa {outcome.passPercent}% para makakuha
               ng XP. Subukan muli kapag handa ka na.
             </Alert>
@@ -357,7 +357,7 @@ export default function ActivityPlayer({ activity, onClose }) {
             <div className="rounded-xl border border-line bg-white p-3">
               <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-muted">
                 <Flame className="h-3.5 w-3.5 text-gold-strong" aria-hidden="true" />
-                Streak
+                Sunod-sunod
               </p>
               <p className="mt-1 text-lg font-bold text-ink">
                 {outcome.streak} araw
@@ -372,43 +372,43 @@ export default function ActivityPlayer({ activity, onClose }) {
             </div>
             <div className="rounded-xl border border-line bg-white p-3">
               <p className="text-[10px] font-bold uppercase tracking-wide text-muted">
-                Level
+                Antas
               </p>
               <p className="mt-1 text-lg font-bold text-ink">
-                Level {outcome.level}
+                Antas {outcome.level}
               </p>
               <p className="text-[10px] text-muted">
-                {outcome.totalXp.toLocaleString()} XP total
+                {outcome.totalXp.toLocaleString()} XP sa kabuuan
               </p>
             </div>
             <div className="rounded-xl border border-line bg-white p-3">
               <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-muted">
                 <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" aria-hidden="true" />
-                Best score
+                Pinakamahusay na marka
               </p>
               <p className="mt-1 text-lg font-bold text-ink">
                 {outcome.bestPercent}%
               </p>
               <p className="text-[10px] text-muted">
-                {outcome.bestCorrect}/{outcome.total} correct
+                {outcome.bestCorrect}/{outcome.total} tamang sagot
               </p>
             </div>
           </div>
 
           {outcome.leveledUp ? (
-            <Alert variant="success" title="Level up!">
-              Umakyat ka sa Level {outcome.level}.
+            <Alert variant="success" title="Umangat sa susunod na antas!">
+              Umakyat ka sa Antas {outcome.level}.
             </Alert>
           ) : null}
 
           <div className="flex flex-wrap items-center gap-2.5 border-t border-line pt-4">
             <Button onClick={resetRun} size="lg">
               <RotateCcw className="h-4 w-4" aria-hidden="true" />
-              Try again
+              Subukan muli
             </Button>
             <Button variant="secondary" onClick={onClose} size="lg">
               <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-              Back to Practice
+              Bumalik sa Pagsasanay
             </Button>
           </div>
 

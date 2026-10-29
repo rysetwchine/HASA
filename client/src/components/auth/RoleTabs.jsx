@@ -5,8 +5,8 @@ import roleStudent from "../../assets/images/auth/role-student.png";
 import roleTeacher from "../../assets/images/auth/role-teacher.png";
 
 const ROLES = [
-  { id: "student", label: "Student", icon: roleStudent },
-  { id: "teacher", label: "Teacher", icon: roleTeacher },
+  { id: "student", label: "Mag-aaral", icon: roleStudent },
+  { id: "teacher", label: "Guro", icon: roleTeacher },
 ];
 
 /**
@@ -41,7 +41,7 @@ export default function RoleTabs({ value, onChange, idPrefix = "auth" }) {
     <div
       role="tablist"
       aria-label="Uri ng account"
-      className="mt-10 grid grid-cols-2 gap-4 sm:gap-6"
+      className="mt-6 grid grid-cols-2 gap-3 sm:gap-5"
       onKeyDown={handleKeyDown}
     >
       {ROLES.map(({ id, label, icon }) => {
