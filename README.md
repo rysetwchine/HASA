@@ -32,7 +32,7 @@ class-scoped workspace. The interface and all learning content are in Filipino.
 | Database | `node:sqlite` (`DatabaseSync`) | No native dependency to compile |
 | Auth | Server sessions, scrypt passwords | httpOnly cookie, HMAC-peppered token hash |
 | AI | Gemini / OpenAI, server-side only | Optional; reports "not configured" honestly |
-| Tests | `node --test` (server), Vitest (client) | 24 API tests, 26 client tests |
+| Tests | `node --test` (server), Vitest (client) | 24 API tests, 46 client tests |
 
 ## Repository layout
 
@@ -86,7 +86,7 @@ Useful commands:
 ```bash
 cd server && npm test        # 24 integration tests, in-memory DB
 cd server && npm run check   # node --check on the entry point
-cd client && npm test        # 26 Vitest tests
+cd client && npm test        # 46 Vitest tests (20 are end-to-end page renders)
 cd client && npm run build   # production build into client/dist
 ```
 

@@ -165,7 +165,13 @@ Served `client/dist` with filesystem-first + SPA fallback: `/`, `/student/dashbo
 `/robots.txt`, `/sitemap.xml`, `/llms.txt`, `/og-image.png` all return 200 with the right
 content type.
 
-Automated tests: `cd server && npm test` → 24/24; `cd client && npm test` → 26/26.
+Automated tests: `cd server && npm test` → 24/24; `cd client && npm test` → 46/46
+(12 format, 8 SEO, 6 guard, 20 end-to-end page renders).
+
+The end-to-end file (`client/src/test/e2e.test.jsx`) opens every student and teacher
+page against a running API and fails on any `console.error`. Point it at a server with
+`HASA_E2E_API=http://127.0.0.1:3100` (and `HASA_E2E_SIGNUP_CODE`); it skips itself when
+nothing is listening.
 
 **Not verified:** the live Vercel URL after this change, and any browser interaction —
 this sandbox cannot reach `vercel.com`, and no headless browser can be installed here.
