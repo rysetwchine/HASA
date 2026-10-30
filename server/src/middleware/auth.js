@@ -28,7 +28,9 @@ function cookieAttributes() {
     secure: config.isProduction,
     sameSite: crossSite ? "None" : "Lax",
     path: "/",
-    maxAge: config.sessionDays * 24 * 60 * 60,
+    // Express reads `maxAge` in milliseconds; `sessionDays` is in days.
+    // Passing seconds made every session cookie die after ~20 minutes.
+    maxAge: config.sessionDays * 24 * 60 * 60 * 1000,
   };
 }
 

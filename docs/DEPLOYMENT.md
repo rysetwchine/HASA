@@ -87,7 +87,7 @@ NODE_ENV=production npm start      # node --env-file-if-exists=.env src/index.js
 | `SESSION_SECRET` | yes | ≥ 32 chars; peppers the session-token HMAC. Rotating it logs everyone out |
 | `DATABASE_PATH` | yes | absolute path **on the volume**, e.g. `/data/hasa.sqlite` |
 | `CLIENT_ORIGIN` | yes | the Vercel origin. Sets `SameSite=None; Secure` cookies |
-| `TEACHER_SIGNUP_CODE` | yes for teacher signup | blank = self-registration disabled (403 by design) |
+| `TEACHER_SIGNUP_CODE` | yes for teacher signup | **6–80 characters**; blank = self-registration disabled (403 by design). A shorter code now fails at boot instead of silently 400-ing every signup. |
 | `TRUST_PROXY` | when behind a proxy | `1` on Render/Railway/Fly so `req.ip` and `secure` are right |
 | `PORT` | usually injected | defaults to 3000 |
 | `GEMINI_API_KEY` / `OPENAI_API_KEY` | optional | blank = AI reported as not configured |

@@ -132,6 +132,20 @@ describe("pagpaparehistro at session", () => {
     assert.match(raw, /HttpOnly/i);
   });
 
+  it("tumatagal ang session cookie nang ayon sa SESSION_DAYS", async () => {
+    // Express ay millisecond ang inaasahan sa `maxAge`; noong nakaraan,
+    // segundo ang ipinapasa kaya 20 minuto lang ang bisa ng cookie.
+    const response = await registerTeacher("bisa");
+    const raw = response.setCookie.join(";");
+    const match = raw.match(/Max-Age=(\d+)/i);
+    assert.ok(match, "dapat may Max-Age ang session cookie");
+    const seconds = Number(match[1]);
+    assert.ok(
+      seconds >= 24 * 60 * 60,
+      `masyadong maikli ang bisa ng cookie: ${seconds}s`,
+    );
+  });
+
   it("tinatanggihan ang maling kodigo ng klase", async () => {
     const teacher = await registerTeacher("dalawa");
     const response = await registerStudent("mali", "HASA-WRONG1");
