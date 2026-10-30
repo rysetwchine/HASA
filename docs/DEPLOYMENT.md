@@ -1,17 +1,21 @@
 # HASA — Deployment
 
-HASA is two deployables:
+HASA is three free pieces that fit together:
 
-| Piece | What it is | Where it belongs |
-|---|---|---|
-| **Client** | Static React + Vite SPA (`client/dist`) | Vercel (already configured) |
-| **API** | Express 5 + `node:sqlite`, owns `hasa.sqlite` | A Node host **with a persistent disk** |
+| Piece | What it is | Where it belongs | Cost |
+|---|---|---|---|
+| **Client** | Static React + Vite SPA (`client/dist`) | Vercel Free (already configured) | free |
+| **API** | Express 5 on Node ≥ 22.9, async DB layer | Render Free web service | free (sleeps when idle) |
+| **Database** | Turso Cloud (libSQL) in production; `node:sqlite` file locally | Turso Free | free |
 
 Vercel can serve the client, but it **cannot host this API**: serverless functions get an
-ephemeral filesystem, so a SQLite file written by one invocation is gone by the next. That
-is a hard constraint, not a configuration gap. Until the API has a home, the deployed site
-will load and then fail every login and lesson call — an honest error from `lib/api.js`,
-not a broken page.
+ephemeral filesystem and a per-request lifetime. Render Free has an ephemeral filesystem
+too — that is why the authoritative data lives in **Turso**, not on the disk. A local
+SQLite file remains fully supported for development, tests, and any host that has a
+volume (`DATABASE_DRIVER=local`).
+
+Until the API has a home, the deployed site will load and then fail every login and
+lesson call — an honest error from `lib/api.js`, not a broken page.
 
 ---
 
