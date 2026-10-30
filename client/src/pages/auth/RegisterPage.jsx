@@ -1,392 +1,330 @@
-import { useState } from "react";
-import { Link } from "react-router";
-import { Eye, EyeOff } from "lucide-react";
-import AuthShell from "../../components/layout/AuthShell.jsx";
-import Alert from "../../components/ui/Alert.jsx";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router";
+import { ArrowLeft, ArrowRight, CheckCircle2, Eye, EyeOff, GraduationCap, UserRound } from "lucide-react";
+import { useAuth } from "../../app/AuthProvider.jsx";
+import Seo from "../../components/Seo.jsx";
+import Logo from "../../components/Logo.jsx";
+import { Alert, Button, Field, Input, Select } from "../../components/ui.jsx";
+import { api, errorMessage } from "../../lib/api.js";
+import { READING_LEVELS } from "../../lib/format.js";
 import { cx } from "../../utils/cx.js";
-import { demoStudent } from "../../data/demoData.js";
 
-import logoHasa from "../../assets/images/brand/logo-hasa.png";
-import featXp from "../../assets/images/auth/feat-xp.png";
-import featAi from "../../assets/images/auth/feat-ai.png";
-import featTrack from "../../assets/images/auth/feat-track.png";
-import inputUser from "../../assets/images/auth/input-user.png";
-import inputLock from "../../assets/images/auth/input-lock.png";
-import roleStudent from "../../assets/images/auth/role-student.png";
-import roleTeacher from "../../assets/images/auth/role-teacher.png";
+const EMPTY_STUDENT = {
+  displayName: "",
+  username: "",
+  password: "",
+  confirmPassword: "",
+  classCode: "",
+  readingLevel: "instructional",
+};
 
-const FEATURES = [
-  { icon: featXp, text: "Earn XP, Badges, and level up as you learn" },
-  { icon: featAi, text: "AI Simplifier turns hard topics into easy one" },
-  { icon: featTrack, text: "Track your progress lesson by lesson" },
-];
-
-const inputClasses =
-  "h-[50px] w-full rounded-[15px] border border-[#9d9d9d] bg-canvas pl-14 pr-4 text-[15px] text-ink placeholder:text-[#717171] focus:border-plum-800 focus:outline-none";
+const EMPTY_TEACHER = {
+  displayName: "",
+  username: "",
+  password: "",
+  confirmPassword: "",
+  className: "",
+  schoolCode: "",
+};
 
 export default function RegisterPage() {
-  const [role, setRole] = useState("student");
-  const [values, setValues] = useState({
-    username: "",
-    password: "",
-    displayName: "",
-    classCode: "",
-  });
+  const { registerStudent, registerTeacher } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialRole = searchParams.get("role") === "teacher" ? "teacher" : "student";
+  const [role, setRole] = useState(initialRole);
+  const [studentForm, setStudentForm] = useState(EMPTY_STUDENT);
+  const [teacherForm, setTeacherForm] = useState(EMPTY_TEACHER);
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+  const [pending, setPending] = useState(false);
+  const [teacherEnabled, setTeacherEnabled] = useState(true);
 
-  const isTeacher = role === "teacher";
+  useEffect(() => {
+    api
+      .get("/config")
+      .then((data) => setTeacherEnabled(Boolean(data.teacherRegistrationEnabled)))
+      .catch(() => {});
+  }, []);
 
-  function update(field, value) {
-    setValues((current) => ({ ...current, [field]: value }));
-  }
-
-  function selectRole(nextRole) {
+  const switchRole = (nextRole) => {
     setRole(nextRole);
-    setErrors({});
-    setSubmitted(false);
-  }
+    setError("");
+    setSearchParams(nextRole === "teacher" ? { role: "teacher" } : {}, { replace: true });
+  };
 
-  function validate() {
-    const next = {};
+  const validate = (form) => {
+    if (!form.displayName.trim() || !form.username.trim()) return "Ilagay ang pangalan at username.";
+    if (form.password.length < 8) return "Dapat may hindi bababa sa 8 karakter ang password.";
+    if (form.password !== form.confirmPassword) return "Hindi magkatugma ang password at kumpirmasyon.";
+    if (role === "student" && !form.classCode.trim()) return "Ilagay ang kodigo ng klase mula sa iyong guro.";
+    if (role === "teacher" && !form.className.trim()) return "Ilagay ang pangalan ng iyong klase.";
+    if (role === "teacher" && !form.schoolCode.trim()) return "Ilagay ang kodigo ng paaralan para sa mga guro.";
+    return "";
+  };
 
-    if (!values.username.trim()) {
-      next.username = "Gumawa ng username.";
-    } else if (values.username.trim().length < 3) {
-      next.username = "Gumamit ng hindi bababa sa 3 letra.";
-    }
-
-    if (!values.password) {
-      next.password = "Gumawa ng password.";
-    } else if (values.password.length < 6) {
-      next.password = "Dapat may 6 na letra o higit pa ang password.";
-    }
-
-    if (!values.displayName.trim()) {
-      next.displayName = isTeacher
-        ? "Ilagay ang pangalan ng guro."
-        : "Ilagay ang palayaw mo sa HASA.";
-    }
-
-    if (!isTeacher && !values.classCode.trim()) {
-      next.classCode = "Ilagay ang kodigo ng klase mula sa iyong guro.";
-    }
-
-    return next;
-  }
-
-  function handleSubmit(event) {
+  const onSubmit = async (event) => {
     event.preventDefault();
-    const nextErrors = validate();
-    setErrors(nextErrors);
-    setSubmitted(false);
+    setError("");
+    const activeForm = role === "student" ? studentForm : teacherForm;
+    const validationError = validate(activeForm);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+    setPending(true);
+    try {
+      if (role === "student") {
+        await registerStudent({
+          displayName: studentForm.displayName,
+          username: studentForm.username,
+          password: studentForm.password,
+          classCode: studentForm.classCode,
+          readingLevel: studentForm.readingLevel,
+        });
+        navigate("/student/dashboard", { replace: true });
+      } else {
+        await registerTeacher({
+          displayName: teacherForm.displayName,
+          username: teacherForm.username,
+          password: teacherForm.password,
+          className: teacherForm.className,
+          schoolCode: teacherForm.schoolCode,
+        });
+        navigate("/teacher/dashboard", { replace: true });
+      }
+    } catch (requestError) {
+      setError(errorMessage(requestError));
+    } finally {
+      setPending(false);
+    }
+  };
 
-    if (Object.keys(nextErrors).length > 0) return;
-    setSubmitted(true);
-  }
+  const form = role === "student" ? studentForm : teacherForm;
+  const updateForm = (key, value) => {
+    if (role === "student") setStudentForm((current) => ({ ...current, [key]: value }));
+    else setTeacherForm((current) => ({ ...current, [key]: value }));
+  };
 
   return (
-    <AuthShell>
-      <div className="flex min-h-screen flex-col bg-canvas lg:flex-row">
-        {/* Kaliwa: plum panel na may hugis-bilog na dekorasyon */}
-        <section className="relative hidden flex-col overflow-hidden bg-plum-800 px-8 py-14 lg:flex lg:w-[54.6%] lg:px-20 lg:py-24 2xl:px-24">
-          <span
-            className="pointer-events-none absolute -left-24 -top-28 h-[340px] w-[360px] rounded-full bg-lav-400"
-            aria-hidden="true"
-          />
-          <span
-            className="pointer-events-none absolute -right-24 -top-40 h-[380px] w-[380px] rounded-full bg-canvas"
-            aria-hidden="true"
-          />
-          <span
-            className="pointer-events-none absolute -bottom-40 -right-16 h-[400px] w-[420px] rounded-full bg-lav-400"
-            aria-hidden="true"
-          />
+    <>
+      <Seo
+        title="Gumawa ng account"
+        description="Magrehistro bilang mag-aaral o guro sa HASA. Kailangan ng mag-aaral ang kodigo ng klase mula sa guro."
+        noindex
+        path="/register"
+      />
+      <div className="min-h-screen bg-cream-50">
+        <header className="border-b border-plum-100 bg-cream-50/90">
+          <div className="mx-auto flex h-18 w-full max-w-5xl items-center px-4 py-3 sm:px-6">
+            <Logo />
+            <Link to="/" className="ml-auto inline-flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-semibold text-muted hover:text-ink">
+              <ArrowLeft className="size-4" aria-hidden="true" /> Bumalik sa simula
+            </Link>
+          </div>
+        </header>
 
-          <div className="relative mt-auto">
-            <h1 className="font-sans text-[40px] font-bold leading-[1.18] tracking-tight text-white 2xl:text-[55px]">
-              HASA: TARA, MATUTO AT MAHASA!
-            </h1>
-            <p className="mt-4 max-w-[590px] text-[17px] leading-snug text-white 2xl:text-[20px]">
-              Sumali sa HASA at matuto ng Araling Panlipunan sa mas madali at
-              masayang paraan
+        <main className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
+          <div className="text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-accent-strong">Simula ng pag-aaral</p>
+            <h1 className="mt-2 text-3xl font-bold tracking-tight text-ink sm:text-4xl">Gumawa ng account sa HASA</h1>
+            <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted">
+              Pumili kung mag-aaral ka o guro. Ang impormasyong ilalagay mo ay makikita lamang
+              ng iyo at ng guro ng iyong klase.
             </p>
-
-            <ul className="mt-11 max-w-[540px] space-y-8">
-              {FEATURES.map(({ icon, text }) => (
-                <li key={text} className="flex items-center gap-5">
-                  <span
-                    className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[20px] bg-black/60"
-                    aria-hidden="true"
-                  >
-                    <img src={icon} alt="" className="h-12 w-[52px] object-contain" />
-                  </span>
-                  <p className="text-[18px] font-semibold text-white 2xl:text-[22px]">
-                    {text}
-                  </p>
-                </li>
-              ))}
-            </ul>
           </div>
 
-          <p className="relative mt-16 text-[14px] font-medium text-white/60 lg:mt-auto">
-            © 2026 HASA — Grade 8 Araling Panlipunan
-          </p>
-        </section>
-
-        {/* Kanan: form ng pagpaparehistro */}
-        <section className="relative flex flex-1 flex-col items-center overflow-hidden px-6 py-14 lg:px-16 lg:py-16">
-          <img src={logoHasa} alt="HASA logo" className="w-[280px] 2xl:w-[340px]" />
-
-          <div className="w-full max-w-[560px]">
-            <h1 className="font-display mt-4 text-[30px] font-extrabold text-ink 2xl:text-[36px]">
-              Create an Account
-            </h1>
-            <p className="mt-1 text-[17px] text-ink 2xl:text-[20px]">
-              Huwag gumamit ng totoong password sa prototype.
-            </p>
-
-            {/* Role tabs */}
-            <div
-              role="tablist"
-              aria-label="Uri ng account"
-              className="mt-10 grid grid-cols-2 gap-6"
+          <div className="mt-7 grid gap-3 sm:grid-cols-2" role="tablist" aria-label="Uri ng account">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={role === "student"}
+              onClick={() => switchRole("student")}
+              className={cx(
+                "flex items-center gap-3 rounded-2xl border p-4 text-left transition-colors",
+                role === "student" ? "border-accent bg-accent-soft" : "border-plum-200 bg-white hover:border-plum-400",
+              )}
             >
-              {[
-                { id: "student", label: "Student", icon: roleStudent },
-                { id: "teacher", label: "Teacher", icon: roleTeacher },
-              ].map(({ id, label, icon }) => (
-                <button
-                  key={id}
-                  type="button"
-                  role="tab"
-                  id={`register-tab-${id}`}
-                  aria-selected={role === id}
-                  aria-controls="register-panel"
-                  tabIndex={role === id ? 0 : -1}
-                  onClick={() => selectRole(id)}
-                  className={cx(
-                    "flex items-center justify-center gap-3 rounded-[11px] border-2 text-[18px] font-medium transition-colors",
-                    role === id
-                      ? "border-plum-800 bg-canvas text-accent-deep shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
-                      : "border-transparent text-ink/70 hover:text-ink",
-                  )}
-                >
-                  <img src={icon} alt="" className="h-8 w-8" aria-hidden="true" />
-                  {label}
-                </button>
-              ))}
-            </div>
-
-            <form
-              id="register-panel"
-              role="tabpanel"
-              aria-labelledby={`register-tab-${role}`}
-              className="mt-10 space-y-5"
-              onSubmit={handleSubmit}
-              noValidate
+              <span className={cx("grid size-10 place-items-center rounded-xl", role === "student" ? "bg-accent text-white" : "bg-plum-100 text-plum-700")}>
+                <UserRound className="size-5" aria-hidden="true" />
+              </span>
+              <span>
+                <span className="block text-sm font-bold text-ink">Mag-aaral</span>
+                <span className="block text-xs text-muted">May kodigo ng klase</span>
+              </span>
+              {role === "student" ? <CheckCircle2 className="ml-auto size-5 text-accent" aria-hidden="true" /> : null}
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={role === "teacher"}
+              onClick={() => switchRole("teacher")}
+              className={cx(
+                "flex items-center gap-3 rounded-2xl border p-4 text-left transition-colors",
+                role === "teacher" ? "border-accent bg-accent-soft" : "border-plum-200 bg-white hover:border-plum-400",
+              )}
             >
-              <div>
-                <label
-                  htmlFor="reg-username"
-                  className="block text-[18px] font-medium text-ink"
-                >
-                  Username
-                </label>
-                <div className="relative mt-2">
-                  <img
-                    src={inputUser}
-                    alt=""
-                    className="pointer-events-none absolute left-4 top-1/2 h-7 w-7 -translate-y-1/2"
-                    aria-hidden="true"
+              <span className={cx("grid size-10 place-items-center rounded-xl", role === "teacher" ? "bg-accent text-white" : "bg-plum-100 text-plum-700")}>
+                <GraduationCap className="size-5" aria-hidden="true" />
+              </span>
+              <span>
+                <span className="block text-sm font-bold text-ink">Guro</span>
+                <span className="block text-xs text-muted">Gagawa ng sariling klase</span>
+              </span>
+              {role === "teacher" ? <CheckCircle2 className="ml-auto size-5 text-accent" aria-hidden="true" /> : null}
+            </button>
+          </div>
+
+          <section className="mt-5 rounded-2xl border border-plum-100 bg-white p-5 sm:p-7">
+            {role === "teacher" && !teacherEnabled ? (
+              <Alert tone="warning" title="Sarado ang pagpaparehistro ng guro" className="mb-5">
+                Hilingin sa administrador ng paaralan na gumawa ng account ng guro. Maaari pa ring
+                mag-log in ang mga may existing na account.
+              </Alert>
+            ) : null}
+            {error ? <Alert tone="danger" title="Hindi natuloy ang pagrehistro" className="mb-5">{error}</Alert> : null}
+
+            <form onSubmit={onSubmit} className="space-y-4" noValidate>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label={role === "teacher" ? "Buong pangalan ng guro" : "Palayaw o pangalan"} htmlFor="displayName">
+                  <Input
+                    id="displayName"
+                    autoComplete="name"
+                    placeholder={role === "teacher" ? "hal. Gng. Maria Santos" : "hal. Ana"}
+                    value={form.displayName}
+                    onChange={(event) => updateForm("displayName", event.target.value)}
+                    required
                   />
-                  <input
-                    id="reg-username"
-                    name="username"
-                    type="text"
+                </Field>
+                <Field label="Username" htmlFor="username" hint="3–30 letra, numero, tuldok, gitling, o underscore.">
+                  <Input
+                    id="username"
                     autoComplete="username"
-                    value={values.username}
-                    onChange={(event) => update("username", event.target.value)}
-                    aria-invalid={errors.username ? "true" : undefined}
-                    placeholder={isTeacher ? "teacher-cruz" : "estudyante1"}
-                    className={inputClasses}
+                    autoCapitalize="none"
+                    spellCheck={false}
+                    placeholder="hal. ana.reyes"
+                    value={form.username}
+                    onChange={(event) => updateForm("username", event.target.value)}
+                    required
                   />
-                </div>
-                {errors.username ? (
-                  <p role="alert" className="mt-1.5 text-[12px] font-semibold text-danger-deep">
-                    {errors.username}
-                  </p>
-                ) : null}
+                </Field>
               </div>
 
-              <div>
-                <label
-                  htmlFor="reg-password"
-                  className="block text-[18px] font-medium text-ink"
-                >
-                  Password
-                </label>
-                <div className="relative mt-2">
-                  <img
-                    src={inputLock}
-                    alt=""
-                    className="pointer-events-none absolute left-4 top-1/2 h-7 w-7 -translate-y-1/2"
-                    aria-hidden="true"
-                  />
-                  <input
-                    id="reg-password"
-                    name="password"
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Password" htmlFor="password" hint="Hindi bababa sa 8 karakter.">
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete="new-password"
+                      className="pr-12"
+                      value={form.password}
+                      onChange={(event) => updateForm("password", event.target.value)}
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((current) => !current)}
+                      className="absolute inset-y-0 right-0 grid w-11 place-items-center text-muted hover:text-ink"
+                      aria-label={showPassword ? "Itago ang password" : "Ipakita ang password"}
+                    >
+                      {showPassword ? <EyeOff className="size-4.5" aria-hidden="true" /> : <Eye className="size-4.5" aria-hidden="true" />}
+                    </button>
+                  </div>
+                </Field>
+                <Field label="Kumpirmahin ang password" htmlFor="confirmPassword">
+                  <Input
+                    id="confirmPassword"
                     type={showPassword ? "text" : "password"}
                     autoComplete="new-password"
-                    value={values.password}
-                    onChange={(event) => update("password", event.target.value)}
-                    aria-invalid={errors.password ? "true" : undefined}
-                    placeholder="••••••••"
-                    className={cx(inputClasses, "pr-16")}
+                    value={form.confirmPassword}
+                    onChange={(event) => updateForm("confirmPassword", event.target.value)}
+                    required
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((current) => !current)}
-                    aria-label={
-                      showPassword ? "Itago ang password" : "Ipakita ang password"
-                    }
-                    aria-pressed={showPassword}
-                    className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center gap-1 text-[15px] font-medium text-accent hover:text-accent-strong"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" aria-hidden="true" />
-                    ) : (
-                      <Eye className="h-4 w-4" aria-hidden="true" />
-                    )}
-                    Show
-                  </button>
-                </div>
-                {errors.password ? (
-                  <p role="alert" className="mt-1.5 text-[12px] font-semibold text-danger-deep">
-                    {errors.password}
-                  </p>
-                ) : null}
+                </Field>
               </div>
 
-              <div>
-                <label
-                  htmlFor="reg-display-name"
-                  className="block text-[18px] font-medium text-ink"
-                >
-                  {isTeacher ? "Pangalan ng guro" : "Palayaw sa HASA"}
-                </label>
-                <div className="relative mt-2">
-                  <img
-                    src={inputUser}
-                    alt=""
-                    className="pointer-events-none absolute left-4 top-1/2 h-7 w-7 -translate-y-1/2"
-                    aria-hidden="true"
-                  />
-                  <input
-                    id="reg-display-name"
-                    name="displayName"
-                    type="text"
-                    value={values.displayName}
-                    onChange={(event) => update("displayName", event.target.value)}
-                    aria-invalid={errors.displayName ? "true" : undefined}
-                    placeholder={isTeacher ? "Guro Cruz" : demoStudent.displayName}
-                    className={inputClasses}
-                  />
-                </div>
-                {errors.displayName ? (
-                  <p role="alert" className="mt-1.5 text-[12px] font-semibold text-danger-deep">
-                    {errors.displayName}
-                  </p>
-                ) : null}
-              </div>
-
-              {isTeacher ? (
-                <div
-                  id="reg-teacher-help"
-                  className="rounded-[15px] border border-line bg-white/60 px-4 py-3 text-[13px] leading-relaxed text-muted"
-                >
-                  Makakagawa ka ng klase at kodigo ng klase kapag aktibo na ang
-                  backend at pagsusuri ng pahintulot.
-                </div>
-              ) : (
-                <div>
-                  <label
-                    htmlFor="reg-class-code"
-                    className="block text-[18px] font-medium text-ink"
-                  >
-                    Kodigo ng Klase
-                  </label>
-                  <div className="relative mt-2">
-                    <img
-                      src={inputLock}
-                      alt=""
-                      className="pointer-events-none absolute left-4 top-1/2 h-7 w-7 -translate-y-1/2"
-                      aria-hidden="true"
+              {role === "student" ? (
+                <>
+                  <Field label="Kodigo ng klase" htmlFor="classCode" hint="Hingin ito sa iyong guro. Halimbawa: HASA-ABC123.">
+                    <Input
+                      id="classCode"
+                      autoCapitalize="characters"
+                      spellCheck={false}
+                      placeholder="HASA-XXXXXX"
+                      value={studentForm.classCode}
+                      onChange={(event) => updateForm("classCode", event.target.value.toUpperCase())}
+                      required
                     />
-                    <input
-                      id="reg-class-code"
-                      name="classCode"
-                      type="text"
-                      value={values.classCode}
-                      onChange={(event) => update("classCode", event.target.value)}
-                      aria-invalid={errors.classCode ? "true" : undefined}
-                      placeholder="HASA-8A"
-                      className={cx(inputClasses, "uppercase placeholder:normal-case")}
-                    />
-                  </div>
-                  {errors.classCode ? (
-                    <p role="alert" className="mt-1.5 text-[12px] font-semibold text-danger-deep">
-                      {errors.classCode}
+                  </Field>
+                  <fieldset>
+                    <legend className="mb-2 text-sm font-semibold text-ink">Antas ng pagbasa</legend>
+                    <div className="grid gap-2 sm:grid-cols-3">
+                      {READING_LEVELS.map((level) => (
+                        <label
+                          key={level.value}
+                          className={cx(
+                            "cursor-pointer rounded-xl border p-3 transition-colors",
+                            studentForm.readingLevel === level.value
+                              ? "border-accent bg-accent-soft"
+                              : "border-plum-200 hover:border-plum-400",
+                          )}
+                        >
+                          <input
+                            type="radio"
+                            name="readingLevel"
+                            value={level.value}
+                            checked={studentForm.readingLevel === level.value}
+                            onChange={(event) => updateForm("readingLevel", event.target.value)}
+                            className="sr-only"
+                          />
+                          <span className="block text-xs font-bold text-ink">{level.label}</span>
+                          <span className="mt-1 block text-[11px] leading-relaxed text-muted">{level.description}</span>
+                        </label>
+                      ))}
+                    </div>
+                    <p className="mt-2 text-xs text-muted">
+                      Ito ay pinipili, hindi sinusukat. Maaari mo itong palitan sa profile.
                     </p>
-                  ) : null}
+                  </fieldset>
+                </>
+              ) : (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field label="Pangalan ng klase" htmlFor="className" hint="Makikita ito ng mga mag-aaral.">
+                    <Input
+                      id="className"
+                      placeholder="hal. Baitang 8 – Rizal"
+                      value={teacherForm.className}
+                      onChange={(event) => updateForm("className", event.target.value)}
+                      required
+                    />
+                  </Field>
+                  <Field label="Kodigo ng paaralan para sa guro" htmlFor="schoolCode" hint="Ibinibigay ng administrador ng paaralan.">
+                    <Input
+                      id="schoolCode"
+                      type="password"
+                      autoComplete="off"
+                      value={teacherForm.schoolCode}
+                      onChange={(event) => updateForm("schoolCode", event.target.value)}
+                      required
+                    />
+                  </Field>
                 </div>
               )}
 
-              <button
-                type="submit"
-                className="mt-6 flex h-[46px] w-full items-center justify-center rounded-[20px] bg-plum-800 text-[16px] font-bold text-canvas shadow-[0_4px_4px_rgba(0,0,0,0.25)] transition-colors hover:bg-plum-900"
-              >
-                Create an Account
-              </button>
-
-              <div className="flex items-center gap-4 pt-1" aria-hidden="true">
-                <span className="h-px flex-1 bg-[#bdbdbd]" />
-                <span className="text-[16px] text-ink">or</span>
-                <span className="h-px flex-1 bg-[#bdbdbd]" />
-              </div>
-
-              <Link
-                to="/login"
-                className="mx-auto flex h-[38px] w-[220px] items-center justify-center rounded-[15px] bg-lav-400 text-[15px] font-medium text-canvas transition-colors hover:bg-[#7e7eb0]"
-              >
-                Mag-log in
-              </Link>
-
-              <p className="pt-2 text-[11px] leading-relaxed text-muted">
-                Prototype pa lamang: hindi nai-save ang account at wala pang
-                backend, database, o secure na password hashing.
-              </p>
-
-              <div aria-live="polite">
-                {submitted ? (
-                  <Alert
-                    variant="warning"
-                    title="Hindi pa aktibo ang pagpaparehistro"
-                    className="mt-1"
-                  >
-                    Naka-validate ang form, pero walang account na nagawa at
-                    walang datos na naipadala sa server.
-                    {isTeacher
-                      ? " Para sa prototype, tingnan ang Tanawan ng Guro."
-                      : ""}
-                  </Alert>
-                ) : null}
-              </div>
+              <Button type="submit" size="lg" className="w-full" disabled={pending || (role === "teacher" && !teacherEnabled)}>
+                {pending ? "Ginagawa ang account…" : role === "student" ? "Gumawa ng account ng mag-aaral" : "Gumawa ng account ng guro"}
+                {!pending ? <ArrowRight className="size-4.5" aria-hidden="true" /> : null}
+              </Button>
             </form>
-          </div>
-        </section>
+
+            <p className="mt-4 text-center text-sm text-muted">
+              May account na?{" "}
+              <Link to="/login" className="font-semibold text-accent-strong hover:text-accent-deep">Mag-log in</Link>
+            </p>
+          </section>
+        </main>
       </div>
-    </AuthShell>
+    </>
   );
 }

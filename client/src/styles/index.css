@@ -1,93 +1,52 @@
 @import "tailwindcss";
-
 @import "./fonts.css";
 
-/*
- * ANG KULAY AT TIPONG ITO AY GALING SA FIGMA FILE NG PROYEKTO.
- * Reference: HASA — Figma (RnfdX0GYsOwcpp7b30d6bn)
- *   cream canvas #fff0d9 · sidebar #3e3e75 · muted lavender #8b8bba
- *   violet accent #8a38f5 · gold #f4c95d
- */
 @theme {
-  /* Mga font mula sa Figma */
-  --font-sans: "Inter", "Roboto", system-ui, sans-serif;
-  --font-display: "Playfair Display", Georgia, serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  /* Likod at punchputo */
-  --color-canvas: #fff0d9;
-  --color-plum-500: #6d6a9d;
-  --color-plum-600: #55555a;
-  --color-plum-700: #4c427c;
+  --color-canvas: #fff7ec;
+  --color-cream-50: #fffdf9;
+  --color-cream-100: #fff7ec;
+  --color-cream-200: #f7ead8;
+  --color-cream-300: #efdcc2;
+
+  --color-plum-50: #f6f3fa;
+  --color-plum-100: #ebe5f4;
+  --color-plum-200: #d9cfe9;
+  --color-plum-300: #bcaed6;
+  --color-plum-400: #9684b8;
+  --color-plum-500: #746294;
+  --color-plum-600: #5a497c;
+  --color-plum-700: #493b68;
   --color-plum-800: #3e3e75;
-  --color-plum-900: #353460;
-  --color-plum-950: #291f47;
-  --color-plum-1000: #2e2e53;
+  --color-plum-900: #2e2857;
+  --color-plum-950: #1e1936;
 
-  --color-lav-200: #d7d1eb;
-  --color-lav-300: #aaa9d5;
-  --color-lav-400: #8b8bba;
-  --color-lav-500: #9e9eba;
-
-  --color-ink: #1e1e1e;
-  --color-muted: #555555;
-  --color-muted-faint: #74747d;
   --color-accent: #8a38f5;
   --color-accent-strong: #6d2cc7;
   --color-accent-deep: #5106b3;
+  --color-accent-soft: #f1e8ff;
 
-  --color-success-strong: #0e4007;
-  --color-success: #2b8320;
   --color-gold: #f4c95d;
-  --color-gold-strong: #f0b511;
-  --color-gold-soft: #fbe49d;
+  --color-gold-soft: #fdf3d7;
+  --color-gold-strong: #e8ae1b;
   --color-brown: #503d0a;
+
+  --color-success: #2b8320;
+  --color-success-soft: #eaf6e6;
+  --color-success-strong: #0e4007;
   --color-danger: #d82e3d;
+  --color-danger-soft: #fdebed;
   --color-danger-deep: #832020;
-  --color-danger-dark: #721b1b;
-  --color-leaf: #6a974a;
 
-  --color-line: #bdbdbd;
-  --color-line-dark: #717171;
-  --color-placeholder: #d9d9d9;
-  --color-card-cool: #dcd7eb;
-  --color-chip-cool: #cccceb;
-  --color-terracotta: #bc7c63;
+  --color-sky: #3e7cb1;
+  --color-sky-soft: #eaf3fb;
+  --color-sky-dark: #235274;
 
-  /*
-   * Mga alias ng lumang palette para sa mga pahinang hindi pa nailalipat
-   * sa bagong design system. Kapag na-migrate na ang lahat, maaari nang
-   * tanggalin ang mga ito.
-   */
-  --color-brand-50: #f5f2fc;
-  --color-brand-100: #e9e2f9;
-  --color-brand-200: #d7d1eb;
-  --color-brand-300: #aaa9d5;
-  --color-brand-400: #8b8bba;
-  --color-brand-500: #6d6a9d;
-  --color-brand-600: #8a38f5;
-  --color-brand-700: #6d2cc7;
-  --color-brand-800: #5106b3;
-  --color-brand-900: #3e3e75;
-
-  --color-cream-50: #fff8ee;
-  --color-cream-100: #fdf1e0;
-  --color-cream-200: #f4e3cc;
-  --color-cream-300: #f6e7d2;
-
-  --color-gold-100: #fbe49d;
-  --color-gold-200: #f3d974;
-  --color-gold-300: #efc954;
-  --color-gold-500: #f0b511;
-  --color-gold-700: #503d0a;
-
-  --radius-card: 25px;
-  --radius-panel: 30px;
-  --radius-nav: 15px;
-  --radius-hero: 20px;
-
-  --shadow-card: 0 4px 4px rgb(0 0 0 / 0.25);
-  --shadow-soft: 0 4px 4px rgb(0 0 0 / 0.3);
+  --color-ink: #1e1b2e;
+  --color-muted: #6b6880;
+  --color-line: #ded8e8;
 }
 
 @layer base {
@@ -98,33 +57,87 @@
   body {
     background-color: var(--color-canvas);
     color: var(--color-ink);
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
   ::selection {
-    background-color: rgb(138 56 245 / 0.25);
+    background-color: rgb(138 56 245 / 0.2);
     color: var(--color-ink);
   }
 
-  /* Malinaw na focus ring para sa keyboard navigation. */
   :focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
   }
 }
 
-@layer utilities {
-  /* Pinapantay ang taas ng sticky sidebar at ng scrollable na nilalaman. */
-  .has-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: rgb(255 240 217 / 0.35) transparent;
+@layer components {
+  .reading-text p {
+    margin-bottom: 1.1rem;
+    line-height: 1.85;
+    color: #34304a;
   }
 
-  /* Sakop para sa mga aralin na page header (inspirasyon ng Figma). */
-  .lessons-banner {
-    background-position: right center;
-    background-repeat: no-repeat;
-    background-size: cover;
+  .reading-text p:last-child {
+    margin-bottom: 0;
+  }
+
+  .reading-text strong {
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+}
+
+@layer utilities {
+  .hide-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .animate-rise {
+    animation: rise 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  .animate-rise-late {
+    animation: rise 0.55s 0.12s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }

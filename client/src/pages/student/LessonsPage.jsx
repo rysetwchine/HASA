@@ -1,356 +1,144 @@
 import { useMemo, useState } from "react";
-import DemoNotice from "../../components/ui/DemoNotice.jsx";
-import Alert from "../../components/ui/Alert.jsx";
+import { Link } from "react-router";
+import { ArrowRight, BookOpen, CheckCircle2, Clock3, Search, SlidersHorizontal, Star } from "lucide-react";
+import Seo from "../../components/Seo.jsx";
+import { Alert, Card, Chip, EmptyState, Input, Loading, PageHeader, ProgressBar, buttonClass } from "../../components/ui.jsx";
+import { errorMessage } from "../../lib/api.js";
+import { DIFFICULTY_LABELS } from "../../lib/format.js";
+import { useApi } from "../../lib/useApi.js";
 import { cx } from "../../utils/cx.js";
-import { demoFigmaLessons } from "../../data/demoData.js";
-
-import bannerLessons from "../../assets/images/lessons/banner-lessons.png";
-import searchIcon from "../../assets/images/lessons/search.png";
-import gridIcon from "../../assets/images/lessons/view-grid.png";
-import listIcon from "../../assets/images/lessons/view-list.png";
-import tipIcon from "../../assets/images/lessons/tip-icon.png";
-import booksIcon from "../../assets/images/lessons/icon-header-lessons.png";
-import diffEasy from "../../assets/images/lessons/diff-easy.png";
-import diffMedium from "../../assets/images/lessons/diff-medium.png";
-import diffHard from "../../assets/images/lessons/diff-hard.png";
-import actionReview from "../../assets/images/lessons/action-review.png";
-
-import thumb1 from "../../assets/images/lessons/thumb-1.png";
-import thumb2 from "../../assets/images/lessons/thumb-2.png";
-import thumb3 from "../../assets/images/lessons/thumb-3.png";
-import thumb4 from "../../assets/images/lessons/thumb-4.png";
-import thumb5 from "../../assets/images/lessons/thumb-5.png";
-import thumb6 from "../../assets/images/lessons/thumb-6.png";
-
-const THUMBS = {
-  "thumb-1": thumb1,
-  "thumb-2": thumb2,
-  "thumb-3": thumb3,
-  "thumb-4": thumb4,
-  "thumb-5": thumb5,
-  "thumb-6": thumb6,
-};
 
 const FILTERS = [
-  { id: "all", label: "All units" },
-  { id: "easy", label: "Easy" },
-  { id: "medium", label: "Medium" },
-  { id: "hard", label: "Hard" },
-  { id: "completed", label: "Completed" },
+  { value: "all", label: "Lahat" },
+  { value: "open", label: "Hindi pa tapos" },
+  { value: "done", label: "Tapos na" },
 ];
 
-/**
- * Mga kulay ng status/chip mula sa Figma frame "Lessons":
- * completed = berde (#2b8320), hindi pa = pula (#832020),
- * sinisimulan pa lamang = dilaw (#f0b511).
- */
-const STATUS_STYLES = {
-  completed: {
-    badge: "bg-[#2b8320]/70 text-[#0e4007]",
-  },
-  "not-started": {
-    badge: "bg-canvas/60 border border-danger-deep text-danger-deep",
-  },
-  "in-progress": {
-    badge: "bg-gold-strong/70 text-brown",
-  },
-};
-
-const DIFFICULTY = {
-  easy: { icon: diffEasy, label: "text-[#2b8320]" },
-  medium: { icon: diffMedium, label: "text-gold-strong" },
-  hard: { icon: diffHard, label: "text-[#832020]" },
-};
-
-function LessonCard({ lesson }) {
-  const status = STATUS_STYLES[lesson.status] ?? STATUS_STYLES.completed;
-  const diff = DIFFICULTY[lesson.difficultyKey] ?? DIFFICULTY.easy;
-
-  return (
-    <article className="flex min-h-[308px] flex-col rounded-[25px] border border-line bg-canvas p-4 shadow-card">
-      <div className="relative">
-        <img
-          src={THUMBS[lesson.thumb]}
-          alt=""
-          className="h-[188px] w-full rounded-[15px] object-cover"
-          aria-hidden="true"
-        />
-        {/* Bilang ng aralin (kaliwa) */}
-        <span
-          className={cx(
-            "absolute left-3 top-3 flex h-[25px] min-w-[45px] items-center justify-center rounded-[10px] px-2 text-[14px] font-black leading-none",
-            lesson.status === "completed"
-              ? "bg-[#2b8320]/70 text-canvas"
-              : lesson.status === "in-progress"
-                ? "bg-gold-strong/70 text-canvas"
-                : "bg-danger-deep/60 text-canvas",
-          )}
-        >
-          {lesson.no}
-        </span>
-        {/* Estado (kanan) */}
-        <span
-          className={cx(
-            "absolute right-3 top-3 flex h-[20px] items-center justify-center rounded-[12px] px-2.5 text-[11px] font-black leading-none",
-            status.badge,
-          )}
-        >
-          {lesson.statusLabel}
-        </span>
-      </div>
-
-      <div className="mt-4 flex min-w-0 flex-1 flex-col">
-        <p className="text-[12px] font-medium text-muted">{lesson.label}</p>
-        <h3 className="mt-0.5 text-[15px] font-bold leading-snug text-ink">
-          {lesson.title}
-        </h3>
-        <div className="mt-auto flex items-center justify-between gap-2 pt-5">
-          <span className="flex items-center gap-1.5">
-            <img
-              src={diff.icon}
-              alt=""
-              className="h-[14px] w-[14px]"
-              aria-hidden="true"
-            />
-            <span className={cx("text-[13px] font-bold", diff.label)}>
-              {lesson.difficulty}
-            </span>
-          </span>
-
-          <button
-            type="button"
-            disabled
-            title="Wala pang lesson detail content sa prototype, kaya hindi pa mabubuksan ang aralin"
-            className={cx(
-              "flex h-[27px] cursor-not-allowed items-center gap-1.5 rounded-[10px] px-3 text-[11.5px] font-semibold",
-              lesson.action === "Review"
-                ? "border border-[#0e4007] bg-[#2b8320]/70 text-[#0e4007]"
-                : lesson.status === "in-progress"
-                  ? "border border-gold-strong bg-white text-brown"
-                  : "border border-danger-deep bg-canvas text-danger-deep",
-            )}
-          >
-            {lesson.action === "Review" ? (
-              <img
-                src={actionReview}
-                alt=""
-                className="h-[15px] w-[15px]"
-                aria-hidden="true"
-              />
-            ) : (
-              <span
-                className={cx(
-                  "inline-block h-0 w-0 border-y-[5px] border-l-[8px] border-y-transparent",
-                  lesson.action === "Start" ? "border-l-danger-deep" : "border-l-gold-strong",
-                )}
-                aria-hidden="true"
-              />
-            )}
-            {lesson.action}
-          </button>
-        </div>
-      </div>
-    </article>
-  );
-}
-
 export default function LessonsPage() {
+  const { data, error, loading } = useApi("/student/lessons");
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("all");
-  const [view, setView] = useState("grid");
 
   const lessons = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return demoFigmaLessons.filter((lesson) => {
-      if (q && !lesson.title.toLowerCase().includes(q)) return false;
-      if (filter === "all") return true;
-      if (filter === "completed") return lesson.status === "completed";
-      return lesson.difficultyKey === filter;
+    const all = data?.lessons || [];
+    return all.filter((lesson) => {
+      const matchesQuery = `${lesson.title} ${lesson.unit} ${lesson.description}`
+        .toLowerCase()
+        .includes(query.trim().toLowerCase());
+      const matchesFilter =
+        filter === "all" || (filter === "done" ? lesson.progress === "completed" : lesson.progress !== "completed");
+      return matchesQuery && matchesFilter;
     });
-  }, [query, filter]);
+  }, [data, query, filter]);
+
+  if (loading) return <Loading label="Nilinog ang mga aralin…" />;
+  if (error) return <Alert tone="danger" title="Hindi mabuksan ang mga aralin">{errorMessage(error)}</Alert>;
+
+  const total = data?.lessons.length || 0;
+  const done = data?.lessons.filter((lesson) => lesson.progress === "completed").length || 0;
 
   return (
-    <div className="space-y-6">
-      <h1 className="sr-only">Araling Panlipunan</h1>
+    <>
+      <Seo
+        title="Mga Aralin"
+        description="Basahin ang mga aralin sa Araling Panlipunan 8 sa antas ng pagbasang akma sa iyo."
+        noindex
+        path="/student/aralin"
+      />
+      <PageHeader
+        eyebrow="Araling Panlipunan 8"
+        title="Mga Aralin"
+        description="Tatlong antas ng teksto sa bawat aralin. Piliin ang pinakamalinaw para sa iyo at magpatuloy sa sariling bilis."
+        actions={<Chip tone="gold"><CheckCircle2 className="size-3.5" aria-hidden="true" /> {done}/{total} natapos</Chip>}
+      />
 
-      {/* Banner na may nakaukit na pamagat mula sa Figma — huwag magdagdag
-          ng teksto sa ibabaw para walang dobleng teksto. */}
-      <div className="-mx-4 -mt-5 sm:-mx-6 xl:-mx-12 xl:-mt-7 2xl:-mx-14">
-        <img
-          src={bannerLessons}
-          alt="Araling Panlipunan — Hi, Siri! Continue your lesson and learn something new."
-          className="w-full object-cover"
-        />
-      </div>
-
-      <Alert variant="info" title="Hindi pa mabubuksan ang mga aralin">
-        Gumagana ang search, filters, at grid/list view. Wala pang aktwal na
-        lesson detail content sa prototype, kaya nananatiling disabled ang
-        Start, Review, at Continue. Hindi ito dinadaan sa pekeng alert o
-        gawa-gawang aralin.
-      </Alert>
-
-      {/* Bar ng mga filter */}
-      <div className="flex flex-col gap-3 rounded-[15px] border border-line-dark bg-lav-500/70 p-3 sm:flex-row sm:items-center lg:gap-5">
-        {/* Hanapin */}
-        <label className="relative flex min-w-0 flex-1 items-center">
-          <img
-            src={searchIcon}
-            alt=""
-            className="pointer-events-none absolute left-3.5 h-[20px] w-[20px]"
-            aria-hidden="true"
-          />
-          <span className="sr-only">Search lessons</span>
-          <input
+      <Card className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative flex-1 sm:max-w-sm">
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden="true" />
+          <Input
             type="search"
+            placeholder="Maghanap ng aralin o yunit…"
+            className="pl-10"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search lessons.."
-            className="h-9 w-full rounded-[11px] border-0 bg-lav-500 pl-11 pr-4 text-[13px] font-medium text-ink placeholder:text-ink/70 focus:outline-none focus:ring-2 focus:ring-plum-800/40"
+            aria-label="Maghanap ng aralin"
           />
-        </label>
-
-        <span
-          className="hidden w-px self-stretch bg-[#000000]/30 lg:block"
-          aria-hidden="true"
-        />
-
-        <div
-          role="group"
-          aria-label="I-filter ang mga aralin"
-          className="flex flex-wrap items-center gap-1"
-        >
-          {FILTERS.map(({ id, label }) => (
+        </div>
+        <div className="flex items-center gap-1.5 overflow-x-auto hide-scrollbar" role="group" aria-label="Salain ang mga aralin">
+          <SlidersHorizontal className="mr-1 size-4 shrink-0 text-muted" aria-hidden="true" />
+          {FILTERS.map((item) => (
             <button
-              key={id}
+              key={item.value}
               type="button"
-              aria-pressed={filter === id}
-              onClick={() => setFilter(id)}
+              onClick={() => setFilter(item.value)}
               className={cx(
-                "rounded-[15px] px-3.5 py-1.5 text-[13px] font-semibold transition-colors",
-                filter === id
-                  ? "bg-plum-800 text-canvas"
-                  : "text-ink/75 hover:text-ink",
+                "whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition-colors",
+                filter === item.value ? "bg-plum-800 text-white" : "bg-plum-50 text-plum-700 hover:bg-plum-100",
               )}
+              aria-pressed={filter === item.value}
             >
-              {label}
+              {item.label}
             </button>
           ))}
         </div>
-      </div>
+      </Card>
 
-      {/* Ulo ng listahan + view toggle */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-end gap-3">
-          <img
-            src={booksIcon}
-            alt=""
-            className="mb-1 h-[41px] w-[41px]"
-            aria-hidden="true"
-          />
-          <h2 className="border-b-4 border-plum-800 pb-1 text-[25px] font-semibold text-ink/85">
-            All Lessons
-          </h2>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            aria-pressed={view === "grid"}
-            onClick={() => setView("grid")}
-            className={cx(
-              "flex items-center gap-2 rounded-[20px] px-4 py-2 text-[15px] font-medium transition-colors",
-              view === "grid"
-                ? "bg-plum-800 text-canvas"
-                : "text-[#a2a2a2] hover:text-ink",
-            )}
-          >
-            <img
-              src={gridIcon}
-              alt=""
-              className="h-[19px] w-[19px]"
-              aria-hidden="true"
-            />
-            Grid View
-          </button>
-          <button
-            type="button"
-            aria-pressed={view === "list"}
-            onClick={() => setView("list")}
-            className={cx(
-              "flex items-center gap-2 rounded-[20px] px-4 py-2 text-[15px] font-medium transition-colors",
-              view === "list"
-                ? "bg-plum-800 text-canvas"
-                : "text-[#a2a2a2] hover:text-ink",
-            )}
-          >
-            <img
-              src={listIcon}
-              alt=""
-              className="h-[21px] w-[21px]"
-              aria-hidden="true"
-            />
-            List View
-          </button>
-        </div>
-      </div>
-
-      {/* Grid ng mga aralin */}
-      {lessons.length > 0 ? (
-        <ul
-          className={cx(
-            "grid gap-6",
-            view === "grid"
-              ? "sm:grid-cols-2 lg:grid-cols-3"
-              : "sm:grid-cols-1 lg:grid-cols-2",
-          )}
-        >
-          {lessons.map((lesson) => (
-            <li key={lesson.id}>
-              <LessonCard lesson={lesson} />
-            </li>
-          ))}
-        </ul>
+      {lessons.length === 0 ? (
+        <EmptyState
+          icon={BookOpen}
+          title="Walang nahanap na aralin"
+          description={query ? "Subukan ang ibang salita o alisin ang filter." : "Wala pang aralin sa iyong klase."}
+        />
       ) : (
-        <div className="rounded-[20px] border border-line bg-white/50 px-5 py-8 text-center">
-          <p className="text-[15px] text-muted">
-            Walang aralin na tugma sa hinanap o filter. Subukan ang ibang salita.
-          </p>
-          <button
-            type="button"
-            onClick={() => {
-              setQuery("");
-              setFilter("all");
-            }}
-            className="mt-3 rounded-[12px] bg-plum-800 px-4 py-2 text-[13px] font-semibold text-canvas hover:bg-plum-900"
-          >
-            I-reset ang mga filter
-          </button>
+        <div className="grid gap-4 md:grid-cols-2">
+          {lessons.map((lesson, index) => (
+            <Card key={lesson.id} className="group flex flex-col p-0">
+              <div className={cx("relative h-28 overflow-hidden rounded-t-2xl", ["bg-plum-800", "bg-accent-strong", "bg-plum-700", "bg-sky-dark"][index % 4])}>
+                <div className="absolute -right-8 -top-10 size-32 rounded-full bg-white/10" aria-hidden="true" />
+                <div className="absolute -bottom-12 left-10 size-28 rounded-full bg-gold/20" aria-hidden="true" />
+                <div className="relative flex h-full items-end justify-between gap-3 p-4">
+                  <span className="rounded-full bg-white/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+                    {lesson.unit}
+                  </span>
+                  {lesson.progress === "completed" ? (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-success px-2.5 py-1 text-[10px] font-bold text-white">
+                      <CheckCircle2 className="size-3" aria-hidden="true" /> Tapos na
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-gold px-2.5 py-1 text-[10px] font-bold text-brown">
+                      <Star className="size-3" aria-hidden="true" /> {lesson.xp} XP
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="flex flex-1 flex-col p-5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Chip>{DIFFICULTY_LABELS[lesson.difficulty] || lesson.difficulty}</Chip>
+                  <span className="inline-flex items-center gap-1 text-xs font-medium text-muted">
+                    <Clock3 className="size-3.5" aria-hidden="true" /> {lesson.estimatedMinutes} min
+                  </span>
+                  {lesson.isClassContent ? <Chip tone="accent">Mula sa guro</Chip> : null}
+                </div>
+                <h2 className="mt-2.5 text-lg font-bold leading-snug text-ink">{lesson.title}</h2>
+                <p className="mt-1.5 line-clamp-3 text-sm leading-relaxed text-muted">{lesson.description}</p>
+                <div className="mt-auto pt-4">
+                  {lesson.progress === "completed" ? (
+                    <ProgressBar value={100} label="Progreso" tone="success" />
+                  ) : (
+                    <p className="text-xs font-medium text-muted">
+                      {lesson.progress === "in_progress" ? "Sinimulan na — maaari mong ipagpatuloy." : "Hindi pa sinimulan."}
+                    </p>
+                  )}
+                  <Link to={`/student/aralin/${lesson.id}`} className={buttonClass({ variant: "secondary", className: "mt-3 w-full" })}>
+                    {lesson.progress === "completed" ? "Balikan ang aralin" : lesson.progress === "in_progress" ? "Ipagpatuloy" : "Buksan ang aralin"}
+                    <ArrowRight className="size-4" aria-hidden="true" />
+                  </Link>
+                </div>
+              </div>
+            </Card>
+          ))}
         </div>
       )}
-
-      {/* Study Tip card */}
-      <aside className="flex items-start gap-4 rounded-[20px] border border-line-dark bg-gold-soft/55 px-6 py-6 sm:px-10">
-        <img
-          src={tipIcon}
-          alt=""
-          className="mt-1 h-[33px] w-[33px] shrink-0"
-          aria-hidden="true"
-        />
-        <div className="min-w-0">
-          <p className="text-[20px] font-black text-ink sm:text-[22px]">
-            Study Tip
-          </p>
-          <p className="mt-2 text-[14px] font-semibold text-ink">
-            Learn one small topic at a time.
-          </p>
-          <p className="mt-0.5 text-[11px] text-ink">
-            Take your time—you don&rsquo;t have to finish everything at once.
-          </p>
-        </div>
-      </aside>
-
-      <DemoNotice />
-    </div>
+    </>
   );
 }

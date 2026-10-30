@@ -1,0 +1,19 @@
+{
+  "name": "hasa-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "HASA API — secure sessions, role-based access, Araling Panlipunan content, and progress tracking",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "test": "node --test test/*.test.js",
+    "check": "node --check src/index.js"
+  },
+  "dependencies": {
+    "express": "5.1.0"
+  }
+}
