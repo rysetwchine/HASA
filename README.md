@@ -91,6 +91,8 @@ Useful commands:
 cd server && npm test        # 32 integration tests (local SQLite driver)
 cd server && npm run test:turso   # same 32 tests on the @libsql/client (Turso) driver
 cd server && npm run smoke   # 27 full-stack checks against a running API
+cd server && npm run db:check     # read-only check of the configured database
+cd server && npm run db:init      # create schema + seed content (idempotent)
 cd server && npm run migrate:dry-run  # count rows before a Turso migration
 cd server && npm run check   # node --check on the entry point
 cd client && npm test        # 52 Vitest tests (26 are end-to-end page renders)

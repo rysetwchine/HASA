@@ -30,17 +30,27 @@
 import { copyFileSync, existsSync, mkdirSync, statSync } from "node:fs";
 import path from "node:path";
 import { DatabaseSync } from "node:sqlite";
+import { fileURLToPath } from "node:url";
 import { createClient } from "@libsql/client";
+import { config } from "../src/config.js";
 import { SCHEMA, SPLIT_SCHEMA } from "../src/db/schema.js";
+
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
 const verifyOnly = args.includes("--verify-only");
 const skipBackup = args.includes("--skip-backup");
 const backupFlag = args.find((arg) => arg.startsWith("--backup-dir="));
-const backupDir = backupFlag ? backupFlag.split("=")[1] : path.resolve("server/backups");
+// Default: server/backups, hindi depende sa CWD (cd server && npm run … ).
+const backupDir = backupFlag
+  ? path.resolve(backupFlag.split("=")[1])
+  : path.resolve(scriptDir, "..", "backups");
 
-const localPath = process.env.DATABASE_PATH || path.resolve("server/data/hasa.sqlite");
+// Parehong default sa API: server/data/hasa.sqlite (DATABASE_PATH kung itinakda).
+const localPath = process.env.DATABASE_PATH
+  ? path.resolve(process.env.DATABASE_PATH)
+  : config.databasePath;
 const tursoUrl = (process.env.TURSO_DATABASE_URL || "").trim();
 const tursoToken = (process.env.TURSO_AUTH_TOKEN || "").trim();
 
@@ -101,13 +111,25 @@ function readTable(db, table) {
   return db.prepare(`SELECT * FROM ${table} ORDER BY rowid`).all();
 }
 
-async function remoteCounts(client) {
+/**
+ * Bilang ng row sa Turso. Kapag `tolerant`, ang kulang na table ay itinuturing
+ * na 0 sa halip na mag-crash — nangyayari ito sa `--dry-run` at `--verify-only`
+ * laban sa isang bagong database na wala pang schema.
+ */
+async function remoteCounts(client, { tolerant = false } = {}) {
   const counts = {};
+  const missing = [];
   for (const table of TABLES) {
-    const result = await client.execute(`SELECT COUNT(*) AS count FROM ${table}`);
-    counts[table] = Number(result.rows[0].count);
+    try {
+      const result = await client.execute(`SELECT COUNT(*) AS count FROM ${table}`);
+      counts[table] = Number(result.rows[0].count);
+    } catch (error) {
+      if (!tolerant) throw error;
+      counts[table] = 0;
+      missing.push(table);
+    }
   }
-  return counts;
+  return { counts, missing };
 }
 
 async function main() {
@@ -139,7 +161,15 @@ async function main() {
 
   if (verifyOnly) {
     log("\nInihahambing ang dalawang database…");
-    const remote = await remoteCounts(client);
+    const { counts: remote, missing } = await remoteCounts(client, { tolerant: true });
+    if (missing.length === TABLES.length) {
+      local.close();
+      client.close();
+      fail(`Walang schema sa Turso (${tursoUrl}). Patakbuhin muna nang walang --verify-only.`);
+    }
+    if (missing.length > 0) {
+      log(`  (wala pang table sa Turso: ${missing.join(", ")})`);
+    }
     let mismatches = 0;
     for (const table of TABLES) {
       const ok = counts[table] === remote[table];
@@ -194,10 +224,18 @@ async function main() {
     fail(`Nabigo ang pagsulat, ibinalik ang transaksyon: ${error.message}`);
   }
 
-  // 3. Verification
+  // 3. Verification — walang maisasagawa sa dry run, wala pang naisulat.
+  if (dryRun) {
+    local.close();
+    client.close();
+    log(`\nDRY RUN — ${written} row ang ililipat. Walang isinulat, walang binago.`);
+    log("  Sunod (kapag kumbinsido ka na): npm run migrate:to-turso");
+    return;
+  }
+
   const verify = await client.execute("SELECT 1 AS ok");
   if (Number(verify.rows[0].ok) !== 1) fail("Walang sagot ang Turso pagkatapos ng migration.");
-  const remote = await remoteCounts(client);
+  const { counts: remote } = await remoteCounts(client);
   let mismatches = 0;
   log("\nPag-verify:");
   for (const table of TABLES) {

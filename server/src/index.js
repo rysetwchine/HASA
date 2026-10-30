@@ -15,6 +15,24 @@ async function main() {
     });
   } catch (error) {
     console.error("[HASA API] Failed to start:", error.message);
+    // Turso ang production database: kung hindi ito maabot, sabihin kaagad
+    // kung aling setting ang titingnan — hindi lang "fetch failed".
+    if (config.tursoUrl) {
+      const host = config.tursoUrl.startsWith("file:")
+        ? config.tursoUrl
+        : config.tursoUrl.replace(/^(libsql|https?):\/\//, "").replace(/\/.*$/, "");
+      console.error(`[HASA API] Turso target: ${host}`);
+      if (!config.tursoAuthToken) {
+        console.error(
+          "[HASA API] TURSO_AUTH_TOKEN is empty — paste the token from the Turso dashboard into server/.env.",
+        );
+      } else {
+        console.error(
+          "[HASA API] Check TURSO_DATABASE_URL / TURSO_AUTH_TOKEN (a wrong or expired token fails here).",
+        );
+      }
+      console.error("[HASA API] Diagnose with: npm run db:check");
+    }
     process.exitCode = 1;
   }
 }

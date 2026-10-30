@@ -139,6 +139,11 @@ npm run migrate:to-turso
 … npm run migrate:verify
 ```
 
+Before migrating, `npm run db:check` tells you whether Turso is reachable and whether the
+schema already exists — a brand-new database reports 14 missing tables until you run
+`npm run db:init`. See `docs/TURSO-CONNECT.md` for the token setup and live-connection
+tests.
+
 The script prints a per-table comparison and refuses to pass if anything is off:
 
 ```
@@ -207,6 +212,10 @@ normal Safari. If you need first-party cookies for strict privacy modes, add the
 ### 2.5 Verification commands
 
 ```bash
+# Does the configured database answer? (read-only, same driver as the API)
+npm run db:check      --prefix server      # tables, row counts, relationships
+npm run db:init       --prefix server      # idempotent schema + platform seeds
+
 # Same code path as Turso, no cloud credentials needed (local libsql file)
 npm test              --prefix server      # node:sqlite driver
 npm run test:turso    --prefix server      # @libsql/client driver
