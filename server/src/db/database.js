@@ -1,203 +1,263 @@
 import { mkdirSync } from "node:fs";
 import path from "node:path";
 import { DatabaseSync } from "node:sqlite";
+import { createClient } from "@libsql/client";
 import { config } from "../config.js";
+import { SCHEMA, splitStatements } from "./schema.js";
 import { seedBadges, seedCurriculum } from "./seedContent.js";
+
+/*
+ * Isang manipis na async na patong sa ibabaw ng dalawang driver:
+ *
+ *   local  — node:sqlite (DatabaseSync) para sa dev at tests
+ *   turso  — @libsql/client (remote libSQL/SQLite sa Turso Cloud)
+ *
+ * Bakit async ang buong API: ang Turso ay remote, kaya walang tulay sa
+ * synchronous na `DatabaseSync`. Pinapanatili namin ang hugis ng lumang code
+ * (`db.prepare(sql).get(...)`) pero ang bawat tawag ay Promise na.
+ *
+ *   const row = await db.prepare("SELECT ...").get(id);
+ *   await db.prepare("INSERT ...").run(a, b);
+ *   await db.transaction(async (tx) => { ... });
+ */
+
+/** `stmt.get(a, b)` at `stmt.get([a, b])` ay parehong tinatanggap. */
+function normaliseArgs(args) {
+  return args.length === 1 && Array.isArray(args[0]) ? args[0] : args;
+}
+
+/** Hatiin ang schema sa magkakahiwalay na statement para sa remote driver. */
+
+/** Lokal na SQLite (node:sqlite). Ang default para sa dev at automated tests. */
+class LocalDriver {
+  name = "local";
+
+  constructor(file) {
+    if (file !== ":memory:") mkdirSync(path.dirname(file), { recursive: true });
+    this.file = file;
+    this.db = new DatabaseSync(file);
+    this.statements = new Map();
+  }
+
+  prepare(sql) {
+    let statement = this.statements.get(sql);
+    if (!statement) {
+      statement = this.db.prepare(sql);
+      this.statements.set(sql, statement);
+    }
+    return statement;
+  }
+
+  async get(sql, args) {
+    return this.prepare(sql).get(...args) ?? null;
+  }
+
+  async all(sql, args) {
+    return this.prepare(sql).all(...args);
+  }
+
+  async run(sql, args) {
+    const info = this.prepare(sql).run(...args);
+    return {
+      changes: Number(info.changes ?? 0),
+      lastInsertRowid: Number(info.lastInsertRowid ?? 0),
+    };
+  }
+
+  async exec(sql) {
+    this.db.exec(sql);
+  }
+
+  async begin() {
+    this.db.exec("BEGIN IMMEDIATE;");
+    let settled = false;
+    return {
+      get: (sql, args) => this.get(sql, args),
+      all: (sql, args) => this.all(sql, args),
+      run: (sql, args) => this.run(sql, args),
+      exec: (sql) => this.exec(sql),
+      commit: async () => {
+        if (settled) return;
+        settled = true;
+        this.db.exec("COMMIT;");
+      },
+      rollback: async () => {
+        if (settled) return;
+        settled = true;
+        this.db.exec("ROLLBACK;");
+      },
+    };
+  }
+
+  async close() {
+    this.statements.clear();
+    this.db.close();
+  }
+}
+
+/** Turso Cloud (@libsql/client). Ginagamit kapag may TURSO_DATABASE_URL. */
+class TursoDriver {
+  name = "turso";
+
+  constructor({ url, authToken }) {
+    this.client = createClient({ url, authToken });
+  }
+
+  #rows(result) {
+    const columns = result.columns;
+    return result.rows.map((row) => {
+      const plain = {};
+      columns.forEach((column, index) => {
+        plain[column] = row[index];
+      });
+      return plain;
+    });
+  }
+
+  #meta(result) {
+    return {
+      changes: Number(result.rowsAffected ?? 0),
+      lastInsertRowid: Number(result.lastInsertRowid ?? 0),
+    };
+  }
+
+  async get(sql, args) {
+    const result = await this.client.execute({ sql, args });
+    return this.#rows(result)[0] ?? null;
+  }
+
+  async all(sql, args) {
+    const result = await this.client.execute({ sql, args });
+    return this.#rows(result);
+  }
+
+  async run(sql, args) {
+    return this.#meta(await this.client.execute({ sql, args }));
+  }
+
+  async exec(sql) {
+    const statements = splitStatements(sql);
+    if (statements.length === 0) return;
+    // Isang round trip: batch na "write" — bumabalik lamang kapag tapos lahat.
+    await this.client.batch(
+      statements.map((statement) => ({ sql: statement, args: [] })),
+      "write",
+    );
+  }
+
+  async begin() {
+    const tx = await this.client.transaction("write");
+    let settled = false;
+    return {
+      get: async (sql, args) => this.#rows(await tx.execute({ sql, args }))[0] ?? null,
+      all: async (sql, args) => this.#rows(await tx.execute({ sql, args })),
+      run: async (sql, args) => this.#meta(await tx.execute({ sql, args })),
+      exec: async (sql) => {
+        for (const statement of splitStatements(sql)) {
+          await tx.execute({ sql: statement, args: [] });
+        }
+      },
+      commit: async () => {
+        if (settled) return;
+        settled = true;
+        await tx.commit();
+      },
+      rollback: async () => {
+        if (settled) return;
+        settled = true;
+        await tx.rollback();
+      },
+    };
+  }
+
+  async close() {
+    this.client.close();
+  }
+}
+
+class Database {
+  constructor(driver) {
+    this.driver = driver;
+    this.driverName = driver.name;
+    this.initialising = false;
+    this.ready = Promise.resolve();
+  }
+
+  /** Bumabalik agad sa isang statement object; ang mga tawag ang async. */
+  prepare(sql) {
+    const driver = this.driver;
+    return {
+      get: (...args) => this.#guard(() => driver.get(sql, normaliseArgs(args))),
+      all: (...args) => this.#guard(() => driver.all(sql, normaliseArgs(args))),
+      run: (...args) => this.#guard(() => driver.run(sql, normaliseArgs(args))),
+    };
+  }
+
+  exec(sql) {
+    return this.#guard(() => this.driver.exec(sql));
+  }
+
+  async #guard(fn) {
+    if (!this.initialising) await this.ready;
+    return fn();
+  }
+
+  async transaction(work) {
+    await this.ready;
+    const handle = await this.driver.begin();
+    const tx = {
+      prepare: (sql) => ({
+        get: (...args) => handle.get(sql, normaliseArgs(args)),
+        all: (...args) => handle.all(sql, normaliseArgs(args)),
+        run: (...args) => handle.run(sql, normaliseArgs(args)),
+      }),
+      exec: (sql) => handle.exec(sql),
+    };
+    try {
+      const result = await work(tx);
+      await handle.commit();
+      return result;
+    } catch (error) {
+      await handle.rollback();
+      throw error;
+    }
+  }
+
+  async close() {
+    await this.driver.close();
+  }
+}
 
 let database = null;
 
-const SCHEMA = `
-PRAGMA foreign_keys = ON;
-
-CREATE TABLE IF NOT EXISTS classes (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  join_code TEXT NOT NULL UNIQUE COLLATE NOCASE,
-  teacher_id INTEGER NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
-  created_at TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  username TEXT NOT NULL UNIQUE COLLATE NOCASE,
-  password_hash TEXT NOT NULL,
-  role TEXT NOT NULL CHECK (role IN ('student', 'teacher')),
-  display_name TEXT NOT NULL,
-  class_id INTEGER REFERENCES classes(id) ON DELETE SET NULL,
-  reading_level TEXT CHECK (reading_level IN ('independent', 'instructional', 'frustration')),
-  is_active INTEGER NOT NULL DEFAULT 1,
-  created_at TEXT NOT NULL,
-  CHECK (
-    (role = 'student' AND class_id IS NOT NULL AND reading_level IS NOT NULL)
-    OR (role = 'teacher' AND class_id IS NULL AND reading_level IS NULL)
-  )
-);
-
-CREATE TABLE IF NOT EXISTS sessions (
-  token_hash TEXT PRIMARY KEY,
-  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  created_at TEXT NOT NULL,
-  expires_at TEXT NOT NULL
-);
-CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
-CREATE INDEX IF NOT EXISTS idx_sessions_expiry ON sessions(expires_at);
-
-CREATE TABLE IF NOT EXISTS lessons (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  slug TEXT NOT NULL UNIQUE,
-  title TEXT NOT NULL,
-  unit TEXT NOT NULL,
-  description TEXT NOT NULL,
-  difficulty TEXT NOT NULL DEFAULT 'katamtaman'
-    CHECK (difficulty IN ('madali', 'katamtaman', 'mahirap')),
-  estimated_minutes INTEGER NOT NULL DEFAULT 10,
-  xp INTEGER NOT NULL DEFAULT 15,
-  content_independent TEXT NOT NULL,
-  content_instructional TEXT NOT NULL,
-  content_frustration TEXT NOT NULL,
-  vocabulary_json TEXT NOT NULL DEFAULT '[]',
-  published INTEGER NOT NULL DEFAULT 1,
-  class_id INTEGER REFERENCES classes(id) ON DELETE CASCADE,
-  created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
-  created_at TEXT NOT NULL,
-  updated_at TEXT NOT NULL
-);
-CREATE INDEX IF NOT EXISTS idx_lessons_class ON lessons(class_id, published);
-
-CREATE TABLE IF NOT EXISTS activities (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  title TEXT NOT NULL,
-  description TEXT NOT NULL,
-  kind TEXT NOT NULL CHECK (kind IN ('activity', 'quiz')),
-  lesson_id INTEGER REFERENCES lessons(id) ON DELETE SET NULL,
-  xp INTEGER NOT NULL DEFAULT 25,
-  pass_percent INTEGER NOT NULL DEFAULT 60,
-  timer_seconds INTEGER,
-  published INTEGER NOT NULL DEFAULT 1,
-  class_id INTEGER REFERENCES classes(id) ON DELETE CASCADE,
-  created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
-  created_at TEXT NOT NULL,
-  updated_at TEXT NOT NULL
-);
-CREATE INDEX IF NOT EXISTS idx_activities_class ON activities(class_id, kind, published);
-
-CREATE TABLE IF NOT EXISTS questions (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  activity_id INTEGER NOT NULL REFERENCES activities(id) ON DELETE CASCADE,
-  position INTEGER NOT NULL,
-  prompt TEXT NOT NULL,
-  options_json TEXT NOT NULL,
-  correct_index INTEGER NOT NULL,
-  explanation TEXT NOT NULL DEFAULT ''
-);
-CREATE INDEX IF NOT EXISTS idx_questions_activity ON questions(activity_id, position);
-
-CREATE TABLE IF NOT EXISTS attempts (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  activity_id INTEGER NOT NULL REFERENCES activities(id) ON DELETE CASCADE,
-  student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  started_at TEXT NOT NULL,
-  completed_at TEXT,
-  score INTEGER,
-  total INTEGER NOT NULL,
-  timed_out INTEGER NOT NULL DEFAULT 0,
-  status TEXT NOT NULL DEFAULT 'in_progress'
-    CHECK (status IN ('in_progress', 'completed'))
-);
-CREATE INDEX IF NOT EXISTS idx_attempts_student ON attempts(student_id, completed_at);
-CREATE INDEX IF NOT EXISTS idx_attempts_activity ON attempts(activity_id, status);
-
-CREATE TABLE IF NOT EXISTS attempt_answers (
-  attempt_id INTEGER NOT NULL REFERENCES attempts(id) ON DELETE CASCADE,
-  question_id INTEGER NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
-  selected_index INTEGER NOT NULL,
-  is_correct INTEGER NOT NULL,
-  PRIMARY KEY (attempt_id, question_id)
-);
-
-CREATE TABLE IF NOT EXISTS lesson_progress (
-  student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  lesson_id INTEGER NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
-  status TEXT NOT NULL DEFAULT 'in_progress'
-    CHECK (status IN ('in_progress', 'completed')),
-  completed_at TEXT,
-  updated_at TEXT NOT NULL,
-  PRIMARY KEY (student_id, lesson_id)
-);
-
-CREATE TABLE IF NOT EXISTS points_ledger (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  delta INTEGER NOT NULL,
-  reason_code TEXT NOT NULL,
-  ref_type TEXT,
-  ref_id INTEGER,
-  created_at TEXT NOT NULL
-);
-CREATE UNIQUE INDEX IF NOT EXISTS idx_points_once
-  ON points_ledger(student_id, reason_code, ref_type, ref_id);
-CREATE INDEX IF NOT EXISTS idx_points_student ON points_ledger(student_id, created_at);
-
-CREATE TABLE IF NOT EXISTS badges (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  code TEXT NOT NULL UNIQUE,
-  name_tl TEXT NOT NULL,
-  description_tl TEXT NOT NULL,
-  xp INTEGER NOT NULL DEFAULT 0,
-  criteria_type TEXT NOT NULL,
-  criteria_target INTEGER NOT NULL,
-  sort_order INTEGER NOT NULL DEFAULT 0
-);
-
-CREATE TABLE IF NOT EXISTS student_badges (
-  student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  badge_id INTEGER NOT NULL REFERENCES badges(id) ON DELETE CASCADE,
-  awarded_at TEXT NOT NULL,
-  PRIMARY KEY (student_id, badge_id)
-);
-
-CREATE TABLE IF NOT EXISTS simplifications (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  cache_key TEXT NOT NULL UNIQUE,
-  reading_level TEXT NOT NULL,
-  provider TEXT NOT NULL,
-  model TEXT NOT NULL,
-  result_json TEXT NOT NULL,
-  created_at TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS ai_usage (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  provider TEXT NOT NULL,
-  operation TEXT NOT NULL,
-  input_chars INTEGER NOT NULL DEFAULT 0,
-  output_chars INTEGER NOT NULL DEFAULT 0,
-  succeeded INTEGER NOT NULL,
-  error_code TEXT,
-  created_at TEXT NOT NULL
-);
-CREATE INDEX IF NOT EXISTS idx_ai_usage_student ON ai_usage(student_id, created_at);
-`;
+/** Buuin ang driver base sa environment. Turso kapag may URL, kung hindi local. */
+export function createDriver() {
+  if (config.tursoUrl) {
+    return new TursoDriver({ url: config.tursoUrl, authToken: config.tursoAuthToken });
+  }
+  const file = config.databasePath;
+  const driver = new LocalDriver(file);
+  driver.db.exec("PRAGMA foreign_keys = ON;");
+  if (file !== ":memory:") driver.db.exec("PRAGMA journal_mode = WAL;");
+  return driver;
+}
 
 export function initDatabase({ seed = true } = {}) {
   if (database) return database;
 
-  if (config.databasePath !== ":memory:") {
-    mkdirSync(path.dirname(config.databasePath), { recursive: true });
-  }
-
-  database = new DatabaseSync(config.databasePath);
-  database.exec("PRAGMA foreign_keys = ON;");
-  if (config.databasePath !== ":memory:") {
-    database.exec("PRAGMA journal_mode = WAL;");
-  }
-  database.exec(SCHEMA);
-
-  seedBadges(database);
-  if (seed) seedCurriculum(database);
-
-  return database;
+  const db = new Database(createDriver());
+  database = db;
+  db.initialising = true;
+  db.ready = (async () => {
+    try {
+      await db.driver.exec(SCHEMA);
+      await seedBadges(db);
+      if (seed) await seedCurriculum(db);
+    } finally {
+      db.initialising = false;
+    }
+  })();
+  return db;
 }
 
 export function getDatabase() {
@@ -205,22 +265,15 @@ export function getDatabase() {
   return database;
 }
 
-export function transaction(work) {
-  const db = getDatabase();
-  db.exec("BEGIN IMMEDIATE;");
-  try {
-    const result = work(db);
-    db.exec("COMMIT;");
-    return result;
-  } catch (error) {
-    db.exec("ROLLBACK;");
-    throw error;
-  }
+export async function transaction(work) {
+  return getDatabase().transaction(work);
 }
 
-export function closeDatabase() {
+export async function closeDatabase() {
   if (database) {
-    database.close();
+    const closing = database;
     database = null;
+    await closing.ready.catch(() => {});
+    await closing.close();
   }
 }

@@ -11,17 +11,17 @@ export function parseJson(value, fallback) {
   }
 }
 
-export function accessibleLesson(db, lessonId, classId) {
-  return db
+export async function accessibleLesson(db, lessonId, classId) {
+  return (await db
     .prepare(
       `SELECT * FROM lessons
        WHERE id = ? AND published = 1 AND (class_id IS NULL OR class_id = ?)`,
     )
-    .get(lessonId, classId);
+    .get(lessonId, classId));
 }
 
-export function listStudentLessons(db, studentId, classId) {
-  return db
+export async function listStudentLessons(db, studentId, classId) {
+  return (await db
     .prepare(
       `SELECT l.id, l.slug, l.title, l.unit, l.description, l.difficulty,
               l.estimated_minutes, l.xp, l.class_id, l.created_by,
@@ -32,7 +32,7 @@ export function listStudentLessons(db, studentId, classId) {
        WHERE l.published = 1 AND (l.class_id IS NULL OR l.class_id = ?)
        ORDER BY l.unit, l.id`,
     )
-    .all(studentId, classId)
+    .all(studentId, classId))
     .map((row) => ({
       id: Number(row.id),
       slug: row.slug,
@@ -48,12 +48,12 @@ export function listStudentLessons(db, studentId, classId) {
     }));
 }
 
-export function serializeLesson(db, row, studentId, readingLevel) {
-  const progress = db
+export async function serializeLesson(db, row, studentId, readingLevel) {
+  const progress = (await db
     .prepare(
       "SELECT status, completed_at FROM lesson_progress WHERE student_id = ? AND lesson_id = ?",
     )
-    .get(studentId, row.id);
+    .get(studentId, row.id));
 
   return {
     id: Number(row.id),
@@ -81,15 +81,15 @@ export function serializeLesson(db, row, studentId, readingLevel) {
   };
 }
 
-export function activityStats(db, studentId, activityId) {
-  const attempts = db
+export async function activityStats(db, studentId, activityId) {
+  const attempts = (await db
     .prepare(
       `SELECT score, total, completed_at, timed_out
        FROM attempts
        WHERE activity_id = ? AND student_id = ? AND status = 'completed'
        ORDER BY completed_at DESC`,
     )
-    .all(activityId, studentId);
+    .all(activityId, studentId));
 
   if (attempts.length === 0) {
     return {
@@ -102,9 +102,9 @@ export function activityStats(db, studentId, activityId) {
     };
   }
 
-  const activity = db
+  const activity = (await db
     .prepare("SELECT pass_percent FROM activities WHERE id = ?")
-    .get(activityId);
+    .get(activityId));
   const best = attempts.reduce(
     (current, attempt) =>
       Number(attempt.score) / Number(attempt.total) >
@@ -124,8 +124,8 @@ export function activityStats(db, studentId, activityId) {
   };
 }
 
-export function listStudentActivities(db, studentId, classId, kind) {
-  const rows = db
+export async function listStudentActivities(db, studentId, classId, kind) {
+  const rows = (await db
     .prepare(
       `SELECT a.*, l.title AS lesson_title,
               (SELECT COUNT(*) FROM questions q WHERE q.activity_id = a.id) AS question_count
@@ -134,7 +134,7 @@ export function listStudentActivities(db, studentId, classId, kind) {
        WHERE a.published = 1 AND a.kind = ? AND (a.class_id IS NULL OR a.class_id = ?)
        ORDER BY a.class_id IS NOT NULL, a.id`,
     )
-    .all(kind, classId);
+    .all(kind, classId));
 
   return rows.map((row) => ({
     id: Number(row.id),
@@ -171,13 +171,13 @@ export function serializeActivity(row, studentId, db) {
   };
 }
 
-export function getStudentDashboard(db, student) {
+export async function getStudentDashboard(db, student) {
   const classId = Number(student.class.id);
-  const metrics = getMetrics(db, student.id, classId);
-  const lessons = listStudentLessons(db, student.id, classId);
+  const metrics = (await getMetrics(db, student.id, classId));
+  const lessons = (await listStudentLessons(db, student.id, classId));
   const continueLesson =
     lessons.find((lesson) => lesson.progress !== "completed") ?? null;
-  const recentRows = db
+  const recentRows = (await db
     .prepare(
       `SELECT at.id, at.score, at.total, at.completed_at, at.timed_out,
               a.title, a.kind, a.pass_percent
@@ -185,9 +185,9 @@ export function getStudentDashboard(db, student) {
        WHERE at.student_id = ? AND at.status = 'completed'
        ORDER BY at.completed_at DESC LIMIT 5`,
     )
-    .all(student.id);
+    .all(student.id));
 
-  const nextAssessment = db
+  const nextAssessment = (await db
     .prepare(
       `SELECT a.id, a.title, a.kind, a.xp
        FROM activities a
@@ -200,7 +200,7 @@ export function getStudentDashboard(db, student) {
          )
        ORDER BY a.kind = 'quiz', a.id LIMIT 1`,
     )
-    .get(classId, student.id);
+    .get(classId, student.id));
 
   return {
     stats: {
@@ -234,15 +234,15 @@ export function getStudentDashboard(db, student) {
   };
 }
 
-export function getStudentProgress(db, student) {
+export async function getStudentProgress(db, student) {
   const classId = Number(student.class.id);
-  const metrics = getMetrics(db, student.id, classId);
-  const lessons = listStudentLessons(db, student.id, classId);
+  const metrics = (await getMetrics(db, student.id, classId));
+  const lessons = (await listStudentLessons(db, student.id, classId));
   const activities = [
-    ...listStudentActivities(db, student.id, classId, "activity"),
-    ...listStudentActivities(db, student.id, classId, "quiz"),
+    ...(await listStudentActivities(db, student.id, classId, "activity")),
+    ...(await listStudentActivities(db, student.id, classId, "quiz")),
   ];
-  const attemptHistory = db
+  const attemptHistory = (await db
     .prepare(
       `SELECT at.id, at.score, at.total, at.completed_at, at.timed_out,
               a.title, a.kind, a.pass_percent
@@ -250,7 +250,7 @@ export function getStudentProgress(db, student) {
        WHERE at.student_id = ? AND at.status = 'completed'
        ORDER BY at.completed_at DESC LIMIT 50`,
     )
-    .all(student.id)
+    .all(student.id))
     .map((row) => ({
       id: Number(row.id),
       title: row.title,
@@ -265,12 +265,12 @@ export function getStudentProgress(db, student) {
       completedAt: row.completed_at,
     }));
 
-  const pointsHistory = db
+  const pointsHistory = (await db
     .prepare(
       `SELECT delta, reason_code, created_at
        FROM points_ledger WHERE student_id = ? ORDER BY created_at DESC LIMIT 20`,
     )
-    .all(student.id)
+    .all(student.id))
     .map((row) => ({
       delta: Number(row.delta),
       reason: row.reason_code,
@@ -300,13 +300,13 @@ export function getStudentProgress(db, student) {
   };
 }
 
-export function getStudentAchievements(db, student) {
-  const metrics = getMetrics(db, student.id, Number(student.class.id));
-  const earned = db
+export async function getStudentAchievements(db, student) {
+  const metrics = (await getMetrics(db, student.id, Number(student.class.id)));
+  const earned = (await db
     .prepare(
       "SELECT badge_id, awarded_at FROM student_badges WHERE student_id = ?",
     )
-    .all(student.id);
+    .all(student.id));
   const earnedMap = new Map(
     earned.map((row) => [Number(row.badge_id), row.awarded_at]),
   );
@@ -318,9 +318,9 @@ export function getStudentAchievements(db, student) {
     perfect_quiz: metrics.perfectQuiz,
   };
 
-  const badges = db
+  const badges = (await db
     .prepare("SELECT * FROM badges ORDER BY sort_order, id")
-    .all()
+    .all())
     .map((badge) => {
       const value = Number(metricByType[badge.criteria_type] ?? 0);
       return {
@@ -345,16 +345,16 @@ export function getStudentAchievements(db, student) {
   };
 }
 
-export function pointsForStudent(db, studentId) {
-  return getPoints(db, studentId);
+export async function pointsForStudent(db, studentId) {
+  return (await getPoints(db, studentId));
 }
 
-export function studentAverage(db, studentId) {
-  const row = db
+export async function studentAverage(db, studentId) {
+  const row = (await db
     .prepare(
       `SELECT AVG(score * 100.0 / total) AS average
        FROM attempts WHERE student_id = ? AND status = 'completed'`,
     )
-    .get(studentId);
+    .get(studentId));
   return row?.average ? Math.round(Number(row.average)) : 0;
 }

@@ -8,9 +8,10 @@ quizzes **on the server**, records real progress in SQLite, and gives teachers t
 class-scoped workspace. The interface and all learning content are in Filipino.
 
 > **Status: production build with a working API.** The client is a static SPA on Vercel;
-> the API is a separate Node process that owns the SQLite file. See
-> `docs/DEPLOYMENT.md` for what that means for hosting, and §"What still needs external
-> setup" below for the parts that require your accounts.
+> the API is a separate Node process. Students' data lives in **Turso Cloud** (SQLite
+> over libSQL) in production, and in a local SQLite file for development and tests —
+> the same code runs on both. See `docs/DEPLOYMENT.md` for the free-tier deployment and
+> §"What still needs external setup" below for the parts that require your accounts.
 
 ## Language policy
 
@@ -29,16 +30,17 @@ class-scoped workspace. The interface and all learning content are in Filipino.
 | Styling | Tailwind 4 | HASA plum/cream/violet/gold tokens, Inter only |
 | Routing | React Router 8 | `BrowserRouter`; SPA rewrites on the host |
 | API | Express 5 on Node ≥ 22.9 | ES modules |
-| Database | `node:sqlite` (`DatabaseSync`) | No native dependency to compile |
+| Database | Turso Cloud (libSQL) in production; `node:sqlite` locally | One async driver API; `@libsql/client` for remote, no native build |
 | Auth | Server sessions, scrypt passwords | httpOnly cookie, HMAC-peppered token hash |
 | AI | Gemini / OpenAI, server-side only | Optional; reports "not configured" honestly |
-| Tests | `node --test` (server), Vitest (client) | 32 API tests, 52 client tests |
+| Tests | `node --test` (server), Vitest (client) | 32 API tests (both drivers), 52 client tests, 27-check smoke script |
 
 ## Repository layout
 
 ```
 HASA/
 ├─ vercel.json            # SPA rewrites + cache/security headers (root project)
+├─ render.yaml            # Render Blueprint for the free API service
 ├─ client/
 │  ├─ vercel.json         # same, if the Vercel Root Directory is client/
 │  ├─ index.html          # lang="tl", canonical, OG/Twitter, JSON-LD
@@ -51,12 +53,13 @@ HASA/
 ├─ server/
 │  ├─ src/
 │  │  ├─ app.js           # express app, routes, error handling
-│  │  ├─ db/              # schema + idempotent seed content
+│  │  ├─ db/              # async driver (local SQLite | Turso), schema, idempotent seed
 │  │  ├─ middleware/      # auth, security (CORS/origin, rate limit), errors
 │  │  ├─ routes/          # auth, student, teacher
 │  │  ├─ services/        # auth, content, progress, AI
 │  │  └─ utils/           # security, validation, time, errors
-│  └─ test/api.test.js    # integration tests on an in-memory database
+│  ├─ scripts/            # smoke test, Turso migration, test runner for libsql
+│  └─ test/api.test.js    # integration tests (in-memory SQLite or libsql file)
 └─ docs/                  # requirements, plan, API, data model, AI, glossary, deployment
 ```
 
@@ -79,13 +82,16 @@ npm run dev
 
 First run creates `server/data/hasa.sqlite` and seeds the curriculum. There are **no seeded
 accounts** — register a teacher with the `TEACHER_SIGNUP_CODE` you set, then register
-students with the class code the API generates.
+students with the class code the API generates. Set `TURSO_DATABASE_URL` +
+`TURSO_AUTH_TOKEN` in `server/.env` to run against Turso instead of the local file.
 
 Useful commands:
 
 ```bash
-cd server && npm test        # 32 integration tests, in-memory DB
+cd server && npm test        # 32 integration tests (local SQLite driver)
+cd server && npm run test:turso   # same 32 tests on the @libsql/client (Turso) driver
 cd server && npm run smoke   # 27 full-stack checks against a running API
+cd server && npm run migrate:dry-run  # count rows before a Turso migration
 cd server && npm run check   # node --check on the entry point
 cd client && npm test        # 52 Vitest tests (26 are end-to-end page renders)
 cd client && npm run build   # production build into client/dist

@@ -32,9 +32,9 @@ before(async () => {
   baseUrl = `http://127.0.0.1:${server.address().port}`;
 });
 
-after(() => {
+after(async () => {
   server?.close();
-  closeDatabase();
+  (await closeDatabase());
 });
 
 // Maraming guro ang nirerehistro ng suite, kaya nililinis ang rate limiter
@@ -199,7 +199,7 @@ describe("pagpaparehistro at session", () => {
   it("naiiba ang hash ng session token kapag alam ang secret", async () => {
     // Ang token_hash sa database ay HMAC, hindi plain sha256 ng token.
     const db = getDatabase();
-    const row = db.prepare("SELECT token_hash FROM sessions LIMIT 1").get();
+    const row = (await db.prepare("SELECT token_hash FROM sessions LIMIT 1").get());
     assert.ok(row?.token_hash);
     assert.match(row.token_hash, /^[a-f0-9]{64}$/);
     assert.notEqual(hashSessionToken("token"), row.token_hash);
@@ -268,9 +268,9 @@ describe("nilalaman at antas ng pagbasa", () => {
     // Ang independent na teksto ay para sa mag-aaral na kaya nang bumasa
     // nang mag-isa, kaya mas mahaba ito kaysa sa instructional at frustration.
     const db = getDatabase();
-    const rows = db
+    const rows = (await db
       .prepare("SELECT slug, content_independent, content_instructional, content_frustration FROM lessons")
-      .all();
+      .all());
     assert.ok(rows.length > 0);
 
     const avgSentence = (text) => {
@@ -328,16 +328,16 @@ describe("pagsusulit, iskor, at XP", () => {
       const started = await call(`POST`, `/api/student/activities/${quiz.id}/start`, {
         cookie: student.cookie,
       });
-      const answers = started.json.questions.map((question) => {
-        const row = db
+      const answers = await Promise.all(started.json.questions.map(async (question) => {
+        const row = (await db
           .prepare("SELECT correct_index FROM questions WHERE id = ?")
-          .get(question.id);
+          .get(question.id));
         const correctIndex = Number(row.correct_index);
         return {
           questionId: question.id,
           selectedIndex: correct ? correctIndex : (correctIndex + 1) % question.options.length,
         };
-      });
+      }));
       return call(`POST`, `/api/student/attempts/${started.json.attemptId}/submit`, {
         cookie: student.cookie,
         body: { answers },
@@ -413,17 +413,17 @@ describe("pagsusulit, iskor, at XP", () => {
 describe("idempotent na seeding", () => {
   it("hindi nagdodoble at hindi binabago ang mga id", async () => {
     const db = getDatabase();
-    const before = db.prepare("SELECT id, slug FROM lessons ORDER BY id").all();
-    const activityCountBefore = db
+    const before = (await db.prepare("SELECT id, slug FROM lessons ORDER BY id").all());
+    const activityCountBefore = (await db
       .prepare("SELECT COUNT(*) AS count FROM activities WHERE class_id IS NULL")
-      .get().count;
+      .get()).count;
 
-    seedCurriculum(db);
+    (await seedCurriculum(db));
 
-    const afterRows = db.prepare("SELECT id, slug FROM lessons ORDER BY id").all();
-    const activityCountAfter = db
+    const afterRows = (await db.prepare("SELECT id, slug FROM lessons ORDER BY id").all());
+    const activityCountAfter = (await db
       .prepare("SELECT COUNT(*) AS count FROM activities WHERE class_id IS NULL")
-      .get().count;
+      .get()).count;
 
     assert.deepEqual(
       afterRows.map((row) => [row.id, row.slug]),
@@ -435,28 +435,28 @@ describe("idempotent na seeding", () => {
 
   it("ibinabalik ang tamang teksto kapag nabago ito", async () => {
     const db = getDatabase();
-    db.prepare(
+    (await db.prepare(
       "UPDATE lessons SET content_independent = 'sira' WHERE slug = 'heograpiya-at-simula-ng-sibilisasyon'",
-    ).run();
+    ).run());
 
-    seedCurriculum(db);
+    (await seedCurriculum(db));
 
-    const row = db
+    const row = (await db
       .prepare("SELECT content_independent FROM lessons WHERE slug = 'heograpiya-at-simula-ng-sibilisasyon'")
-      .get();
+      .get());
     assert.ok(row.content_independent.length > 300, "dapat naibalik ang orihinal na teksto");
   });
 
   it("tama ang sagot sa 'Alin ang huling nangyari?' ng Guhit ng Panahon", async () => {
     const db = getDatabase();
-    const activity = db
+    const activity = (await db
       .prepare("SELECT id FROM activities WHERE title = 'Guhit ng Panahon' AND class_id IS NULL")
-      .get();
+      .get());
     assert.ok(activity, "dapat may seed na aktibidad na Guhit ng Panahon");
 
-    const question = db
+    const question = (await db
       .prepare("SELECT options_json, correct_index FROM questions WHERE activity_id = ? AND prompt = ?")
-      .get(activity.id, "Alin ang huling nangyari?");
+      .get(activity.id, "Alin ang huling nangyari?"));
     assert.ok(question);
 
     const options = JSON.parse(question.options_json);
@@ -470,24 +470,24 @@ describe("idempotent na seeding", () => {
   it("hindi ginagalaw ang nilalamang ginawa ng guro", async () => {
     const db = getDatabase();
     const teacher = await registerTeacher("labinlima");
-    const classId = db
+    const classId = (await db
       .prepare("SELECT id FROM classes WHERE join_code = ?")
-      .get(teacher.json.user.class.joinCode).id;
+      .get(teacher.json.user.class.joinCode)).id;
 
-    db.prepare(
+    (await db.prepare(
       `INSERT INTO lessons (
         slug, title, unit, description, difficulty, estimated_minutes, xp,
         content_independent, content_instructional, content_frustration,
         vocabulary_json, published, class_id, created_by, created_at, updated_at
       ) VALUES ('aralin-ng-guro', 'Aralin ng Guro', 'Yunit 1', 'Sariling aralin',
         'madali', 5, 10, 'a', 'b', 'c', '[]', 1, ?, ?, '2026-01-01', '2026-01-01')`,
-    ).run(classId, teacher.json.user.id);
+    ).run(classId, teacher.json.user.id));
 
-    seedCurriculum(db);
+    (await seedCurriculum(db));
 
-    const row = db
+    const row = (await db
       .prepare("SELECT title, content_independent FROM lessons WHERE slug = 'aralin-ng-guro'")
-      .get();
+      .get());
     assert.equal(row.title, "Aralin ng Guro");
     assert.equal(row.content_independent, "a");
   });

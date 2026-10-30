@@ -1,0 +1,46 @@
+# HASA API — Render Blueprint (free tier)
+#
+# Awtomatikong ginagawa ng Render ang web service na ito mula sa repo.
+# New → Blueprint → piliin ang repo, pagkatapos ay ilagay ang mga value na
+# may `sync: false` sa dashboard (hindi kailanman isinusulat sa Git).
+#
+# Ang Render Free ay walang persistent disk, kaya ang tanging matatag na
+# imbakan ay ang Turso (TURSO_DATABASE_URL + TURSO_AUTH_TOKEN).
+services:
+  - type: web
+    name: hasa-api
+    runtime: node
+    plan: free
+    region: singapore
+    rootDir: server
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "22.22.3"
+      # Turso Cloud (libsql://<db>-<org>.turso.io) — server-only secrets.
+      - key: TURSO_DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false
+      # 64 hex character random value; Render can generate it.
+      - key: SESSION_SECRET
+        generateValue: true
+      # Exact Vercel origin, walang trailing slash.
+      - key: CLIENT_ORIGIN
+        sync: false
+      # 6–80 characters; blangko = sarado ang teacher self-registration.
+      - key: TEACHER_SIGNUP_CODE
+        sync: false
+      # Behind Render's proxy: kailangan para tama ang req.ip at secure cookie.
+      - key: TRUST_PROXY
+        value: "1"
+      # Optional AI (server-side only). Blangko = honest na "AI not configured".
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false

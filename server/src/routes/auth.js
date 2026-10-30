@@ -23,19 +23,19 @@ import * as validate from "../utils/validation.js";
 
 export const authRouter = Router();
 
-function studentStats(userId) {
+async function studentStats(userId) {
   const db = getDatabase();
-  const points = getPoints(db, userId);
+  const points = (await getPoints(db, userId));
   return {
     points,
     level: levelForPoints(points),
-    streak: getStreak(db, userId),
+    streak: (await getStreak(db, userId)),
   };
 }
 
-export function sessionPayload(user) {
+export async function sessionPayload(user) {
   const payload = { user };
-  if (user.role === "student") payload.stats = studentStats(user.id);
+  if (user.role === "student") payload.stats = await studentStats(user.id);
   return payload;
 }
 
@@ -54,12 +54,12 @@ authRouter.post(
       const readingLevel = validate.readingLevel(req.body?.readingLevel ?? "instructional");
 
       const db = getDatabase();
-      const existing = db.prepare("SELECT id FROM users WHERE username = ?").get(username);
+      const existing = (await db.prepare("SELECT id FROM users WHERE username = ?").get(username));
       if (existing) {
         throw errors.conflict("Ginagamit na ang username na ito. Pumili ng iba.");
       }
 
-      const cls = db.prepare("SELECT id FROM classes WHERE join_code = ?").get(code);
+      const cls = (await db.prepare("SELECT id FROM classes WHERE join_code = ?").get(code));
       if (!cls) {
         throw errors.validation(
           "Hindi mahanap ang kodigo ng klase. Tiyakin itong tama at humingi ng tulong sa guro.",
@@ -67,17 +67,17 @@ authRouter.post(
       }
 
       const passwordHash = await hashPassword(password);
-      const result = db
+      const result = (await db
         .prepare(
           `INSERT INTO users (username, password_hash, role, display_name, class_id, reading_level, is_active, created_at)
            VALUES (?, ?, 'student', ?, ?, ?, 1, ?)`,
         )
-        .run(username, passwordHash, displayName, cls.id, readingLevel, nowIso());
+        .run(username, passwordHash, displayName, cls.id, readingLevel, nowIso()));
 
-      const session = issueSession(Number(result.lastInsertRowid));
+      const session = (await issueSession(Number(result.lastInsertRowid)));
       setSessionCookie(res, session.token);
-      const user = publicUser(db, Number(result.lastInsertRowid));
-      res.status(201).json(sessionPayload(user));
+      const user = (await publicUser(db, Number(result.lastInsertRowid)));
+      res.status(201).json(await sessionPayload(user));
     } catch (error) {
       if (error?.code === "SQLITE_CONSTRAINT_UNIQUE") {
         return next(errors.conflict("Ginagamit na ang username na ito. Pumili ng iba."));
@@ -120,22 +120,22 @@ authRouter.post(
       });
 
       const db = getDatabase();
-      const existing = db.prepare("SELECT id FROM users WHERE username = ?").get(username);
+      const existing = (await db.prepare("SELECT id FROM users WHERE username = ?").get(username));
       if (existing) {
         throw errors.conflict("Ginagamit na ang username na ito. Pumili ng iba.");
       }
 
       const passwordHash = await hashPassword(password);
-      const created = createTeacher({
+      const created = (await createTeacher({
         username,
         passwordHash,
         displayName,
         className,
-      });
-      const session = issueSession(created.teacherId);
+      }));
+      const session = (await issueSession(created.teacherId));
       setSessionCookie(res, session.token);
-      const user = publicUser(db, created.teacherId);
-      res.status(201).json({ ...sessionPayload(user), classJoinCode: created.joinCode });
+      const user = (await publicUser(db, created.teacherId));
+      res.status(201).json({ ...(await sessionPayload(user)), classJoinCode: created.joinCode });
     } catch (error) {
       if (error?.code === "SQLITE_CONSTRAINT_UNIQUE") {
         return next(errors.conflict("Ginagamit na ang username na ito. Pumili ng iba."));
@@ -160,11 +160,11 @@ authRouter.post(
       }
 
       const db = getDatabase();
-      const account = db
+      const account = (await db
         .prepare(
           "SELECT id, password_hash, is_active FROM users WHERE username = ?",
         )
-        .get(usernameValue);
+        .get(usernameValue));
 
       const passwordOk = account
         ? await verifyPassword(passwordValue, account.password_hash)
@@ -178,28 +178,28 @@ authRouter.post(
         );
       }
 
-      const session = issueSession(Number(account.id));
+      const session = (await issueSession(Number(account.id)));
       setSessionCookie(res, session.token);
-      const user = publicUser(db, Number(account.id));
-      res.json(sessionPayload(user));
+      const user = (await publicUser(db, Number(account.id)));
+      res.json(await sessionPayload(user));
     } catch (error) {
       next(error);
     }
   },
 );
 
-authRouter.post("/logout", (req, res) => {
+authRouter.post("/logout", async (req, res) => {
   const token = sessionTokenFromRequest(req);
-  if (token) revokeSession(hashSessionToken(token));
+  if (token) (await revokeSession(hashSessionToken(token)));
   clearSessionCookie(res);
   res.status(204).end();
 });
 
-authRouter.get("/me", requireAuth, (req, res) => {
-  res.json(sessionPayload(req.user));
+authRouter.get("/me", requireAuth, async (req, res) => {
+  res.json(await sessionPayload(req.user));
 });
 
-authRouter.patch("/profile", requireAuth, (req, res, next) => {
+authRouter.patch("/profile", requireAuth, async (req, res, next) => {
   try {
     const db = getDatabase();
     const displayName = validate.text(req.body?.displayName, "pangalan", {
@@ -209,29 +209,29 @@ authRouter.patch("/profile", requireAuth, (req, res, next) => {
 
     if (req.user.role === "student") {
       const readingLevel = validate.readingLevel(req.body?.readingLevel);
-      db.prepare("UPDATE users SET display_name = ?, reading_level = ? WHERE id = ?").run(
+      (await db.prepare("UPDATE users SET display_name = ?, reading_level = ? WHERE id = ?").run(
         displayName,
         readingLevel,
         req.user.id,
-      );
+      ));
     } else {
-      db.prepare("UPDATE users SET display_name = ? WHERE id = ?").run(
+      (await db.prepare("UPDATE users SET display_name = ? WHERE id = ?").run(
         displayName,
         req.user.id,
-      );
+      ));
       if (req.body?.className !== undefined) {
         const className = validate.text(req.body.className, "pangalan ng klase", {
           min: 3,
           max: 80,
         });
-        db.prepare("UPDATE classes SET name = ? WHERE teacher_id = ?").run(
+        (await db.prepare("UPDATE classes SET name = ? WHERE teacher_id = ?").run(
           className,
           req.user.id,
-        );
+        ));
       }
     }
 
-    res.json(sessionPayload(publicUser(db, req.user.id)));
+    res.json(await sessionPayload(await publicUser(db, req.user.id)));
   } catch (error) {
     next(error);
   }
@@ -246,18 +246,18 @@ authRouter.post("/password", requireAuth, async (req, res, next) => {  try {
     }
 
     const db = getDatabase();
-    const account = db
+    const account = (await db
       .prepare("SELECT password_hash FROM users WHERE id = ?")
-      .get(req.user.id);
+      .get(req.user.id));
     const ok = await verifyPassword(currentPassword, account?.password_hash);
     if (!ok) throw errors.validation("Mali ang kasalukuyang password.");
 
     const newHash = await hashPassword(newPassword);
-    db.prepare("UPDATE users SET password_hash = ? WHERE id = ?").run(
+    (await db.prepare("UPDATE users SET password_hash = ? WHERE id = ?").run(
       newHash,
       req.user.id,
-    );
-    revokeOtherSessions(req.user.id, req.auth?.tokenHash);
+    ));
+    (await revokeOtherSessions(req.user.id, req.auth?.tokenHash));
     res.json({ message: "Napalitan na ang password." });
   } catch (error) {
     next(error);

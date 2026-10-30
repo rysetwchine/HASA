@@ -37,24 +37,24 @@ function studentClassId(student) {
   return Number(student.class.id);
 }
 
-studentRouter.get("/dashboard", (req, res) => {
+studentRouter.get("/dashboard", async (req, res) => {
   const db = getDatabase();
-  res.json(getStudentDashboard(db, req.user));
+  res.json((await getStudentDashboard(db, req.user)));
 });
 
-studentRouter.get("/lessons", (req, res) => {
+studentRouter.get("/lessons", async (req, res) => {
   const db = getDatabase();
-  res.json({ lessons: listStudentLessons(db, req.user.id, studentClassId(req.user)) });
+  res.json({ lessons: (await listStudentLessons(db, req.user.id, studentClassId(req.user))) });
 });
 
-studentRouter.get("/lessons/:id", (req, res, next) => {
+studentRouter.get("/lessons/:id", async (req, res, next) => {
   try {
     const db = getDatabase();
     const lessonId = validate.id(req.params.id, "aralin");
-    const row = accessibleLesson(db, lessonId, studentClassId(req.user));
+    const row = (await accessibleLesson(db, lessonId, studentClassId(req.user)));
     if (!row) throw errors.notFound("Hindi mahanap ang aralin.");
     res.json({
-      lesson: serializeLesson(db, row, req.user.id, req.user.readingLevel),
+      lesson: (await serializeLesson(db, row, req.user.id, req.user.readingLevel)),
     });
   } catch (error) {
     next(error);
@@ -63,22 +63,22 @@ studentRouter.get("/lessons/:id", (req, res, next) => {
 
 // Binubuksan ng mag-aaral ang aralin: kung wala pang rekord, itinatala itong
 // "in_progress". Walang XP dito — XP ay sa pagkumpleto lamang.
-studentRouter.post("/lessons/:id/start", (req, res, next) => {
+studentRouter.post("/lessons/:id/start", async (req, res, next) => {
   try {
     const db = getDatabase();
     const lessonId = validate.id(req.params.id, "aralin");
-    const row = accessibleLesson(db, lessonId, studentClassId(req.user));
+    const row = (await accessibleLesson(db, lessonId, studentClassId(req.user)));
     if (!row) throw errors.notFound("Hindi mahanap ang aralin.");
 
-    const existing = db
+    const existing = (await db
       .prepare("SELECT status FROM lesson_progress WHERE student_id = ? AND lesson_id = ?")
-      .get(req.user.id, lessonId);
+      .get(req.user.id, lessonId));
 
     if (!existing) {
-      db.prepare(
+      (await db.prepare(
         `INSERT INTO lesson_progress (student_id, lesson_id, status, completed_at, updated_at)
          VALUES (?, ?, 'in_progress', NULL, ?)`,
-      ).run(req.user.id, lessonId, nowIso());
+      ).run(req.user.id, lessonId, nowIso()));
     }
 
     res.json({
@@ -90,43 +90,43 @@ studentRouter.post("/lessons/:id/start", (req, res, next) => {
   }
 });
 
-studentRouter.post("/lessons/:id/complete", (req, res, next) => {
+studentRouter.post("/lessons/:id/complete", async (req, res, next) => {
   try {
     const db = getDatabase();
     const lessonId = validate.id(req.params.id, "aralin");
-    const row = accessibleLesson(db, lessonId, studentClassId(req.user));
+    const row = (await accessibleLesson(db, lessonId, studentClassId(req.user)));
     if (!row) throw errors.notFound("Hindi mahanap ang aralin.");
 
-    const existing = db
+    const existing = (await db
       .prepare(
         "SELECT status FROM lesson_progress WHERE student_id = ? AND lesson_id = ?",
       )
-      .get(req.user.id, lessonId);
+      .get(req.user.id, lessonId));
     const firstCompletion = existing?.status !== "completed";
 
-    transaction((tx) => {
-      tx.prepare(
+    await transaction(async (tx) => {
+      (await tx.prepare(
         `INSERT INTO lesson_progress (student_id, lesson_id, status, completed_at, updated_at)
          VALUES (?, ?, 'completed', ?, ?)
          ON CONFLICT(student_id, lesson_id) DO UPDATE SET
            status = 'completed',
            completed_at = COALESCE(lesson_progress.completed_at, excluded.completed_at),
            updated_at = excluded.updated_at`,
-      ).run(req.user.id, lessonId, nowIso(), nowIso());
+      ).run(req.user.id, lessonId, nowIso(), nowIso()));
 
       if (firstCompletion) {
-        awardPoints(tx, {
+        (await awardPoints(tx, {
           studentId: req.user.id,
           delta: Number(row.xp),
           reasonCode: "lesson_completed",
           refType: "lesson",
           refId: lessonId,
-        });
+        }));
       }
     });
 
-    const badgeResult = firstCompletion ? evaluateBadges(req.user.id) : { newBadges: [], xpAwarded: 0 };
-    const metrics = getMetrics(db, req.user.id, studentClassId(req.user));
+    const badgeResult = firstCompletion ? (await evaluateBadges(req.user.id)) : { newBadges: [], xpAwarded: 0 };
+    const metrics = (await getMetrics(db, req.user.id, studentClassId(req.user)));
     res.json({
       alreadyCompleted: !firstCompletion,
       lessonXp: firstCompletion ? Number(row.xp) : 0,
@@ -134,8 +134,8 @@ studentRouter.post("/lessons/:id/complete", (req, res, next) => {
       newBadges: badgeResult.newBadges,
       stats: {
         ...metrics,
-        points: getPoints(db, req.user.id),
-        level: levelForPoints(getPoints(db, req.user.id)),
+        points: (await getPoints(db, req.user.id)),
+        level: levelForPoints((await getPoints(db, req.user.id))),
       },
     });
   } catch (error) {
@@ -143,31 +143,31 @@ studentRouter.post("/lessons/:id/complete", (req, res, next) => {
   }
 });
 
-studentRouter.get("/activities", (req, res, next) => {
+studentRouter.get("/activities", async (req, res, next) => {
   try {
     const kind = req.query.kind === "quiz" ? "quiz" : req.query.kind === "activity" ? "activity" : null;
     if (!kind) throw errors.validation("Ilagay ang uri: activity o quiz.");
     const db = getDatabase();
     res.json({
-      activities: listStudentActivities(db, req.user.id, studentClassId(req.user), kind),
+      activities: (await listStudentActivities(db, req.user.id, studentClassId(req.user), kind)),
     });
   } catch (error) {
     next(error);
   }
 });
 
-studentRouter.get("/activities/:id", (req, res, next) => {
+studentRouter.get("/activities/:id", async (req, res, next) => {
   try {
     const db = getDatabase();
     const activityId = validate.id(req.params.id, "aktibidad");
-    const row = db
+    const row = (await db
       .prepare(
         `SELECT a.*, l.title AS lesson_title,
                 (SELECT COUNT(*) FROM questions q WHERE q.activity_id = a.id) AS question_count
          FROM activities a LEFT JOIN lessons l ON l.id = a.lesson_id
          WHERE a.id = ? AND a.published = 1 AND (a.class_id IS NULL OR a.class_id = ?)`,
       )
-      .get(activityId, studentClassId(req.user));
+      .get(activityId, studentClassId(req.user)));
     if (!row) throw errors.notFound("Hindi mahanap ang aktibidad.");
     res.json({ activity: serializeActivity(row, req.user.id, db) });
   } catch (error) {
@@ -175,29 +175,29 @@ studentRouter.get("/activities/:id", (req, res, next) => {
   }
 });
 
-studentRouter.post("/activities/:id/start", (req, res, next) => {
+studentRouter.post("/activities/:id/start", async (req, res, next) => {
   try {
     const db = getDatabase();
     const activityId = validate.id(req.params.id, "aktibidad");
-    const activity = db
+    const activity = (await db
       .prepare(
         `SELECT a.*, l.title AS lesson_title,
                 (SELECT COUNT(*) FROM questions q WHERE q.activity_id = a.id) AS question_count
          FROM activities a LEFT JOIN lessons l ON l.id = a.lesson_id
          WHERE a.id = ? AND a.published = 1 AND (a.class_id IS NULL OR a.class_id = ?)`,
       )
-      .get(activityId, studentClassId(req.user));
+      .get(activityId, studentClassId(req.user)));
     if (!activity) throw errors.notFound("Hindi mahanap ang aktibidad.");
     if (Number(activity.question_count) === 0) {
       throw errors.conflict("Wala pang tanong ang aktibidad na ito.");
     }
 
-    const questions = db
+    const questions = (await db
       .prepare(
         `SELECT id, prompt, options_json
          FROM questions WHERE activity_id = ? ORDER BY position, id`,
       )
-      .all(activityId)
+      .all(activityId))
       .map((question) => ({
         id: Number(question.id),
         prompt: question.prompt,
@@ -205,12 +205,12 @@ studentRouter.post("/activities/:id/start", (req, res, next) => {
       }));
 
     const startedAt = nowIso();
-    const result = db
+    const result = (await db
       .prepare(
         `INSERT INTO attempts (activity_id, student_id, started_at, total, status)
          VALUES (?, ?, ?, ?, 'in_progress')`,
       )
-      .run(activityId, req.user.id, startedAt, questions.length);
+      .run(activityId, req.user.id, startedAt, questions.length));
 
     res.status(201).json({
       attemptId: Number(result.lastInsertRowid),
@@ -226,29 +226,29 @@ studentRouter.post("/activities/:id/start", (req, res, next) => {
 studentRouter.post(
   "/attempts/:id/submit",
   rateLimit({ keyPrefix: "quiz-submit", windowMs: 60 * 1000, max: 20 }),
-  (req, res, next) => {
+  async (req, res, next) => {
     try {
       const db = getDatabase();
       const attemptId = validate.id(req.params.id, "pagtatangka");
-      const attempt = db
+      const attempt = (await db
         .prepare(
           `SELECT at.*, a.title, a.kind, a.pass_percent, a.xp, a.timer_seconds,
                   a.lesson_id, a.class_id
            FROM attempts at JOIN activities a ON a.id = at.activity_id
            WHERE at.id = ? AND at.student_id = ?`,
         )
-        .get(attemptId, req.user.id);
+        .get(attemptId, req.user.id));
       if (!attempt) throw errors.notFound("Hindi mahanap ang pagtatangka.");
       if (attempt.status === "completed") {
         throw errors.conflict("Nasumite na ang pagtatangkang ito.");
       }
 
-      const questions = db
+      const questions = (await db
         .prepare(
           `SELECT id, prompt, options_json, correct_index, explanation
            FROM questions WHERE activity_id = ? ORDER BY position, id`,
         )
-        .all(attempt.activity_id);
+        .all(attempt.activity_id));
       if (questions.length === 0) throw errors.conflict("Wala pang tanong ang aktibidad.");
 
       const submitted = Array.isArray(req.body?.answers) ? req.body.answers : [];
@@ -298,21 +298,21 @@ studentRouter.post(
       const total = questions.length;
       const scorePercent = percent(correct, total);
       const passed = scorePercent >= Number(attempt.pass_percent);
-      const priorPass = db
+      const priorPass = (await db
         .prepare(
           `SELECT 1 FROM attempts at JOIN activities a ON a.id = at.activity_id
            WHERE at.student_id = ? AND at.activity_id = ? AND at.status = 'completed'
              AND at.score * 100.0 / at.total >= a.pass_percent
            LIMIT 1`,
         )
-        .get(req.user.id, attempt.activity_id);
+        .get(req.user.id, attempt.activity_id));
       const firstPass = passed && !priorPass;
 
-      transaction((tx) => {
-        tx.prepare(
+      await transaction(async (tx) => {
+        (await tx.prepare(
           `UPDATE attempts SET completed_at = ?, score = ?, total = ?, timed_out = ?, status = 'completed'
            WHERE id = ? AND student_id = ?`,
-        ).run(nowIso(), correct, total, timedOut ? 1 : 0, attemptId, req.user.id);
+        ).run(nowIso(), correct, total, timedOut ? 1 : 0, attemptId, req.user.id));
 
         const insertAnswer = tx.prepare(
           `INSERT OR REPLACE INTO attempt_answers (attempt_id, question_id, selected_index, is_correct)
@@ -320,28 +320,28 @@ studentRouter.post(
         );
         for (const item of feedback) {
           if (item.selectedIndex === null) continue;
-          insertAnswer.run(
+          (await insertAnswer.run(
             attemptId,
             item.questionId,
             item.selectedIndex,
             item.correct ? 1 : 0,
-          );
+          ));
         }
 
         if (firstPass) {
-          awardPoints(tx, {
+          (await awardPoints(tx, {
             studentId: req.user.id,
             delta: Number(attempt.xp),
             reasonCode: "activity_passed",
             refType: "activity",
             refId: Number(attempt.activity_id),
-          });
+          }));
         }
       });
 
-      const badgeResult = evaluateBadges(req.user.id);
-      const points = getPoints(db, req.user.id);
-      const stats = activityStats(db, req.user.id, Number(attempt.activity_id));
+      const badgeResult = (await evaluateBadges(req.user.id));
+      const points = (await getPoints(db, req.user.id));
+      const stats = (await activityStats(db, req.user.id, Number(attempt.activity_id)));
 
       res.json({
         attempt: {
@@ -368,7 +368,7 @@ studentRouter.post(
         totals: {
           points,
           level: levelForPoints(points),
-          streak: getStreak(db, req.user.id),
+          streak: (await getStreak(db, req.user.id)),
         },
       });
     } catch (error) {
@@ -377,9 +377,9 @@ studentRouter.post(
   },
 );
 
-studentRouter.get("/attempts", (req, res) => {
+studentRouter.get("/attempts", async (req, res) => {
   const db = getDatabase();
-  const rows = db
+  const rows = (await db
     .prepare(
       `SELECT at.id, at.score, at.total, at.completed_at, at.timed_out,
               a.title, a.kind, a.pass_percent
@@ -387,7 +387,7 @@ studentRouter.get("/attempts", (req, res) => {
        WHERE at.student_id = ? AND at.status = 'completed'
        ORDER BY at.completed_at DESC LIMIT 100`,
     )
-    .all(req.user.id);
+    .all(req.user.id));
 
   res.json({
     attempts: rows.map((row) => ({
@@ -406,22 +406,22 @@ studentRouter.get("/attempts", (req, res) => {
   });
 });
 
-studentRouter.get("/progress", (req, res) => {
+studentRouter.get("/progress", async (req, res) => {
   const db = getDatabase();
-  res.json(getStudentProgress(db, req.user));
+  res.json((await getStudentProgress(db, req.user)));
 });
 
-studentRouter.get("/achievements", (req, res) => {
+studentRouter.get("/achievements", async (req, res) => {
   const db = getDatabase();
-  res.json(getStudentAchievements(db, req.user));
+  res.json((await getStudentAchievements(db, req.user)));
 });
 
-studentRouter.get("/overview", (req, res) => {
+studentRouter.get("/overview", async (req, res) => {
   const db = getDatabase();
-  const metrics = getMetrics(db, req.user.id, studentClassId(req.user));
+  const metrics = (await getMetrics(db, req.user.id, studentClassId(req.user)));
   res.json({
     stats: metrics,
-    passedActivities: passedActivityRows(db, req.user.id),
+    passedActivities: (await passedActivityRows(db, req.user.id)),
   });
 });
 

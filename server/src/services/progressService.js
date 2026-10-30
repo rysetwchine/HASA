@@ -1,15 +1,15 @@
 import { getDatabase, transaction } from "../db/database.js";
 import { calculateStreak, levelForPoints, manilaDateKey, nowIso, percent } from "../utils/time.js";
 
-export function getPoints(db, studentId) {
-  const row = db
+export async function getPoints(db, studentId) {
+  const row = (await db
     .prepare("SELECT COALESCE(SUM(delta), 0) AS points FROM points_ledger WHERE student_id = ?")
-    .get(studentId);
+    .get(studentId));
   return Number(row.points) || 0;
 }
 
-export function getStreak(db, studentId, today = manilaDateKey()) {
-  const rows = db
+export async function getStreak(db, studentId, today = manilaDateKey()) {
+  const rows = (await db
     .prepare(
       `SELECT completed_at AS date FROM attempts
        WHERE student_id = ? AND status = 'completed' AND completed_at IS NOT NULL
@@ -17,7 +17,7 @@ export function getStreak(db, studentId, today = manilaDateKey()) {
        SELECT completed_at AS date FROM lesson_progress
        WHERE student_id = ? AND status = 'completed' AND completed_at IS NOT NULL`,
     )
-    .all(studentId, studentId);
+    .all(studentId, studentId));
 
   return calculateStreak(
     rows.map((row) => manilaDateKey(row.date)),
@@ -25,30 +25,30 @@ export function getStreak(db, studentId, today = manilaDateKey()) {
   );
 }
 
-export function totalLessonsForStudent(db, classId) {
+export async function totalLessonsForStudent(db, classId) {
   return Number(
-    db
+    (await db
       .prepare(
         `SELECT COUNT(*) AS count FROM lessons
          WHERE published = 1 AND (class_id IS NULL OR class_id = ?)`,
       )
-      .get(classId).count,
+      .get(classId)).count,
   );
 }
 
-export function totalActivitiesForStudent(db, classId, kind) {
+export async function totalActivitiesForStudent(db, classId, kind) {
   return Number(
-    db
+    (await db
       .prepare(
         `SELECT COUNT(*) AS count FROM activities
          WHERE published = 1 AND kind = ? AND (class_id IS NULL OR class_id = ?)`,
       )
-      .get(kind, classId).count,
+      .get(kind, classId)).count,
   );
 }
 
-export function passedActivityRows(db, studentId) {
-  return db
+export async function passedActivityRows(db, studentId) {
+  return (await db
     .prepare(
       `SELECT a.id, a.kind, a.title, MAX(CASE WHEN at.score * 100.0 / at.total >= a.pass_percent THEN 1 ELSE 0 END) AS passed,
               MAX(CASE WHEN at.score = at.total THEN 1 ELSE 0 END) AS perfect,
@@ -58,19 +58,19 @@ export function passedActivityRows(db, studentId) {
        WHERE at.student_id = ? AND at.status = 'completed'
        GROUP BY a.id`,
     )
-    .all(studentId);
+    .all(studentId));
 }
 
-export function getMetrics(db, studentId, classId) {
-  const points = getPoints(db, studentId);
+export async function getMetrics(db, studentId, classId) {
+  const points = (await getPoints(db, studentId));
   const lessonsCompleted = Number(
-    db
+    (await db
       .prepare(
         "SELECT COUNT(*) AS count FROM lesson_progress WHERE student_id = ? AND status = 'completed'",
       )
-      .get(studentId).count,
+      .get(studentId)).count,
   );
-  const passed = passedActivityRows(db, studentId);
+  const passed = (await passedActivityRows(db, studentId));
   const activitiesPassed = passed.filter((row) => Number(row.passed) === 1).length;
   const quizzesPassed = passed.filter(
     (row) => Number(row.passed) === 1 && row.kind === "quiz",
@@ -84,29 +84,29 @@ export function getMetrics(db, studentId, classId) {
   return {
     points,
     level: levelForPoints(points),
-    streak: getStreak(db, studentId),
+    streak: (await getStreak(db, studentId)),
     lessonsCompleted,
-    lessonsTotal: totalLessonsForStudent(db, classId),
+    lessonsTotal: (await totalLessonsForStudent(db, classId)),
     activitiesPassed,
     quizzesPassed,
     perfectQuiz,
     badgesEarned: Number(
-      db
+      (await db
         .prepare("SELECT COUNT(*) AS count FROM student_badges WHERE student_id = ?")
-        .get(studentId).count,
+        .get(studentId)).count,
     ),
   };
 }
 
-export function awardPoints(db, { studentId, delta, reasonCode, refType, refId }) {
+export async function awardPoints(db, { studentId, delta, reasonCode, refType, refId }) {
   if (delta <= 0) return 0;
-  const result = db
+  const result = (await db
     .prepare(
       `INSERT OR IGNORE INTO points_ledger
        (student_id, delta, reason_code, ref_type, ref_id, created_at)
        VALUES (?, ?, ?, ?, ?, ?)`,
     )
-    .run(studentId, delta, reasonCode, refType, refId, nowIso());
+    .run(studentId, delta, reasonCode, refType, refId, nowIso()));
   return Number(result.changes) > 0 ? delta : 0;
 }
 
@@ -122,48 +122,48 @@ const BADGE_METRIC = {
  * Awards every badge whose rule is now met. Runs in one transaction so a
  * badge and its one-time XP cannot be granted twice.
  */
-export function evaluateBadges(studentId) {
+export async function evaluateBadges(studentId) {
   const db = getDatabase();
-  const student = db
+  const student = (await db
     .prepare("SELECT id, class_id FROM users WHERE id = ? AND role = 'student'")
-    .get(studentId);
+    .get(studentId));
   if (!student) return { newBadges: [], xpAwarded: 0 };
 
-  const metrics = getMetrics(db, studentId, Number(student.class_id));
-  const badges = db.prepare("SELECT * FROM badges ORDER BY sort_order, id").all();
+  const metrics = (await getMetrics(db, studentId, Number(student.class_id)));
+  const badges = (await db.prepare("SELECT * FROM badges ORDER BY sort_order, id").all());
   const awarded = new Set(
-    db
+    (await db
       .prepare("SELECT badge_id FROM student_badges WHERE student_id = ?")
-      .all(studentId)
+      .all(studentId))
       .map((row) => Number(row.badge_id)),
   );
 
   const newBadges = [];
   let xpAwarded = 0;
 
-  transaction((tx) => {
+  await transaction(async (tx) => {
     for (const badge of badges) {
       if (awarded.has(Number(badge.id))) continue;
       const metricKey = BADGE_METRIC[badge.criteria_type];
       const value = metricKey ? Number(metrics[metricKey]) || 0 : 0;
       if (value < Number(badge.criteria_target)) continue;
 
-      const insert = tx
+      const insert = (await tx
         .prepare(
           "INSERT OR IGNORE INTO student_badges (student_id, badge_id, awarded_at) VALUES (?, ?, ?)",
         )
-        .run(studentId, badge.id, nowIso());
+        .run(studentId, badge.id, nowIso()));
       if (Number(insert.changes) === 0) continue;
 
       const bonus = Number(badge.xp) || 0;
       if (bonus > 0) {
-        awardPoints(tx, {
+        (await awardPoints(tx, {
           studentId,
           delta: bonus,
           reasonCode: "badge_awarded",
           refType: "badge",
           refId: Number(badge.id),
-        });
+        }));
       }
       xpAwarded += bonus;
       newBadges.push({
@@ -176,7 +176,7 @@ export function evaluateBadges(studentId) {
     }
   });
 
-  return { newBadges, xpAwarded, points: getPoints(db, studentId) };
+  return { newBadges, xpAwarded, points: (await getPoints(db, studentId)) };
 }
 
 export function serializeAttemptScore(row) {

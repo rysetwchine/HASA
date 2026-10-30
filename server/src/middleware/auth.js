@@ -48,11 +48,11 @@ export function sessionTokenFromRequest(req) {
   return cookies[config.cookieName] || null;
 }
 
-export function optionalAuth(req, _res, next) {
+export async function optionalAuth(req, _res, next) {
   const token = sessionTokenFromRequest(req);
-  const session = findUserBySession(token);
+  const session = (await findUserBySession(token));
   if (session) {
-    const user = publicUser(getDatabase(), session.userId);
+    const user = (await publicUser(getDatabase(), session.userId));
     if (user) {
       req.user = user;
       req.auth = session;
