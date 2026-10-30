@@ -32,7 +32,7 @@ class-scoped workspace. The interface and all learning content are in Filipino.
 | Database | `node:sqlite` (`DatabaseSync`) | No native dependency to compile |
 | Auth | Server sessions, scrypt passwords | httpOnly cookie, HMAC-peppered token hash |
 | AI | Gemini / OpenAI, server-side only | Optional; reports "not configured" honestly |
-| Tests | `node --test` (server), Vitest (client) | 24 API tests, 46 client tests |
+| Tests | `node --test` (server), Vitest (client) | 32 API tests, 52 client tests |
 
 ## Repository layout
 
@@ -84,9 +84,10 @@ students with the class code the API generates.
 Useful commands:
 
 ```bash
-cd server && npm test        # 24 integration tests, in-memory DB
+cd server && npm test        # 32 integration tests, in-memory DB
+cd server && npm run smoke   # 27 full-stack checks against a running API
 cd server && npm run check   # node --check on the entry point
-cd client && npm test        # 46 Vitest tests (20 are end-to-end page renders)
+cd client && npm test        # 52 Vitest tests (26 are end-to-end page renders)
 cd client && npm run build   # production build into client/dist
 ```
 
@@ -108,11 +109,11 @@ Student (session + `role=student`; all `noindex`):
 | `/student/dashboard` | Pangunahing Pahina |
 | `/student/aralin` | Mga Aralin |
 | `/student/aralin/:id` | Detalye ng Aralin |
-| `/student/aktibidad` · `/student/aktibidad/:id` | Aktibidad at player |
+| `/student/aktibidad` · `/student/aktibidad/:id` | Pagsasanay at player |
 | `/student/pagsusulit` · `/student/pagsusulit/:id` | Pagsusulit at player |
-| `/student/progreso` | Progreso |
+| `/student/progreso` | Aking Pag-unlad |
 | `/student/mga-gantimpala` | Mga Gantimpala |
-| `/student/pasimplehin` | AI Pantulong |
+| `/student/pasimplehin` | AI Tagapagpasimple |
 | `/student/profile` | Aking Profile |
 
 Teacher (session + `role=teacher`; all `noindex`):
@@ -121,9 +122,10 @@ Teacher (session + `role=teacher`; all `noindex`):
 |---|---|
 | `/teacher/dashboard` | Pangunahing Pahina |
 | `/teacher/mga-mag-aaral` · `/:id` | Mga Mag-aaral at detalye |
-| `/teacher/mga-aralin` | Pamamahala ng mga Aralin |
+| `/teacher/mga-aralin` | Pamamahala ng Aralin |
 | `/teacher/mga-aktibidad` | Mga Aktibidad |
 | `/teacher/mga-pagsusulit` | Mga Pagsusulit |
+| `/teacher/progreso` | Progreso ng Mag-aaral |
 | `/teacher/mga-ulat` | Mga Ulat |
 | `/teacher/profile` | Aking Profile |
 

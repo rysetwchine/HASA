@@ -223,8 +223,8 @@ export default function TeacherLessonsPage() {
       <Seo title="Pamamahala ng mga Aralin" description="Gumawa, i-edit, at i-publish ng mga aralin sa HASA." noindex path="/teacher/mga-aralin" />
       <PageHeader
         eyebrow="Nilalaman"
-        title="Mga Aralin"
-        description="Gumawa ng sariling aralin para sa iyong klase. Ang mga pangkalahatang aralin ay hindi maaaring i-edit at ibinabahagi sa lahat ng klase."
+        title="Pamamahala ng Aralin"
+        description="Pamahalaan ang mga aralin ng klase: gumawa ng sariling aralin para sa iyong klase. Ang mga pangkalahatang aralin ay hindi maaaring i-edit at ibinabahagi sa lahat ng klase."
         actions={<Button onClick={openCreate}><Plus className="size-4" aria-hidden="true" /> Bagong aralin</Button>}
       />
 

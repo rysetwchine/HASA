@@ -27,6 +27,7 @@ const StudentDetailPage = lazy(() => import("../pages/teacher/StudentDetailPage.
 const TeacherLessons = lazy(() => import("../pages/teacher/LessonsPage.jsx"));
 const TeacherActivities = lazy(() => import("../pages/teacher/AssessmentsPage.jsx"));
 const TeacherQuizzes = lazy(() => import("../pages/teacher/AssessmentsPage.jsx"));
+const ClassProgressPage = lazy(() => import("../pages/teacher/ClassProgressPage.jsx"));
 const ReportsPage = lazy(() => import("../pages/teacher/ReportsPage.jsx"));
 const TeacherProfile = lazy(() => import("../pages/teacher/ProfilePage.jsx"));
 
@@ -105,6 +106,7 @@ export default function AppRoutes() {
           <Route path="mga-aralin" element={<TeacherLessons />} />
           <Route path="mga-aktibidad" element={<TeacherActivities kind="activity" />} />
           <Route path="mga-pagsusulit" element={<TeacherQuizzes kind="quiz" />} />
+          <Route path="progreso" element={<ClassProgressPage />} />
           <Route path="mga-ulat" element={<ReportsPage />} />
           <Route path="profile" element={<TeacherProfile />} />
         </Route>

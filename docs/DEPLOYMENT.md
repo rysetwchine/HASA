@@ -48,7 +48,7 @@ The build script is the project's own `vite build`; nothing is overridden.
 { "source": "/((?!api/).*)", "destination": "/index.html" }
 ```
 
-Deep links (`/student/aralin/3`, `/teacher/mga-ulat`) return `index.html` and React Router
+Deep links (`/student/aralin/3`, `/teacher/progreso`, `/teacher/mga-ulat`) return `index.html` and React Router
 takes over, so a refresh is never a 404. `/api/*` is deliberately excluded: with no API on
 this host those requests should 404 rather than receive HTML.
 
@@ -161,12 +161,16 @@ npm run build --prefix client → ✓ built, lazy route chunks, no .map files
 ```
 
 Served `client/dist` with filesystem-first + SPA fallback: `/`, `/student/dashboard`,
-`/teacher/mga-ulat`, `/mga-aralin`, `/assets/*.js|css`, `/fonts/*.woff2`, `/favicon.svg`,
+`/teacher/progreso`, `/teacher/mga-ulat`, `/mga-aralin`, `/assets/*.js|css`, `/fonts/*.woff2`, `/favicon.svg`,
 `/robots.txt`, `/sitemap.xml`, `/llms.txt`, `/og-image.png` all return 200 with the right
 content type.
 
-Automated tests: `cd server && npm test` → 24/24; `cd client && npm test` → 46/46
-(12 format, 8 SEO, 6 guard, 20 end-to-end page renders).
+Automated tests: `cd server && npm test` → 32/32; `cd client && npm test` → 52/52
+(12 format, 8 SEO, 6 guard, 26 end-to-end page renders).
+
+Against a running API, `HASA_API=<origin> HASA_TEACHER_CODE=<code> npm run smoke --prefix server`
+runs 27 full-stack checks (registration, drafts, publish, XP once, quiz, progress, reset).
+Use a test database — it creates records.
 
 The end-to-end file (`client/src/test/e2e.test.jsx`) opens every student and teacher
 page against a running API and fails on any `console.error`. Point it at a server with
@@ -255,7 +259,7 @@ Add the domain in Vercel, then update `VITE_SITE_URL`, `client/public/sitemap.xm
 ### Step 6 — verify on the live URL
 
 - `/` renders the redesign, not the Stage-1 prototype.
-- Hard-refresh `/student/dashboard` and `/teacher/mga-ulat` → app loads (SPA rewrite), not 404.
+- Hard-refresh `/student/dashboard` and `/teacher/progreso`, `/teacher/mga-ulat` → app loads (SPA rewrite), not 404.
 - Register a teacher with `TEACHER_SIGNUP_CODE` → get a `HASA-XXXXXX` class code.
 - Register a student with that code → the six lessons appear.
 - Complete a lesson → XP increases and no fake success message appears.

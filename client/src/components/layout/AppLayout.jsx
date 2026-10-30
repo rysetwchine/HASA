@@ -92,7 +92,10 @@ export default function AppLayout({ role }) {
           ) : null}
         </div>
 
-        <nav className="min-h-0 flex-1 overflow-y-auto px-3 pb-4">
+        <nav className="min-h-0 flex-1 overflow-y-auto px-3 pb-4" aria-label="Mga pahina">
+          <p className="px-2.5 pb-2 pt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-plum-400">
+            {role === "teacher" ? "Pamamahala" : "Pag-aaral"}
+          </p>
           <ul className="space-y-1">
             {items.map(({ to, label, icon: Icon }) => (
               <li key={to}>
@@ -100,22 +103,45 @@ export default function AppLayout({ role }) {
                   to={to}
                   className={({ isActive }) =>
                     cx(
-                      "group flex min-h-11 items-center gap-3 rounded-xl px-3.5 text-sm font-semibold transition-colors",
+                      // 200ms: swabe sa mata, hindi mabagal.
+                      "group flex min-h-11 items-center gap-3 rounded-xl px-2.5 py-1.5 text-sm font-semibold",
+                      "transition-[background-color,color,box-shadow,transform] duration-200 ease-out",
+                      "motion-reduce:transition-none motion-reduce:transform-none",
+                      "active:scale-[0.985]",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-plum-900",
                       isActive
-                        ? "bg-white text-plum-900 shadow-sm"
+                        ? "bg-white text-plum-900 shadow-[0_10px_22px_-16px_rgba(0,0,0,0.85)]"
                         : "text-plum-100 hover:bg-white/10 hover:text-white",
                     )
                   }
                 >
                   {({ isActive }) => (
                     <>
-                      <Icon
-                        className={cx("size-[18px] shrink-0", isActive ? "text-accent" : "text-plum-300")}
-                        aria-hidden="true"
-                      />
+                      <span
+                        className={cx(
+                          "grid size-8 shrink-0 place-items-center rounded-lg",
+                          "transition-[background-color,color,transform,box-shadow] duration-200 ease-out",
+                          "motion-reduce:transition-none motion-reduce:transform-none",
+                          "group-hover:scale-105 group-active:scale-95 motion-reduce:group-hover:scale-100 motion-reduce:group-active:scale-100",
+                          isActive
+                            ? "bg-accent text-white shadow-[0_6px_14px_-6px_rgba(138,56,245,0.9)]"
+                            : // Puting lalagyan para kitang-kita ang itim na outline icon
+                              // sa madilim na plum sidebar.
+                              "bg-cream-50 text-ink shadow-sm ring-1 ring-black/10",
+                        )}
+                      >
+                        <Icon
+                          className="size-[17px]"
+                          strokeWidth={isActive ? 2.4 : 1.9}
+                          aria-hidden="true"
+                        />
+                      </span>
                       <span className="truncate">{label}</span>
                       {isActive ? (
-                        <ChevronRight className="ml-auto size-4 text-plum-400" aria-hidden="true" />
+                        <ChevronRight
+                          className="ml-auto size-4 shrink-0 text-plum-400"
+                          aria-hidden="true"
+                        />
                       ) : null}
                     </>
                   )}
@@ -128,7 +154,7 @@ export default function AppLayout({ role }) {
         <div className="border-t border-white/10 p-4">
           <Link
             to={role === "teacher" ? "/teacher/profile" : "/student/profile"}
-            className="flex items-center gap-3 rounded-xl p-2 hover:bg-white/10"
+            className="flex items-center gap-3 rounded-xl p-2 transition-colors duration-200 ease-out hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-plum-900 motion-reduce:transition-none"
           >
             <span className="grid size-10 shrink-0 place-items-center rounded-full bg-gold text-sm font-bold text-brown">
               {initials(user?.displayName)}
@@ -145,9 +171,11 @@ export default function AppLayout({ role }) {
           <button
             type="button"
             onClick={handleLogout}
-            className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-plum-200 hover:bg-white/10 hover:text-white"
+            className="group mt-2 flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-sm font-semibold text-plum-200 transition-[background-color,color,transform] duration-200 ease-out hover:bg-white/10 hover:text-white active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-plum-900 motion-reduce:transition-none motion-reduce:transform-none"
           >
-            <LogOut className="size-4" aria-hidden="true" />
+            <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-white/10 text-plum-100 transition-[background-color,transform] duration-200 ease-out group-hover:scale-105 group-hover:bg-white/15 group-active:scale-95 motion-reduce:transition-none motion-reduce:transform-none">
+              <LogOut className="size-[17px]" strokeWidth={1.9} aria-hidden="true" />
+            </span>
             Mag-log out
           </button>
         </div>

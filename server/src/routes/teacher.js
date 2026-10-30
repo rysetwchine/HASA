@@ -808,6 +808,107 @@ teacherRouter.delete("/activities/:id", (req, res, next) => {
   }
 });
 
+teacherRouter.get("/progress", (req, res) => {
+  const db = getDatabase();
+  const cls = teacherClass(db, req.user.id);
+
+  const lessons = db
+    .prepare(
+      `SELECT id, title, unit
+       FROM lessons
+       WHERE published = 1 AND (class_id IS NULL OR class_id = ?)
+       ORDER BY unit, id`,
+    )
+    .all(cls.id)
+    .map((row) => ({ id: Number(row.id), title: row.title, unit: row.unit }));
+
+  const activitiesTotal = Number(
+    db
+      .prepare(
+        `SELECT COUNT(*) AS count FROM activities
+         WHERE published = 1 AND (class_id IS NULL OR class_id = ?)`,
+      )
+      .get(cls.id).count,
+  );
+
+  // Isang query para sa buong klase — hindi per-student loop.
+  const progressRows = db
+    .prepare(
+      `SELECT lp.student_id, lp.lesson_id, lp.status
+       FROM lesson_progress lp
+       JOIN users u ON u.id = lp.student_id
+       WHERE u.class_id = ? AND u.role = 'student' AND u.is_active = 1`,
+    )
+    .all(cls.id);
+
+  const passedRows = db
+    .prepare(
+      `SELECT at.student_id, COUNT(DISTINCT at.activity_id) AS passed
+       FROM attempts at
+       JOIN activities a ON a.id = at.activity_id
+       JOIN users u ON u.id = at.student_id
+       WHERE at.status = 'completed'
+         AND at.total > 0
+         AND at.score * 100.0 / at.total >= a.pass_percent
+         AND u.class_id = ? AND u.role = 'student' AND u.is_active = 1
+       GROUP BY at.student_id`,
+    )
+    .all(cls.id);
+  const passedBy = new Map(passedRows.map((row) => [Number(row.student_id), Number(row.passed)]));
+
+  const lessonsBy = new Map();
+  for (const row of progressRows) {
+    const key = Number(row.student_id);
+    if (!lessonsBy.has(key)) lessonsBy.set(key, new Map());
+    lessonsBy.get(key).set(Number(row.lesson_id), row.status);
+  }
+
+  const students = classStudents(db, cls.id).map((student) => {
+    const snapshot = studentSnapshot(db, student);
+    const statuses = lessonsBy.get(Number(student.id)) || new Map();
+    const lessonsCompleted = lessons.filter(
+      (lesson) => statuses.get(lesson.id) === "completed",
+    ).length;
+    const lessonsInProgress = lessons.filter(
+      (lesson) => statuses.get(lesson.id) === "in_progress",
+    ).length;
+    const activitiesPassed = passedBy.get(Number(student.id)) || 0;
+    const totalSteps = lessons.length + activitiesTotal;
+
+    return {
+      ...snapshot,
+      lessonsCompleted,
+      lessonsInProgress,
+      activitiesPassed,
+      lessonsTotal: lessons.length,
+      activitiesTotal,
+      completionPercent:
+        totalSteps > 0
+          ? Math.round(((lessonsCompleted + activitiesPassed) * 100) / totalSteps)
+          : 0,
+      lessonStatus: lessons.map((lesson) => statuses.get(lesson.id) ?? "not_started"),
+    };
+  });
+
+  res.json({
+    class: { id: Number(cls.id), name: cls.name, joinCode: cls.join_code },
+    totals: {
+      students: students.length,
+      lessons: lessons.length,
+      activities: activitiesTotal,
+      averageCompletion:
+        students.length > 0
+          ? Math.round(
+              students.reduce((sum, student) => sum + student.completionPercent, 0) /
+                students.length,
+            )
+          : 0,
+    },
+    lessons,
+    students,
+  });
+});
+
 teacherRouter.get("/reports", (req, res) => {
   const db = getDatabase();
   const cls = teacherClass(db, req.user.id);

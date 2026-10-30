@@ -61,6 +61,35 @@ studentRouter.get("/lessons/:id", (req, res, next) => {
   }
 });
 
+// Binubuksan ng mag-aaral ang aralin: kung wala pang rekord, itinatala itong
+// "in_progress". Walang XP dito — XP ay sa pagkumpleto lamang.
+studentRouter.post("/lessons/:id/start", (req, res, next) => {
+  try {
+    const db = getDatabase();
+    const lessonId = validate.id(req.params.id, "aralin");
+    const row = accessibleLesson(db, lessonId, studentClassId(req.user));
+    if (!row) throw errors.notFound("Hindi mahanap ang aralin.");
+
+    const existing = db
+      .prepare("SELECT status FROM lesson_progress WHERE student_id = ? AND lesson_id = ?")
+      .get(req.user.id, lessonId);
+
+    if (!existing) {
+      db.prepare(
+        `INSERT INTO lesson_progress (student_id, lesson_id, status, completed_at, updated_at)
+         VALUES (?, ?, 'in_progress', NULL, ?)`,
+      ).run(req.user.id, lessonId, nowIso());
+    }
+
+    res.json({
+      status: existing?.status ?? "in_progress",
+      startedAt: nowIso(),
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 studentRouter.post("/lessons/:id/complete", (req, res, next) => {
   try {
     const db = getDatabase();

@@ -109,6 +109,7 @@ export function StatCard({ icon: Icon, label, value, hint, tone = "accent" }) {
     gold: "bg-gold-soft text-brown",
     plum: "bg-plum-100 text-plum-800",
     success: "bg-success-soft text-success-strong",
+    sky: "bg-sky-soft text-sky-dark",
   };
   return (
     <Card className="flex items-start gap-4 p-4 sm:p-5">

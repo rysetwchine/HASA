@@ -178,7 +178,11 @@ export default function PlayerPage() {
                   {attemptResult.passed ? <CheckCircle2 className="size-3.5" aria-hidden="true" /> : <XCircle className="size-3.5" aria-hidden="true" />}
                   {attemptResult.passed ? "Pumasa" : `Kailangan ng ${activity.passPercent}%`}
                 </Chip>
-                <Chip tone="gold"><Trophy className="size-3.5" aria-hidden="true" /> +{attemptResult.xpAwarded} XP</Chip>
+                <span className={attemptResult.xpAwarded > 0 ? "animate-xp-pop" : undefined}>
+                  <Chip tone="gold">
+                    <Trophy className="size-3.5" aria-hidden="true" /> +{attemptResult.xpAwarded} XP
+                  </Chip>
+                </span>
                 {attemptResult.timedOut ? <Chip tone="warning"><Clock3 className="size-3.5" aria-hidden="true" /> Naubos ang oras</Chip> : null}
                 {attemptResult.alreadyPassed && !attemptResult.firstPass ? (
                   <Chip>Naipasa mo na ito dati</Chip>
