@@ -60,6 +60,13 @@ export function assertProductionConfig() {
   if (!config.clientOrigin && process.env.VERCEL) {
     problems.push("CLIENT_ORIGIN must be set when the API and client use different domains.");
   }
+  // The signup form itself requires 6–80 characters; a shorter code would make
+  // every teacher registration fail with a validation error.
+  if (config.teacherSignupCode && config.teacherSignupCode.length < 6) {
+    problems.push(
+      "TEACHER_SIGNUP_CODE must be at least 6 characters, or teacher signup will always fail validation.",
+    );
+  }
   if (problems.length > 0) {
     throw new Error(`Invalid production configuration:\n- ${problems.join("\n- ")}`);
   }
