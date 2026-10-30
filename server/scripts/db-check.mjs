@@ -78,12 +78,28 @@ const report = {
   content: {},
   relations: [],
   foreignKeyViolations: null,
+  failure: null,
   problems: [],
 };
 
 const out = (line = "") => {
   if (!asJson) console.log(line);
 };
+
+/**
+ * Ibahin ang tunay na sanhi ng pagpalya: network, auth, o maling URL.
+ * "fetch failed" lamang ang isinusuka ng fetch API — hindi nito sinasabi kung
+ * offline ang makina o mali ang token, at magkaiba ang lunas.
+ */
+function classify(error) {
+  const text = `${error?.message ?? ""} ${error?.cause?.code ?? ""} ${error?.code ?? ""}`;
+  if (/ECONNRESET|ENOTFOUND|EAI_AGAIN|ETIMEDOUT|ECONNREFUSED|EHOSTUNREACH|UND_ERR|fetch failed|socket/i.test(text)) {
+    return "network";
+  }
+  if (/401|403|unauthor|forbidden|jwt|token|auth/i.test(text)) return "auth";
+  if (/404|not found|database/i.test(text)) return "url";
+  return "unknown";
+}
 
 function describeTarget() {
   if (config.tursoUrl) {
@@ -125,6 +141,7 @@ async function main() {
   } catch (error) {
     report.latencyMs = Date.now() - started;
     report.problems.push(error.message);
+    report.failure = classify(error);
     finish(2);
     return;
   }
@@ -229,9 +246,18 @@ function finish(code) {
     out("");
     if (config.tursoUrl && !config.tursoAuthToken) {
       out("  • TURSO_AUTH_TOKEN is empty — paste the token into server/.env");
+    } else if (report.failure === "network") {
+      out("  • Cannot reach the Turso host at all (DNS/TCP/TLS failed before any query).");
+      out("    Wrong token or wrong database: NOT the cause here — nothing was sent.");
+      out("    Check: internet connection, VPN/school firewall, `curl -v https://<host>`.");
+    } else if (report.failure === "auth") {
+      out("  • The host answered but rejected the credentials.");
+      out("    Get a fresh token: turso db tokens create hasa");
+    } else if (report.failure === "url") {
+      out("  • The host answered 404 — TURSO_DATABASE_URL probably names the wrong database.");
+      out("    Copy it from: turso db show hasa --url");
     } else if (config.tursoUrl) {
-      out("  • Turso: the URL or token is wrong, or this machine has no network access");
-      out("    (get a fresh token: turso db tokens create hasa)");
+      out("  • Turso: check TURSO_DATABASE_URL and TURSO_AUTH_TOKEN (server/.env).");
     } else {
       out("  • Local: check that DATABASE_PATH is writable");
     }

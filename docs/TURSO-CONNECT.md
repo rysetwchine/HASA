@@ -188,8 +188,10 @@ cookies, add the `/api` rewrite from `docs/VERCEL-API-PROXY.md`.
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `RESULT: CONNECTION FAILED — fetch failed` + "token is empty" | `TURSO_AUTH_TOKEN` blank | paste it into `server/.env` |
-| same, with a token set | wrong/expired token, or no network | `turso db tokens create hasa`, retry |
+| `CONNECTION FAILED — fetch failed` + "token is empty" | `TURSO_AUTH_TOKEN` blank | paste it into `server/.env` |
+| `CONNECTION FAILED` + "Cannot reach the Turso host at all" | DNS/TCP/TLS failed before any query — offline, VPN, or a school/office firewall that blocks `*.turso.io:443` | try another network; `curl -v https://hasa-chinee.aws-ap-southeast-1.turso.io/health` must answer |
+| `CONNECTION FAILED` + "rejected the credentials" | wrong/expired token | `turso db tokens create hasa` |
+| `CONNECTION FAILED` + "names the wrong database" | URL typo | `turso db show hasa --url` |
 | `✘ missing: classes, users, …` | fresh database | `npm run db:init` |
 | `✘ platform content missing` | seeds not run | `npm run db:init` |
 | API exits at boot, `TURSO_DATABASE_URL is required in production` | prod without Turso | set the variable, or `DATABASE_DRIVER=local` on a volume host |

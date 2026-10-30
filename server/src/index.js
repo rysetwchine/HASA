@@ -22,13 +22,18 @@ async function main() {
         ? config.tursoUrl
         : config.tursoUrl.replace(/^(libsql|https?):\/\//, "").replace(/\/.*$/, "");
       console.error(`[HASA API] Turso target: ${host}`);
+      const reason = `${error.message} ${error.cause?.code ?? ""} ${error.code ?? ""}`;
       if (!config.tursoAuthToken) {
         console.error(
           "[HASA API] TURSO_AUTH_TOKEN is empty — paste the token from the Turso dashboard into server/.env.",
         );
+      } else if (/ECONNRESET|ENOTFOUND|EAI_AGAIN|ETIMEDOUT|ECONNREFUSED|UND_ERR|fetch failed|socket/i.test(reason)) {
+        console.error(
+          "[HASA API] Cannot reach the Turso host — network/firewall first, token second.",
+        );
       } else {
         console.error(
-          "[HASA API] Check TURSO_DATABASE_URL / TURSO_AUTH_TOKEN (a wrong or expired token fails here).",
+          "[HASA API] The host answered but rejected the request: check TURSO_DATABASE_URL / TURSO_AUTH_TOKEN.",
         );
       }
       console.error("[HASA API] Diagnose with: npm run db:check");
