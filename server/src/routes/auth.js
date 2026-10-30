@@ -17,7 +17,7 @@ import {
 } from "../services/authService.js";
 import { getPoints, getStreak } from "../services/progressService.js";
 import { AppError, errors } from "../utils/errors.js";
-import { hashPassword, sha256, verifyPassword } from "../utils/security.js";
+import { hashPassword, hashSessionToken, verifyPassword } from "../utils/security.js";
 import { levelForPoints, nowIso } from "../utils/time.js";
 import * as validate from "../utils/validation.js";
 
@@ -190,7 +190,7 @@ authRouter.post(
 
 authRouter.post("/logout", (req, res) => {
   const token = sessionTokenFromRequest(req);
-  if (token) revokeSession(sha256(token));
+  if (token) revokeSession(hashSessionToken(token));
   clearSessionCookie(res);
   res.status(204).end();
 });

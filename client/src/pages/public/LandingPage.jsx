@@ -20,12 +20,12 @@ const LEVELS = [
   {
     name: "Malayang Pagbasa",
     tag: "Independent",
-    text: "Umusbong ang mga unang lungsod sa tabi ng mga ilog dahil may tubig at matabang lupa para sa agrikultura.",
+    text: "Umusbong ang mga unang lungsod sa tabi ng mga ilog dahil may tubig at matabang lupa para sa agrikultura. Nang magkaroon ng sobrang ani at espesyalisasyon sa trabaho, lumitaw ang pamahalaan, batas, at sistema ng pagsulat.",
   },
   {
     name: "May Gabay na Pagbasa",
     tag: "Instructional",
-    text: "Ang mga ilog ay nagsilbing daan ng kalakalan at pinagkukunan ng tubig. Dahil dito, nagkaroon ng pagkain at hanapbuhay ang mga tao.",
+    text: "Umusbong ang mga unang lungsod sa tabi ng mga ilog dahil may tubig at matabang lupa. Dahil may sobrang pagkain, may mga taong naging artisano at tagapagtala.",
   },
   {
     name: "Nahihirapang Pagbasa",
@@ -128,7 +128,7 @@ export default function LandingPage() {
                   <span className="size-2.5 rounded-full bg-gold" aria-hidden="true" />
                   <span className="size-2.5 rounded-full bg-success/70" aria-hidden="true" />
                 </div>
-                <p className="text-xs font-semibold text-muted">Halimbawa ng aralin</p>
+                <p className="text-xs font-semibold text-muted">Tatlong antas ng teksto</p>
               </div>
               <div className="p-5 sm:p-6">
                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-accent-strong">

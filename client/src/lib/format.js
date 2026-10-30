@@ -24,19 +24,19 @@ export const READING_LEVELS = [
     value: "independent",
     label: "Malayang Pagbasa",
     english: "Independent",
-    description: "Mas maikli at mas simple ang pangungusap, may kaunting gabay.",
+    description: "Buong teksto sa antas ng baitang: mas mahahabang pangungusap at mas mayamang talasalitaan.",
   },
   {
     value: "instructional",
     label: "May Gabay na Pagbasa",
     english: "Instructional",
-    description: "Katamtamang haba, may paliwanag sa mahihirap na salita.",
+    description: "Katamtamang haba ng pangungusap, may maikling paliwanag sa mahihirap na salita.",
   },
   {
     value: "frustration",
     label: "Nahihirapang Pagbasa",
     english: "Frustration",
-    description: "Hakbang-hakbang at napakaikling pangungusap para sa dagdag na tulong.",
+    description: "Napakaikling pangungusap, may halimbawa at hakbang-hakbang na paliwanag.",
   },
 ];
 

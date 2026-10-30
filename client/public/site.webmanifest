@@ -1,0 +1,16 @@
+{
+  "name": "HASA — Pantulong sa Araling Panlipunan 8",
+  "short_name": "HASA",
+  "description": "Tatlong antas ng teksto, pagsusulit, at progreso para sa Araling Panlipunan 8.",
+  "lang": "tl",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#fdf9f1",
+  "theme_color": "#3b3470",
+  "icons": [
+    { "src": "/favicon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

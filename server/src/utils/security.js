@@ -1,10 +1,12 @@
 import {
   createHash,
+  createHmac,
   randomBytes,
   scrypt as scryptCallback,
   timingSafeEqual,
 } from "node:crypto";
 import { promisify } from "node:util";
+import { config } from "../config.js";
 
 const scrypt = promisify(scryptCallback);
 const KEY_LENGTH = 64;
@@ -38,6 +40,18 @@ export function randomToken(bytes = 32) {
 
 export function sha256(value) {
   return createHash("sha256").update(value).digest("hex");
+}
+
+/**
+ * Ang SESSION_SECRET ay dating hinihingi sa production ngunit hindi ginagamit.
+ * Ginagamit na ito ngayon bilang "pepper" sa pag-hash ng session token, kaya
+ * kahit makuha ang database, hindi magagamit ang token_hash para gumawa ng
+ * bisitang session. Sa development lamang ginagamit ang fallback; hinihingi
+ * pa rin ng `assertProductionConfig()` ang tunay na secret sa production.
+ */
+export function hashSessionToken(token) {
+  const pepper = config.sessionSecret || "hasa-development-pepper";
+  return createHmac("sha256", pepper).update(token).digest("hex");
 }
 
 const JOIN_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
