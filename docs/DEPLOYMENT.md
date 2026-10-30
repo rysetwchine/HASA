@@ -178,3 +178,91 @@ this sandbox cannot reach `vercel.com`, and no headless browser can be installed
 After deploying, check: `/` loads, a hard refresh on `/student/dashboard` returns the app
 (not 404), fonts render as Inter, the favicon appears, and `/login` reports a clear Tagalog
 connection error until `VITE_API_URL` points at a running API.
+
+---
+
+## 7. Cutover runbook — switching production to `production-redesign`
+
+The Vercel project (`proctoristab/hasa-xtg1`, `https://hasa-xtg1.vercel.app`) still has
+**Production Branch = `main`**, which is the old Stage-1 prototype. The redesign lives on
+`production-redesign`. `main` is intentionally left untouched — do not point the project at
+it, and do not merge the redesign into it.
+
+Do these steps **in this order**. Steps 1–2 must come first: the Vercel build only bakes in
+the `VITE_*` values that exist when the build runs, and without a reachable API every screen
+that needs data shows the Tagalog "cannot connect" state.
+
+### Step 1 — deploy the API (the only real blocker)
+
+Vercel cannot host this API: it writes to SQLite on disk, and a serverless function's
+filesystem is ephemeral. Put `server/` on a host with a persistent volume (Render, Railway,
+Fly.io, a VPS):
+
+```
+Build:  npm ci --prefix server
+Start:  node server/src/index.js
+```
+
+Environment variables on that host:
+
+| Name | Value |
+|---|---|
+| `NODE_ENV` | `production` |
+| `SESSION_SECRET` | 32+ random characters (`openssl rand -hex 32`) |
+| `DATABASE_PATH` | absolute path **inside the mounted volume**, e.g. `/data/hasa.sqlite` |
+| `CLIENT_ORIGIN` | `https://hasa-xtg1.vercel.app` (exact origin, no trailing slash) |
+| `TEACHER_SIGNUP_CODE` | **6–80 characters**, e.g. `HASA-GURO-2026` |
+| `TRUST_PROXY` | `1` behind a proxy |
+| `PORT` | injected by the host |
+
+The server refuses to boot in production if `SESSION_SECRET` is missing/short or if
+`TEACHER_SIGNUP_CODE` is set but shorter than 6 characters. Check `GET /api/health` returns
+`{"status":"ok"}` before moving on.
+
+### Step 2 — Vercel environment variables
+
+Project → Settings → Environment Variables → **Production** (repeat for Preview):
+
+| Name | Value |
+|---|---|
+| `VITE_API_URL` | the API origin from step 1, e.g. `https://hasa-api.onrender.com` — no trailing slash, no `/api` |
+| `VITE_SITE_URL` | `https://hasa-xtg1.vercel.app` (or the custom domain) |
+
+### Step 3 — switch the production branch
+
+Project → Settings → **Git** → *Production Branch* → change `main` to
+`production-redesign` → Save. Nothing deploys from this alone; step 4 does.
+
+### Step 4 — deploy
+
+Deployments → the latest `production-redesign` deployment → **Redeploy** (keep the build
+settings; they come from `vercel.json`, so no dashboard override is needed):
+
+| Setting | Value | Source |
+|---|---|---|
+| Install Command | `npm ci --prefix client` | `/vercel.json` |
+| Build Command | `npm run build --prefix client` | `/vercel.json` |
+| Output Directory | `client/dist` | `/vercel.json` |
+
+If the project's Root Directory is set to `client` instead, `client/vercel.json` supplies
+`npm ci` / `npm run build` / `dist`.
+
+### Step 5 — optional custom domain
+
+Add the domain in Vercel, then update `VITE_SITE_URL`, `client/public/sitemap.xml`,
+`client/public/robots.txt`, and the canonical/OG URLs in `client/index.html`, and redeploy.
+
+### Step 6 — verify on the live URL
+
+- `/` renders the redesign, not the Stage-1 prototype.
+- Hard-refresh `/student/dashboard` and `/teacher/mga-ulat` → app loads (SPA rewrite), not 404.
+- Register a teacher with `TEACHER_SIGNUP_CODE` → get a `HASA-XXXXXX` class code.
+- Register a student with that code → the six lessons appear.
+- Complete a lesson → XP increases and no fake success message appears.
+- Reload after ~30 minutes → still signed in (session cookie is 14 days).
+- DevTools console: no errors; Network: `/api/*` calls go to the API host, not Vercel.
+
+### Rollback
+
+Set Production Branch back to `main` and redeploy. Both branches stay intact, so the switch
+is reversible in one setting.
