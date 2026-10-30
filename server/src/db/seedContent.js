@@ -956,7 +956,7 @@ const ACTIVITIES = [
   },
 ];
 
-export function seedBadges(db) {
+export async function seedBadges(db) {
   const statement = db.prepare(`
     INSERT INTO badges (code, name_tl, description_tl, xp, criteria_type, criteria_target, sort_order)
     VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -970,7 +970,7 @@ export function seedBadges(db) {
   `);
 
   for (const badge of BADGES) {
-    statement.run(
+    (await statement.run(
       badge.code,
       badge.name,
       badge.description,
@@ -978,11 +978,11 @@ export function seedBadges(db) {
       badge.criteriaType,
       badge.criteriaTarget,
       badge.sortOrder,
-    );
+    ));
   }
 }
 
-export function seedCurriculum(db) {
+export async function seedCurriculum(db) {
   const now = new Date().toISOString();
 
   /*
@@ -1030,14 +1030,14 @@ export function seedCurriculum(db) {
       JSON.stringify(lesson.vocabulary),
     ];
 
-    const existing = selectLesson.get(lesson.slug);
+    const existing = (await selectLesson.get(lesson.slug));
     if (!existing) {
-      const result = insertLesson.run(
+      const result = (await insertLesson.run(
         lesson.slug,
         ...values,
         now,
         now,
-      );
+      ));
       LESSON_ID.set(lesson.slug, Number(result.lastInsertRowid));
       continue;
     }
@@ -1045,7 +1045,7 @@ export function seedCurriculum(db) {
     LESSON_ID.set(lesson.slug, Number(existing.id));
     const isPlatformLesson = existing.class_id === null && existing.created_by === null;
     if (isPlatformLesson) {
-      updateLesson.run(...values, now, Number(existing.id));
+      (await updateLesson.run(...values, now, Number(existing.id)));
     }
   }
 
@@ -1077,12 +1077,12 @@ export function seedCurriculum(db) {
   const deleteQuestion = db.prepare("DELETE FROM questions WHERE id = ?");
 
   for (const activity of ACTIVITIES) {
-    const existing = selectActivity.get(activity.title, activity.kind);
+    const existing = (await selectActivity.get(activity.title, activity.kind));
     const lessonId = LESSON_ID.get(activity.lessonSlug) ?? null;
     let activityId;
 
     if (!existing) {
-      const result = insertActivity.run(
+      const result = (await insertActivity.run(
         activity.title,
         activity.description,
         activity.kind,
@@ -1092,13 +1092,13 @@ export function seedCurriculum(db) {
         activity.timerSeconds,
         now,
         now,
-      );
+      ));
       activityId = Number(result.lastInsertRowid);
     } else {
       activityId = Number(existing.id);
       const isPlatformActivity = existing.class_id === null && existing.created_by === null;
       if (isPlatformActivity) {
-        updateActivity.run(
+        (await updateActivity.run(
           activity.description,
           lessonId,
           activity.xp,
@@ -1106,43 +1106,43 @@ export function seedCurriculum(db) {
           activity.timerSeconds,
           now,
           activityId,
-        );
+        ));
       }
     }
 
     // Tanong: i-update sa puwesto para manatili ang question_id na
     // tinutukoy ng attempt_answers, at alisin ang sobrang puwesto.
     const keptPositions = new Set();
-    activity.questions.forEach((question, index) => {
+    for (const [index, question] of activity.questions.entries()) {
       const position = index + 1;
       keptPositions.add(position);
-      const existingQuestion = selectQuestion.get(activityId, position);
+      const existingQuestion = (await selectQuestion.get(activityId, position));
       if (existingQuestion) {
-        updateQuestion.run(
+        (await updateQuestion.run(
           question.prompt,
           JSON.stringify(question.options),
           question.correctIndex,
           question.explanation,
           Number(existingQuestion.id),
-        );
+        ));
       } else {
-        insertQuestion.run(
+        (await insertQuestion.run(
           activityId,
           position,
           question.prompt,
           JSON.stringify(question.options),
           question.correctIndex,
           question.explanation,
-        );
+        ));
       }
-    });
+    }
 
-    const extraQuestions = db
+    const extraQuestions = (await db
       .prepare("SELECT id, position FROM questions WHERE activity_id = ?")
-      .all(activityId);
+      .all(activityId));
     for (const row of extraQuestions) {
       if (!keptPositions.has(Number(row.position))) {
-        deleteQuestion.run(Number(row.id));
+        (await deleteQuestion.run(Number(row.id)));
       }
     }
   }

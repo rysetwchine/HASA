@@ -57,6 +57,19 @@ export default function LessonDetailPage() {
     if (data?.lesson?.defaultLevel) setLevel(data.lesson.defaultLevel);
   }, [data?.lesson?.defaultLevel]);
 
+  // Itinatala ang pagbukas ng aralin bilang "in_progress" (walang XP).
+  // Ang guro ay nakikita ito sa Progreso ng Mag-aaral.
+  useEffect(() => {
+    if (!data?.lesson?.id) return;
+    const controller = new AbortController();
+    api
+      .post(`/student/lessons/${data.lesson.id}/start`, undefined, {
+        signal: controller.signal,
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, [data?.lesson?.id]);
+
   if (loading) return <Loading label="Binubuksan ang aralin…" />;
   if (error) return <Alert tone="danger" title="Hindi mabuksan ang aralin">{errorMessage(error)}</Alert>;
 

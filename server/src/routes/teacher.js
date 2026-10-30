@@ -16,10 +16,10 @@ import * as validate from "../utils/validation.js";
 export const teacherRouter = Router();
 teacherRouter.use(requireAuth, requireRole("teacher"));
 
-function teacherClass(db, teacherId) {
-  const cls = db
+async function teacherClass(db, teacherId) {
+  const cls = (await db
     .prepare("SELECT id, name, join_code, created_at FROM classes WHERE teacher_id = ?")
-    .get(teacherId);
+    .get(teacherId));
   if (!cls) {
     throw errors.conflict(
       "Wala pang klase ang account na ito. Gumawa ng klase bago magpatuloy.",
@@ -28,42 +28,42 @@ function teacherClass(db, teacherId) {
   return cls;
 }
 
-function classStudents(db, classId) {
-  return db
+async function classStudents(db, classId) {
+  return (await db
     .prepare(
       `SELECT id, username, display_name, reading_level, created_at
        FROM users
        WHERE class_id = ? AND role = 'student' AND is_active = 1
        ORDER BY display_name COLLATE NOCASE`,
     )
-    .all(classId);
+    .all(classId));
 }
 
-function studentSnapshot(db, student) {
-  const points = getPoints(db, student.id);
-  const attempts = db
+async function studentSnapshot(db, student) {
+  const points = (await getPoints(db, student.id));
+  const attempts = (await db
     .prepare(
       `SELECT COUNT(*) AS count, AVG(score * 100.0 / total) AS average,
               MAX(completed_at) AS last_attempt
        FROM attempts WHERE student_id = ? AND status = 'completed'`,
     )
-    .get(student.id);
+    .get(student.id));
   const lessonsCompleted = Number(
-    db
+    (await db
       .prepare(
         "SELECT COUNT(*) AS count FROM lesson_progress WHERE student_id = ? AND status = 'completed'",
       )
-      .get(student.id).count,
+      .get(student.id)).count,
   );
-  const lastLesson = db
+  const lastLesson = (await db
     .prepare(
       "SELECT MAX(updated_at) AS last_lesson FROM lesson_progress WHERE student_id = ?",
     )
-    .get(student.id);
+    .get(student.id));
   const badges = Number(
-    db
+    (await db
       .prepare("SELECT COUNT(*) AS count FROM student_badges WHERE student_id = ?")
-      .get(student.id).count,
+      .get(student.id)).count,
   );
   const lastActiveCandidates = [attempts.last_attempt, lastLesson.last_lesson].filter(Boolean);
 
@@ -79,7 +79,7 @@ function studentSnapshot(db, student) {
     attempts: Number(attempts.count),
     averageScore: attempts.average ? Math.round(Number(attempts.average)) : 0,
     badges,
-    streak: getStreak(db, student.id),
+    streak: (await getStreak(db, student.id)),
     lastActiveAt:
       lastActiveCandidates.length > 0
         ? lastActiveCandidates.sort().at(-1)
@@ -87,43 +87,43 @@ function studentSnapshot(db, student) {
   };
 }
 
-function verifyStudent(db, teacherId, studentId) {
-  const student = db
+async function verifyStudent(db, teacherId, studentId) {
+  const student = (await db
     .prepare(
       `SELECT u.id, c.id AS class_id
        FROM users u JOIN classes c ON c.id = u.class_id
        WHERE u.id = ? AND u.role = 'student' AND c.teacher_id = ?`,
     )
-    .get(studentId, teacherId);
+    .get(studentId, teacherId));
   if (!student) throw errors.notFound("Hindi mahanap ang mag-aaral sa iyong klase.");
   return student;
 }
 
-teacherRouter.get("/dashboard", (req, res) => {
+teacherRouter.get("/dashboard", async (req, res) => {
   const db = getDatabase();
-  const cls = teacherClass(db, req.user.id);
-  const students = classStudents(db, cls.id);
-  const snapshots = students.map((student) => studentSnapshot(db, student));
+  const cls = (await teacherClass(db, req.user.id));
+  const students = (await classStudents(db, cls.id));
+  const snapshots = await Promise.all(students.map((student) => studentSnapshot(db, student)));
   const publishedLessons = Number(
-    db
+    (await db
       .prepare(
         "SELECT COUNT(*) AS count FROM lessons WHERE published = 1 AND (class_id IS NULL OR class_id = ?)",
       )
-      .get(cls.id).count,
+      .get(cls.id)).count,
   );
   const publishedAssessments = Number(
-    db
+    (await db
       .prepare(
         "SELECT COUNT(*) AS count FROM activities WHERE published = 1 AND (class_id IS NULL OR class_id = ?)",
       )
-      .get(cls.id).count,
+      .get(cls.id)).count,
   );
   const totalCompletedLessons = snapshots.reduce(
     (sum, student) => sum + student.lessonsCompleted,
     0,
   );
   const possibleLessons = students.length * Math.max(1, publishedLessons);
-  const recentAttempts = db
+  const recentAttempts = (await db
     .prepare(
       `SELECT at.id, at.score, at.total, at.completed_at, at.timed_out,
               a.title, a.kind, a.pass_percent, u.display_name
@@ -134,7 +134,7 @@ teacherRouter.get("/dashboard", (req, res) => {
          AND at.status = 'completed'
        ORDER BY at.completed_at DESC LIMIT 8`,
     )
-    .all(cls.id)
+    .all(cls.id))
     .map((row) => ({
       id: Number(row.id),
       studentName: row.display_name,
@@ -189,11 +189,11 @@ teacherRouter.get("/dashboard", (req, res) => {
   });
 });
 
-teacherRouter.get("/students", (req, res) => {
+teacherRouter.get("/students", async (req, res) => {
   const db = getDatabase();
-  const cls = teacherClass(db, req.user.id);
-  const students = classStudents(db, cls.id).map((student) =>
-    studentSnapshot(db, student),
+  const cls = (await teacherClass(db, req.user.id));
+  const students = await Promise.all(
+    (await classStudents(db, cls.id)).map((student) => studentSnapshot(db, student)),
   );
   res.json({
     class: { id: Number(cls.id), name: cls.name, joinCode: cls.join_code },
@@ -201,16 +201,16 @@ teacherRouter.get("/students", (req, res) => {
   });
 });
 
-teacherRouter.get("/students/:id", (req, res, next) => {
+teacherRouter.get("/students/:id", async (req, res, next) => {
   try {
     const db = getDatabase();
     const studentId = validate.id(req.params.id, "mag-aaral");
-    verifyStudent(db, req.user.id, studentId);
-    const user = publicUser(db, studentId);
+    (await verifyStudent(db, req.user.id, studentId));
+    const user = (await publicUser(db, studentId));
     res.json({
       student: user,
-      progress: getStudentProgress(db, user),
-      achievements: getStudentAchievements(db, user),
+      progress: (await getStudentProgress(db, user)),
+      achievements: (await getStudentAchievements(db, user)),
     });
   } catch (error) {
     next(error);
@@ -221,15 +221,15 @@ teacherRouter.post("/students/:id/reset-password", async (req, res, next) => {
   try {
     const db = getDatabase();
     const studentId = validate.id(req.params.id, "mag-aaral");
-    verifyStudent(db, req.user.id, studentId);
+    (await verifyStudent(db, req.user.id, studentId));
 
     const temporaryPassword = createTemporaryPassword();
     const passwordHash = await hashPassword(temporaryPassword);
-    db.prepare("UPDATE users SET password_hash = ? WHERE id = ?").run(
+    (await db.prepare("UPDATE users SET password_hash = ? WHERE id = ?").run(
       passwordHash,
       studentId,
-    );
-    db.prepare("DELETE FROM sessions WHERE user_id = ?").run(studentId);
+    ));
+    (await db.prepare("DELETE FROM sessions WHERE user_id = ?").run(studentId));
     res.json({
       temporaryPassword,
       message: "Gumawa ng pansamantalang password. Ibigay ito sa mag-aaral at ipachange agad.",
@@ -249,11 +249,11 @@ function slugify(value) {
     .slice(0, 70) || "aralin";
 }
 
-function uniqueSlug(db, title) {
+async function uniqueSlug(db, title) {
   const base = slugify(title);
   let candidate = base;
   let index = 2;
-  while (db.prepare("SELECT 1 FROM lessons WHERE slug = ?").get(candidate)) {
+  while ((await db.prepare("SELECT 1 FROM lessons WHERE slug = ?").get(candidate))) {
     candidate = `${base}-${index}`;
     index += 1;
   }
@@ -300,23 +300,23 @@ function lessonPayload(db, row, teacherId) {
   };
 }
 
-teacherRouter.get("/lessons", (req, res) => {
+teacherRouter.get("/lessons", async (req, res) => {
   const db = getDatabase();
-  const cls = teacherClass(db, req.user.id);
-  const rows = db
+  const cls = (await teacherClass(db, req.user.id));
+  const rows = (await db
     .prepare(
       `SELECT * FROM lessons
        WHERE created_by = ? OR class_id IS NULL
        ORDER BY class_id IS NOT NULL DESC, unit, id`,
     )
-    .all(req.user.id);
+    .all(req.user.id));
   res.json({ lessons: rows.map((row) => lessonPayload(db, row, req.user.id)) });
 });
 
-teacherRouter.post("/lessons", (req, res, next) => {
+teacherRouter.post("/lessons", async (req, res, next) => {
   try {
     const db = getDatabase();
-    const cls = teacherClass(db, req.user.id);
+    const cls = (await teacherClass(db, req.user.id));
     const title = validate.text(req.body?.title, "pamagat", { min: 3, max: 160 });
     const unit = validate.text(req.body?.unit, "yunit", { min: 3, max: 120 });
     const description = validate.text(req.body?.description, "paglalarawan", {
@@ -350,9 +350,9 @@ teacherRouter.post("/lessons", (req, res, next) => {
     const vocabulary = cleanVocabulary(req.body?.vocabulary);
     const published = req.body?.published ? 1 : 0;
     const now = nowIso();
-    const slug = uniqueSlug(db, title);
+    const slug = (await uniqueSlug(db, title));
 
-    const result = db
+    const result = (await db
       .prepare(
         `INSERT INTO lessons (
            slug, title, unit, description, difficulty, estimated_minutes, xp,
@@ -377,21 +377,21 @@ teacherRouter.post("/lessons", (req, res, next) => {
         req.user.id,
         now,
         now,
-      );
-    const row = db.prepare("SELECT * FROM lessons WHERE id = ?").get(result.lastInsertRowid);
+      ));
+    const row = (await db.prepare("SELECT * FROM lessons WHERE id = ?").get(result.lastInsertRowid));
     res.status(201).json({ lesson: lessonPayload(db, row, req.user.id) });
   } catch (error) {
     next(error);
   }
 });
 
-teacherRouter.patch("/lessons/:id", (req, res, next) => {
+teacherRouter.patch("/lessons/:id", async (req, res, next) => {
   try {
     const db = getDatabase();
     const lessonId = validate.id(req.params.id, "aralin");
-    const row = db
+    const row = (await db
       .prepare("SELECT * FROM lessons WHERE id = ? AND created_by = ?")
-      .get(lessonId, req.user.id);
+      .get(lessonId, req.user.id));
     if (!row) throw errors.notFound("Hindi mahanap ang aralin na maaari mong i-edit.");
 
     const title = req.body?.title !== undefined
@@ -429,7 +429,7 @@ teacherRouter.patch("/lessons/:id", (req, res, next) => {
       ? req.body.published ? 1 : 0
       : row.published;
 
-    db.prepare(
+    (await db.prepare(
       `UPDATE lessons SET
          title = ?, unit = ?, description = ?, difficulty = ?, estimated_minutes = ?,
          xp = ?, content_independent = ?, content_instructional = ?, content_frustration = ?,
@@ -449,31 +449,31 @@ teacherRouter.patch("/lessons/:id", (req, res, next) => {
       published,
       nowIso(),
       lessonId,
-    );
-    const updated = db.prepare("SELECT * FROM lessons WHERE id = ?").get(lessonId);
+    ));
+    const updated = (await db.prepare("SELECT * FROM lessons WHERE id = ?").get(lessonId));
     res.json({ lesson: lessonPayload(db, updated, req.user.id) });
   } catch (error) {
     next(error);
   }
 });
 
-teacherRouter.delete("/lessons/:id", (req, res, next) => {
+teacherRouter.delete("/lessons/:id", async (req, res, next) => {
   try {
     const db = getDatabase();
     const lessonId = validate.id(req.params.id, "aralin");
-    const row = db
+    const row = (await db
       .prepare("SELECT id FROM lessons WHERE id = ? AND created_by = ?")
-      .get(lessonId, req.user.id);
+      .get(lessonId, req.user.id));
     if (!row) throw errors.notFound("Hindi mahanap ang aralin.");
-    const progress = db
+    const progress = (await db
       .prepare("SELECT COUNT(*) AS count FROM lesson_progress WHERE lesson_id = ?")
-      .get(lessonId);
+      .get(lessonId));
     if (Number(progress.count) > 0) {
       throw errors.conflict(
         "May mag-aaral nang nagbukas ng araling ito. I-unpublish na lang ito upang hindi mawala ang rekord.",
       );
     }
-    db.prepare("DELETE FROM lessons WHERE id = ?").run(lessonId);
+    (await db.prepare("DELETE FROM lessons WHERE id = ?").run(lessonId));
     res.status(204).end();
   } catch (error) {
     next(error);
@@ -532,13 +532,13 @@ function activityListPayload(db, row) {
   };
 }
 
-teacherRouter.get("/activities", (req, res, next) => {
+teacherRouter.get("/activities", async (req, res, next) => {
   try {
     const db = getDatabase();
-    const cls = teacherClass(db, req.user.id);
+    const cls = (await teacherClass(db, req.user.id));
     const kind = req.query.kind === "quiz" ? "quiz" : req.query.kind === "activity" ? "activity" : null;
     if (!kind) throw errors.validation("Ilagay ang uri: activity o quiz.");
-    const rows = db
+    const rows = (await db
       .prepare(
         `SELECT a.*, l.title AS lesson_title,
                 (SELECT COUNT(*) FROM questions q WHERE q.activity_id = a.id) AS question_count,
@@ -548,18 +548,18 @@ teacherRouter.get("/activities", (req, res, next) => {
          WHERE a.kind = ? AND (a.created_by = ? OR a.class_id IS NULL)
          ORDER BY a.class_id IS NOT NULL DESC, a.id`,
       )
-      .all(req.user.id, kind, req.user.id);
+      .all(req.user.id, kind, req.user.id));
     res.json({ activities: rows.map((row) => activityListPayload(db, row)) });
   } catch (error) {
     next(error);
   }
 });
 
-teacherRouter.get("/activities/:id", (req, res, next) => {
+teacherRouter.get("/activities/:id", async (req, res, next) => {
   try {
     const db = getDatabase();
     const activityId = validate.id(req.params.id, "aktibidad");
-    const row = db
+    const row = (await db
       .prepare(
         `SELECT a.*, l.title AS lesson_title,
                 (SELECT COUNT(*) FROM questions q WHERE q.activity_id = a.id) AS question_count,
@@ -568,16 +568,16 @@ teacherRouter.get("/activities/:id", (req, res, next) => {
          FROM activities a LEFT JOIN lessons l ON l.id = a.lesson_id
          WHERE a.id = ?`,
       )
-      .get(req.user.id, activityId);
+      .get(req.user.id, activityId));
     if (!row) throw errors.notFound("Hindi mahanap ang aktibidad.");
     if (!row.editable && row.class_id !== null) {
       throw errors.forbidden("Hindi mo pagmamay-ari ang aktibidad na ito.");
     }
-    const questions = db
+    const questions = (await db
       .prepare(
         "SELECT id, position, prompt, options_json, correct_index, explanation FROM questions WHERE activity_id = ? ORDER BY position, id",
       )
-      .all(activityId)
+      .all(activityId))
       .map((question) => ({
         id: Number(question.id),
         prompt: question.prompt,
@@ -615,24 +615,24 @@ function activityFields(body) {
   return { kind, title, description, xp, passPercent, timerSeconds, lessonId, published };
 }
 
-teacherRouter.post("/activities", (req, res, next) => {
+teacherRouter.post("/activities", async (req, res, next) => {
   try {
     const db = getDatabase();
-    const cls = teacherClass(db, req.user.id);
+    const cls = (await teacherClass(db, req.user.id));
     const fields = activityFields(req.body);
     if (fields.lessonId) {
-      const lesson = db
+      const lesson = (await db
         .prepare(
           "SELECT id FROM lessons WHERE id = ? AND (class_id IS NULL OR class_id = ?)",
         )
-        .get(fields.lessonId, cls.id);
+        .get(fields.lessonId, cls.id));
       if (!lesson) throw errors.validation("Hindi mahanap ang kaugnay na aralin.");
     }
     const questions = cleanQuestions(req.body?.questions);
     const now = nowIso();
 
-    const createdId = transaction((tx) => {
-      const result = tx
+    const createdId = await transaction(async (tx) => {
+      const result = (await tx
         .prepare(
           `INSERT INTO activities
              (title, description, kind, lesson_id, xp, pass_percent, timer_seconds,
@@ -652,53 +652,53 @@ teacherRouter.post("/activities", (req, res, next) => {
           req.user.id,
           now,
           now,
-        );
+        ));
       const activityId = Number(result.lastInsertRowid);
       const insertQuestion = tx.prepare(
         `INSERT INTO questions (activity_id, position, prompt, options_json, correct_index, explanation)
          VALUES (?, ?, ?, ?, ?, ?)`,
       );
-      questions.forEach((question, index) => {
-        insertQuestion.run(
+      for (const [index, question] of questions.entries()) {
+        (await insertQuestion.run(
           activityId,
           index + 1,
           question.prompt,
           JSON.stringify(question.options),
           question.correctIndex,
           question.explanation,
-        );
-      });
+        ));
+      }
       return activityId;
     });
 
-    const row = db
+    const row = (await db
       .prepare(
         `SELECT a.*, l.title AS lesson_title,
                 (SELECT COUNT(*) FROM questions q WHERE q.activity_id = a.id) AS question_count,
                 0 AS attempt_count, 1 AS editable
          FROM activities a LEFT JOIN lessons l ON l.id = a.lesson_id WHERE a.id = ?`,
       )
-      .get(createdId);
+      .get(createdId));
     res.status(201).json({ activity: activityListPayload(db, row) });
   } catch (error) {
     next(error);
   }
 });
 
-teacherRouter.patch("/activities/:id", (req, res, next) => {
+teacherRouter.patch("/activities/:id", async (req, res, next) => {
   try {
     const db = getDatabase();
     const activityId = validate.id(req.params.id, "aktibidad");
-    const row = db
+    const row = (await db
       .prepare("SELECT * FROM activities WHERE id = ? AND created_by = ?")
-      .get(activityId, req.user.id);
+      .get(activityId, req.user.id));
     if (!row) throw errors.notFound("Hindi mahanap ang aktibidad na maaari mong i-edit.");
     const completed = Number(
-      db
+      (await db
         .prepare(
           "SELECT COUNT(*) AS count FROM attempts WHERE activity_id = ? AND status = 'completed'",
         )
-        .get(activityId).count,
+        .get(activityId)).count,
     );
 
     const merged = {
@@ -716,10 +716,10 @@ teacherRouter.patch("/activities/:id", (req, res, next) => {
     const fields = activityFields(merged);
 
     if (fields.lessonId) {
-      const cls = teacherClass(db, req.user.id);
-      const lesson = db
+      const cls = (await teacherClass(db, req.user.id));
+      const lesson = (await db
         .prepare("SELECT id FROM lessons WHERE id = ? AND (class_id IS NULL OR class_id = ?)")
-        .get(fields.lessonId, cls.id);
+        .get(fields.lessonId, cls.id));
       if (!lesson) throw errors.validation("Hindi mahanap ang kaugnay na aralin.");
     }
 
@@ -730,8 +730,8 @@ teacherRouter.patch("/activities/:id", (req, res, next) => {
       );
     }
 
-    transaction((tx) => {
-      tx.prepare(
+    await transaction(async (tx) => {
+      (await tx.prepare(
         `UPDATE activities SET
            title = ?, description = ?, kind = ?, lesson_id = ?, xp = ?, pass_percent = ?,
            timer_seconds = ?, published = ?, updated_at = ?
@@ -747,28 +747,28 @@ teacherRouter.patch("/activities/:id", (req, res, next) => {
         fields.published,
         nowIso(),
         activityId,
-      );
+      ));
 
       if (questions) {
-        tx.prepare("DELETE FROM questions WHERE activity_id = ?").run(activityId);
+        (await tx.prepare("DELETE FROM questions WHERE activity_id = ?").run(activityId));
         const insertQuestion = tx.prepare(
           `INSERT INTO questions (activity_id, position, prompt, options_json, correct_index, explanation)
            VALUES (?, ?, ?, ?, ?, ?)`,
         );
-        questions.forEach((question, index) => {
-          insertQuestion.run(
+        for (const [index, question] of questions.entries()) {
+          (await insertQuestion.run(
             activityId,
             index + 1,
             question.prompt,
             JSON.stringify(question.options),
             question.correctIndex,
             question.explanation,
-          );
-        });
+          ));
+        }
       }
     });
 
-    const updated = db
+    const updated = (await db
       .prepare(
         `SELECT a.*, l.title AS lesson_title,
                 (SELECT COUNT(*) FROM questions q WHERE q.activity_id = a.id) AS question_count,
@@ -776,45 +776,148 @@ teacherRouter.patch("/activities/:id", (req, res, next) => {
                 1 AS editable
          FROM activities a LEFT JOIN lessons l ON l.id = a.lesson_id WHERE a.id = ?`,
       )
-      .get(activityId);
+      .get(activityId));
     res.json({ activity: activityListPayload(db, updated) });
   } catch (error) {
     next(error);
   }
 });
 
-teacherRouter.delete("/activities/:id", (req, res, next) => {
+teacherRouter.delete("/activities/:id", async (req, res, next) => {
   try {
     const db = getDatabase();
     const activityId = validate.id(req.params.id, "aktibidad");
-    const row = db
+    const row = (await db
       .prepare("SELECT id FROM activities WHERE id = ? AND created_by = ?")
-      .get(activityId, req.user.id);
+      .get(activityId, req.user.id));
     if (!row) throw errors.notFound("Hindi mahanap ang aktibidad.");
     const attempts = Number(
-      db
+      (await db
         .prepare("SELECT COUNT(*) AS count FROM attempts WHERE activity_id = ?")
-        .get(activityId).count,
+        .get(activityId)).count,
     );
     if (attempts > 0) {
       throw errors.conflict(
         "May mga pagtatangka na ang aktibidad na ito. I-unpublish na lang ito upang mapanatili ang rekord ng mag-aaral.",
       );
     }
-    db.prepare("DELETE FROM activities WHERE id = ?").run(activityId);
+    (await db.prepare("DELETE FROM activities WHERE id = ?").run(activityId));
     res.status(204).end();
   } catch (error) {
     next(error);
   }
 });
 
-teacherRouter.get("/reports", (req, res) => {
+teacherRouter.get("/progress", async (req, res) => {
   const db = getDatabase();
-  const cls = teacherClass(db, req.user.id);
-  const students = classStudents(db, cls.id).map((student) =>
-    studentSnapshot(db, student),
+  const cls = (await teacherClass(db, req.user.id));
+
+  const lessons = (await db
+    .prepare(
+      `SELECT id, title, unit
+       FROM lessons
+       WHERE published = 1 AND (class_id IS NULL OR class_id = ?)
+       ORDER BY unit, id`,
+    )
+    .all(cls.id))
+    .map((row) => ({ id: Number(row.id), title: row.title, unit: row.unit }));
+
+  const activitiesTotal = Number(
+    (await db
+      .prepare(
+        `SELECT COUNT(*) AS count FROM activities
+         WHERE published = 1 AND (class_id IS NULL OR class_id = ?)`,
+      )
+      .get(cls.id)).count,
   );
-  const assessments = db
+
+  // Isang query para sa buong klase — hindi per-student loop.
+  const progressRows = (await db
+    .prepare(
+      `SELECT lp.student_id, lp.lesson_id, lp.status
+       FROM lesson_progress lp
+       JOIN users u ON u.id = lp.student_id
+       WHERE u.class_id = ? AND u.role = 'student' AND u.is_active = 1`,
+    )
+    .all(cls.id));
+
+  const passedRows = (await db
+    .prepare(
+      `SELECT at.student_id, COUNT(DISTINCT at.activity_id) AS passed
+       FROM attempts at
+       JOIN activities a ON a.id = at.activity_id
+       JOIN users u ON u.id = at.student_id
+       WHERE at.status = 'completed'
+         AND at.total > 0
+         AND at.score * 100.0 / at.total >= a.pass_percent
+         AND u.class_id = ? AND u.role = 'student' AND u.is_active = 1
+       GROUP BY at.student_id`,
+    )
+    .all(cls.id));
+  const passedBy = new Map(passedRows.map((row) => [Number(row.student_id), Number(row.passed)]));
+
+  const lessonsBy = new Map();
+  for (const row of progressRows) {
+    const key = Number(row.student_id);
+    if (!lessonsBy.has(key)) lessonsBy.set(key, new Map());
+    lessonsBy.get(key).set(Number(row.lesson_id), row.status);
+  }
+
+  const students = await Promise.all(
+    (await classStudents(db, cls.id)).map(async (student) => {
+    const snapshot = (await studentSnapshot(db, student));
+    const statuses = lessonsBy.get(Number(student.id)) || new Map();
+    const lessonsCompleted = lessons.filter(
+      (lesson) => statuses.get(lesson.id) === "completed",
+    ).length;
+    const lessonsInProgress = lessons.filter(
+      (lesson) => statuses.get(lesson.id) === "in_progress",
+    ).length;
+    const activitiesPassed = passedBy.get(Number(student.id)) || 0;
+    const totalSteps = lessons.length + activitiesTotal;
+
+    return {
+      ...snapshot,
+      lessonsCompleted,
+      lessonsInProgress,
+      activitiesPassed,
+      lessonsTotal: lessons.length,
+      activitiesTotal,
+      completionPercent:
+        totalSteps > 0
+          ? Math.round(((lessonsCompleted + activitiesPassed) * 100) / totalSteps)
+          : 0,
+        lessonStatus: lessons.map((lesson) => statuses.get(lesson.id) ?? "not_started"),
+      };
+    }),
+  );
+
+  res.json({
+    class: { id: Number(cls.id), name: cls.name, joinCode: cls.join_code },
+    totals: {
+      students: students.length,
+      lessons: lessons.length,
+      activities: activitiesTotal,
+      averageCompletion:
+        students.length > 0
+          ? Math.round(
+              students.reduce((sum, student) => sum + student.completionPercent, 0) /
+                students.length,
+            )
+          : 0,
+    },
+    lessons,
+    students,
+  });
+});
+
+teacherRouter.get("/reports", async (req, res) => {
+  const db = getDatabase();
+  const cls = (await teacherClass(db, req.user.id));
+  const students = await Promise.all(
+    (await classStudents(db, cls.id)).map((student) => studentSnapshot(db, student)),
+  );
+  const assessments = (await db
     .prepare(
       `SELECT a.id, a.title, a.kind, a.pass_percent,
               (SELECT COUNT(*) FROM questions q WHERE q.activity_id = a.id) AS question_count,
@@ -825,7 +928,7 @@ teacherRouter.get("/reports", (req, res) => {
        WHERE a.published = 1 AND (a.class_id IS NULL OR a.class_id = ?)
        ORDER BY a.kind, a.id`,
     )
-    .all(cls.id)
+    .all(cls.id))
     .map((row) => ({
       id: Number(row.id),
       title: row.title,
@@ -860,8 +963,8 @@ teacherRouter.get("/reports", (req, res) => {
   });
 });
 
-teacherRouter.post("/class/rotate-code", (req, res) => {
-  const code = rotateJoinCode(req.user.id);
+teacherRouter.post("/class/rotate-code", async (req, res) => {
+  const code = (await rotateJoinCode(req.user.id));
   if (!code) throw errors.conflict("Hindi magawa ang bagong kodigo. Subukan muli.");
   res.json({ joinCode: code });
 });

@@ -13,12 +13,13 @@ process.env.SESSION_SECRET = "test-session-secret-value-32-chars-min";
 process.env.TEACHER_SIGNUP_CODE = "HASA-TEST-SIGNUP";
 
 import assert from "node:assert/strict";
-import { after, before, describe, it } from "node:test";
+import { after, before, beforeEach, describe, it } from "node:test";
 
 const { createApp } = await import("../src/app.js");
 const { getDatabase, closeDatabase } = await import("../src/db/database.js");
 const { seedCurriculum } = await import("../src/db/seedContent.js");
 const { hashSessionToken } = await import("../src/utils/security.js");
+const { resetRateLimits } = await import("../src/middleware/security.js");
 
 let server;
 let baseUrl;
@@ -31,9 +32,15 @@ before(async () => {
   baseUrl = `http://127.0.0.1:${server.address().port}`;
 });
 
-after(() => {
+after(async () => {
   server?.close();
-  closeDatabase();
+  (await closeDatabase());
+});
+
+// Maraming guro ang nirerehistro ng suite, kaya nililinis ang rate limiter
+// bago ang bawat test. Hiwalay na sinusuri ang rate limiting mismo.
+beforeEach(() => {
+  resetRateLimits();
 });
 
 /** Simpleng fetch na nagbabalik ng status, JSON, at cookie. */
@@ -192,7 +199,7 @@ describe("pagpaparehistro at session", () => {
   it("naiiba ang hash ng session token kapag alam ang secret", async () => {
     // Ang token_hash sa database ay HMAC, hindi plain sha256 ng token.
     const db = getDatabase();
-    const row = db.prepare("SELECT token_hash FROM sessions LIMIT 1").get();
+    const row = (await db.prepare("SELECT token_hash FROM sessions LIMIT 1").get());
     assert.ok(row?.token_hash);
     assert.match(row.token_hash, /^[a-f0-9]{64}$/);
     assert.notEqual(hashSessionToken("token"), row.token_hash);
@@ -261,9 +268,9 @@ describe("nilalaman at antas ng pagbasa", () => {
     // Ang independent na teksto ay para sa mag-aaral na kaya nang bumasa
     // nang mag-isa, kaya mas mahaba ito kaysa sa instructional at frustration.
     const db = getDatabase();
-    const rows = db
+    const rows = (await db
       .prepare("SELECT slug, content_independent, content_instructional, content_frustration FROM lessons")
-      .all();
+      .all());
     assert.ok(rows.length > 0);
 
     const avgSentence = (text) => {
@@ -321,16 +328,16 @@ describe("pagsusulit, iskor, at XP", () => {
       const started = await call(`POST`, `/api/student/activities/${quiz.id}/start`, {
         cookie: student.cookie,
       });
-      const answers = started.json.questions.map((question) => {
-        const row = db
+      const answers = await Promise.all(started.json.questions.map(async (question) => {
+        const row = (await db
           .prepare("SELECT correct_index FROM questions WHERE id = ?")
-          .get(question.id);
+          .get(question.id));
         const correctIndex = Number(row.correct_index);
         return {
           questionId: question.id,
           selectedIndex: correct ? correctIndex : (correctIndex + 1) % question.options.length,
         };
-      });
+      }));
       return call(`POST`, `/api/student/attempts/${started.json.attemptId}/submit`, {
         cookie: student.cookie,
         body: { answers },
@@ -406,17 +413,17 @@ describe("pagsusulit, iskor, at XP", () => {
 describe("idempotent na seeding", () => {
   it("hindi nagdodoble at hindi binabago ang mga id", async () => {
     const db = getDatabase();
-    const before = db.prepare("SELECT id, slug FROM lessons ORDER BY id").all();
-    const activityCountBefore = db
+    const before = (await db.prepare("SELECT id, slug FROM lessons ORDER BY id").all());
+    const activityCountBefore = (await db
       .prepare("SELECT COUNT(*) AS count FROM activities WHERE class_id IS NULL")
-      .get().count;
+      .get()).count;
 
-    seedCurriculum(db);
+    (await seedCurriculum(db));
 
-    const afterRows = db.prepare("SELECT id, slug FROM lessons ORDER BY id").all();
-    const activityCountAfter = db
+    const afterRows = (await db.prepare("SELECT id, slug FROM lessons ORDER BY id").all());
+    const activityCountAfter = (await db
       .prepare("SELECT COUNT(*) AS count FROM activities WHERE class_id IS NULL")
-      .get().count;
+      .get()).count;
 
     assert.deepEqual(
       afterRows.map((row) => [row.id, row.slug]),
@@ -428,28 +435,28 @@ describe("idempotent na seeding", () => {
 
   it("ibinabalik ang tamang teksto kapag nabago ito", async () => {
     const db = getDatabase();
-    db.prepare(
+    (await db.prepare(
       "UPDATE lessons SET content_independent = 'sira' WHERE slug = 'heograpiya-at-simula-ng-sibilisasyon'",
-    ).run();
+    ).run());
 
-    seedCurriculum(db);
+    (await seedCurriculum(db));
 
-    const row = db
+    const row = (await db
       .prepare("SELECT content_independent FROM lessons WHERE slug = 'heograpiya-at-simula-ng-sibilisasyon'")
-      .get();
+      .get());
     assert.ok(row.content_independent.length > 300, "dapat naibalik ang orihinal na teksto");
   });
 
   it("tama ang sagot sa 'Alin ang huling nangyari?' ng Guhit ng Panahon", async () => {
     const db = getDatabase();
-    const activity = db
+    const activity = (await db
       .prepare("SELECT id FROM activities WHERE title = 'Guhit ng Panahon' AND class_id IS NULL")
-      .get();
+      .get());
     assert.ok(activity, "dapat may seed na aktibidad na Guhit ng Panahon");
 
-    const question = db
+    const question = (await db
       .prepare("SELECT options_json, correct_index FROM questions WHERE activity_id = ? AND prompt = ?")
-      .get(activity.id, "Alin ang huling nangyari?");
+      .get(activity.id, "Alin ang huling nangyari?"));
     assert.ok(question);
 
     const options = JSON.parse(question.options_json);
@@ -463,25 +470,162 @@ describe("idempotent na seeding", () => {
   it("hindi ginagalaw ang nilalamang ginawa ng guro", async () => {
     const db = getDatabase();
     const teacher = await registerTeacher("labinlima");
-    const classId = db
+    const classId = (await db
       .prepare("SELECT id FROM classes WHERE join_code = ?")
-      .get(teacher.json.user.class.joinCode).id;
+      .get(teacher.json.user.class.joinCode)).id;
 
-    db.prepare(
+    (await db.prepare(
       `INSERT INTO lessons (
         slug, title, unit, description, difficulty, estimated_minutes, xp,
         content_independent, content_instructional, content_frustration,
         vocabulary_json, published, class_id, created_by, created_at, updated_at
       ) VALUES ('aralin-ng-guro', 'Aralin ng Guro', 'Yunit 1', 'Sariling aralin',
         'madali', 5, 10, 'a', 'b', 'c', '[]', 1, ?, ?, '2026-01-01', '2026-01-01')`,
-    ).run(classId, teacher.json.user.id);
+    ).run(classId, teacher.json.user.id));
 
-    seedCurriculum(db);
+    (await seedCurriculum(db));
 
-    const row = db
+    const row = (await db
       .prepare("SELECT title, content_independent FROM lessons WHERE slug = 'aralin-ng-guro'")
-      .get();
+      .get());
     assert.equal(row.title, "Aralin ng Guro");
     assert.equal(row.content_independent, "a");
+  });
+});
+
+describe("progreso ng klase para sa guro", () => {
+  it("bagong mag-aaral: 0 XP, Antas 1, at walang progreso", async () => {
+    const teacher = await registerTeacher("sariwa");
+    const student = await registerStudent("sariwa", teacher.json.user.class.joinCode);
+    assert.equal(student.status, 201);
+
+    const dashboard = await call("GET", "/api/student/dashboard", {
+      cookie: student.cookie,
+    });
+    assert.equal(dashboard.status, 200);
+    const { stats } = dashboard.json;
+    assert.equal(stats.points, 0, "dapat 0 XP ang bagong account");
+    assert.equal(stats.level, 1, "dapat Antas 1 ang bagong account");
+    assert.equal(stats.xpIntoLevel, 0);
+    assert.equal(stats.lessonProgressPercent, 0, "dapat 0% ang progress bar");
+    assert.equal(stats.lessonsCompleted, 0);
+    assert.equal(stats.activitiesPassed, 0);
+    assert.equal(stats.badgesEarned, 0);
+    assert.equal(stats.streak, 0);
+    assert.equal(stats.lessonsTotal >= 6, true, "dapat mabilang ang mga aralin sa klase");
+    assert.equal(dashboard.json.recentAttempts.length, 0);
+  });
+
+  it("hindi nakikita ng guro ang mag-aaral ng ibang klase", async () => {
+    const teacherA = await registerTeacher("proga");
+    await registerStudent("proga1", teacherA.json.user.class.joinCode);
+
+    const teacherB = await registerTeacher("progb");
+    const other = await call("GET", "/api/teacher/progress", { cookie: teacherB.cookie });
+
+    assert.equal(other.status, 200);
+    assert.equal(other.json.totals.students, 0);
+    assert.equal(other.json.students.length, 0);
+  });
+
+  it("tunay na datos ang progreso at naaayon sa natapos ng mag-aaral", async () => {
+    const teacher = await registerTeacher("progc");
+    const classCode = teacher.json.user.class.joinCode;
+    const student = await registerStudent("progc1", classCode);
+    const idle = await registerStudent("progc2", classCode);
+
+    const lessons = await call("GET", "/api/student/lessons", { cookie: student.cookie });
+    const lessonId = lessons.json.lessons[0].id;
+    const completed = await call("POST", `/api/student/lessons/${lessonId}/complete`, {
+      cookie: student.cookie,
+    });
+    assert.equal(completed.status, 200);
+
+    const progress = await call("GET", "/api/teacher/progress", { cookie: teacher.cookie });
+    assert.equal(progress.status, 200);
+    assert.equal(progress.json.totals.students, 2);
+    assert.equal(progress.json.totals.lessons, lessons.json.lessons.length);
+    assert.ok(progress.json.totals.activities > 0);
+
+    const active = progress.json.students.find((row) => row.id === student.json.user.id);
+    const untouched = progress.json.students.find((row) => row.id === idle.json.user.id);
+
+    assert.equal(active.lessonsCompleted, 1);
+    assert.ok(active.completionPercent > 0);
+    assert.equal(active.lessonStatus[0], "completed");
+    assert.equal(active.points > 0, true, "dapat may XP pagkatapos tapusin ang aralin");
+
+    assert.equal(untouched.lessonsCompleted, 0);
+    assert.equal(untouched.completionPercent, 0);
+    assert.equal(untouched.points, 0);
+    assert.equal(untouched.lessonStatus.every((status) => status === "not_started"), true);
+  });
+
+  it("hindi mabubuksan ng mag-aaral ang progreso ng guro", async () => {
+    const teacher = await registerTeacher("progd");
+    const student = await registerStudent("progd1", teacher.json.user.class.joinCode);
+    const response = await call("GET", "/api/teacher/progress", { cookie: student.cookie });
+    assert.equal(response.status, 403);
+  });
+});
+
+describe("proteksyon sa labis na pagtatangka", () => {
+  it("nagbabalik ng 429 pagkatapos ng 12 maling login", async () => {
+    // Sinusuri mismo ang rate limiter na nililinis ng beforeEach sa itaas.
+    const attempt = () =>
+      call("POST", "/api/auth/login", {
+        body: { username: "walang_gantong_account", password: "MaliMali123" },
+      });
+
+    const statuses = [];
+    for (let index = 0; index < 14; index += 1) {
+      const response = await attempt();
+      statuses.push(response.status);
+    }
+
+    assert.equal(statuses.slice(0, 12).every((status) => status === 401), true);
+    assert.equal(statuses.at(-1), 429, "dapat hinarangan ang labis na pagtatangka");
+  });
+});
+
+describe("pagbukas ng aralin", () => {
+  it("itinatala ang aralin bilang isinagawa nang walang XP", async () => {
+    const teacher = await registerTeacher("simula");
+    const student = await registerStudent("simula", teacher.json.user.class.joinCode);
+
+    const lessons = await call("GET", "/api/student/lessons", { cookie: student.cookie });
+    const lessonId = lessons.json.lessons[0].id;
+
+    const started = await call("POST", `/api/student/lessons/${lessonId}/start`, {
+      cookie: student.cookie,
+    });
+    assert.equal(started.status, 200);
+    assert.equal(started.json.status, "in_progress");
+
+    const dashboard = await call("GET", "/api/student/dashboard", { cookie: student.cookie });
+    assert.equal(dashboard.json.stats.points, 0, "walang XP sa pagbukas lamang");
+    assert.equal(dashboard.json.stats.lessonsCompleted, 0);
+
+    const progress = await call("GET", "/api/teacher/progress", { cookie: teacher.cookie });
+    const row = progress.json.students.find((item) => item.id === student.json.user.id);
+    assert.equal(row.lessonStatus[0], "in_progress");
+    assert.equal(row.lessonsInProgress, 1);
+    assert.equal(row.lessonsCompleted, 0);
+
+    // Muli itong buksan: hindi ito nadodoble.
+    await call("POST", `/api/student/lessons/${lessonId}/start`, { cookie: student.cookie });
+    const again = await call("GET", "/api/teacher/progress", { cookie: teacher.cookie });
+    const rowAgain = again.json.students.find((item) => item.id === student.json.user.id);
+    assert.equal(rowAgain.lessonsInProgress, 1);
+  });
+
+  it("hindi mabubuksan ng guro ang aralin ng mag-aaral", async () => {
+    const teacher = await registerTeacher("simula2");
+    const lessons = await call("GET", "/api/teacher/lessons", { cookie: teacher.cookie });
+    const lessonId = lessons.json.lessons[0].id;
+    const response = await call("POST", `/api/student/lessons/${lessonId}/start`, {
+      cookie: teacher.cookie,
+    });
+    assert.equal(response.status, 403);
   });
 });

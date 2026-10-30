@@ -1,17 +1,21 @@
 # HASA — Deployment
 
-HASA is two deployables:
+HASA is three free pieces that fit together:
 
-| Piece | What it is | Where it belongs |
-|---|---|---|
-| **Client** | Static React + Vite SPA (`client/dist`) | Vercel (already configured) |
-| **API** | Express 5 + `node:sqlite`, owns `hasa.sqlite` | A Node host **with a persistent disk** |
+| Piece | What it is | Where it belongs | Cost |
+|---|---|---|---|
+| **Client** | Static React + Vite SPA (`client/dist`) | Vercel Free (already configured) | free |
+| **API** | Express 5 on Node ≥ 22.9, async DB layer | Render Free web service | free (sleeps when idle) |
+| **Database** | Turso Cloud (libSQL) in production; `node:sqlite` file locally | Turso Free | free |
 
 Vercel can serve the client, but it **cannot host this API**: serverless functions get an
-ephemeral filesystem, so a SQLite file written by one invocation is gone by the next. That
-is a hard constraint, not a configuration gap. Until the API has a home, the deployed site
-will load and then fail every login and lesson call — an honest error from `lib/api.js`,
-not a broken page.
+ephemeral filesystem and a per-request lifetime. Render Free has an ephemeral filesystem
+too — that is why the authoritative data lives in **Turso**, not on the disk. A local
+SQLite file remains fully supported for development, tests, and any host that has a
+volume (`DATABASE_DRIVER=local`).
+
+Until the API has a home, the deployed site will load and then fail every login and
+lesson call — an honest error from `lib/api.js`, not a broken page.
 
 ---
 
@@ -48,7 +52,7 @@ The build script is the project's own `vite build`; nothing is overridden.
 { "source": "/((?!api/).*)", "destination": "/index.html" }
 ```
 
-Deep links (`/student/aralin/3`, `/teacher/mga-ulat`) return `index.html` and React Router
+Deep links (`/student/aralin/3`, `/teacher/progreso`, `/teacher/mga-ulat`) return `index.html` and React Router
 takes over, so a refresh is never a 404. `/api/*` is deliberately excluded: with no API on
 this host those requests should 404 rather than receive HTML.
 
@@ -69,47 +73,161 @@ same-origin proxy.
 
 ---
 
-## 2. API on a persistent Node host
+## 2. API on Render Free + Turso Cloud
 
-Any host that gives you a process **and a mounted disk** works: Render (with a disk),
-Railway (with a volume), Fly.io (volume), a VPS, or a school server.
+Free-only stack: **Vercel Free** (client) + **Render Free** web service (API) +
+**Turso Cloud Free** (database). Render Free has **no persistent disk**, so the
+authoritative database must live in Turso. A local SQLite file is still supported for
+development, tests, and any host that does have a volume.
+
+### 2.1 How the database layer works
+
+`server/src/db/database.js` exposes one async API over two drivers:
+
+| Driver | When | Notes |
+|---|---|---|
+| `local` | no `TURSO_DATABASE_URL` (dev, tests, volume hosts) | `node:sqlite`, WAL, prepared-statement cache |
+| `turso` | `TURSO_DATABASE_URL` is set | `@libsql/client` (`libsql://…`), one round trip per statement |
+
+Every call site is awaited, so the same code runs on either driver:
+
+```js
+const row = await db.prepare("SELECT … WHERE id = ?").get(id);
+await db.transaction(async (tx) => { await tx.prepare("INSERT …").run(a, b); });
+```
+
+- Transactions use `BEGIN IMMEDIATE`/`COMMIT`/`ROLLBACK` locally and
+  `client.transaction("write")` on Turso — quiz submission + XP + badges stay atomic.
+- Duplicate XP is prevented by the unique index `idx_points_once`
+  (`student_id, reason_code, ref_type, ref_id`) plus `INSERT OR IGNORE`, so it holds on
+  both drivers regardless of retries.
+- The schema in `server/src/db/schema.js` contains no PRAGMAs: foreign keys are always
+  on in Turso and are enabled explicitly by the local driver only.
+- `GET /api/health` is database-free; `/api/config` reports the driver-independent config.
+
+### 2.2 Create the Turso database and migrate existing data
 
 ```bash
-# Build/run
-cd server
-npm ci --omit=dev
-NODE_ENV=production npm start      # node --env-file-if-exists=.env src/index.js
+# 1. Install the Turso CLI, sign in, create the database
+turso auth login
+turso db create hasa
+turso db show hasa --url              # libsql://hasa-<org>.turso.io
+turso db tokens create hasa           # TURSO_AUTH_TOKEN (server-only)
 ```
+
+Then copy the local rows (student accounts, hashes, sessions, progress, XP, badges,
+quiz attempts) into Turso. The script is idempotent (`INSERT OR REPLACE` with original
+ids), runs inside one deferred-FK transaction, and **verifies row counts and relations**
+before it exits successfully:
+
+```bash
+cd server
+
+# 0. Always dry-run first — reads and counts only
+DATABASE_PATH=./data/hasa.sqlite \
+TURSO_DATABASE_URL=libsql://hasa-<org>.turso.io \
+TURSO_AUTH_TOKEN=… \
+npm run migrate:dry-run
+
+# 1. Real run: backs up the local file first, then copies
+DATABASE_PATH=./data/hasa.sqlite \
+TURSO_DATABASE_URL=libsql://hasa-<org>.turso.io \
+TURSO_AUTH_TOKEN=… \
+npm run migrate:to-turso
+
+# 2. Later re-checks (e.g. after cutover)
+… npm run migrate:verify
+```
+
+Before migrating, `npm run db:check` tells you whether Turso is reachable and whether the
+schema already exists — a brand-new database reports 14 missing tables until you run
+`npm run db:init`. See `docs/TURSO-CONNECT.md` for the token setup and live-connection
+tests.
+
+The script prints a per-table comparison and refuses to pass if anything is off:
+
+```
+  ✔ users            local=2 turso=2
+  ✔ lesson_progress  local=1 turso=1
+  ✔ points_ledger    local=4 turso=4
+  ✔ students_without_class: 0
+```
+
+**Backups and rollback**
+
+- Before writing, the script copies the local database (plus `-wal`/`-shm`) to
+  `server/backups/hasa-<timestamp>.sqlite` (git-ignored). Nothing in Turso is ever
+  deleted by the migration — it only inserts/replaces rows.
+- The migration **never modifies the source database**; rollback is simply “point the
+  API back at the file”: unset `TURSO_DATABASE_URL` (or set `DATABASE_DRIVER=local` with
+  `DATABASE_PATH`) and restart.
+- Turso keeps its own backups/point-in-time restore on paid plans; on the free plan take
+  your own dump: `turso db shell hasa ".dump" > backups/hasa-$(date +%F).sql`,
+  and restore with `turso db shell hasa < backups/hasa-YYYY-MM-DD.sql`.
+- Keep the last local `.sqlite` file and the `backups/` folder until you have verified
+  the live site for a full week.
+
+### 2.3 Deploy on Render Free
+
+`render.yaml` at the repo root is a Blueprint: **New → Blueprint → pick the repo**.
+
+| Setting | Value |
+|---|---|
+| Root Directory | `server` |
+| Build Command | `npm ci` |
+| Start Command | `npm start` (`node --env-file-if-exists=.env src/index.js`) |
+| Health Check Path | `/api/health` |
+| Instance Type | Free |
+| Node version | `22.x` or newer (`engines.node >= 22.9.0`) |
+
+Environment variables (Render → Settings → Environment):
 
 | Variable | Required | Notes |
 |---|---|---|
-| `NODE_ENV` | yes | `production` enables `assertProductionConfig()` and the SPA static fallback |
-| `SESSION_SECRET` | yes | ≥ 32 chars; peppers the session-token HMAC. Rotating it logs everyone out |
-| `DATABASE_PATH` | yes | absolute path **on the volume**, e.g. `/data/hasa.sqlite` |
-| `CLIENT_ORIGIN` | yes | the Vercel origin. Sets `SameSite=None; Secure` cookies |
-| `TEACHER_SIGNUP_CODE` | yes for teacher signup | **6–80 characters**; blank = self-registration disabled (403 by design). A shorter code now fails at boot instead of silently 400-ing every signup. |
-| `TRUST_PROXY` | when behind a proxy | `1` on Render/Railway/Fly so `req.ip` and `secure` are right |
-| `PORT` | usually injected | defaults to 3000 |
-| `GEMINI_API_KEY` / `OPENAI_API_KEY` | optional | blank = AI reported as not configured |
+| `NODE_ENV` | yes | `production` |
+| `TURSO_DATABASE_URL` | **yes** | `libsql://hasa-<org>.turso.io` |
+| `TURSO_AUTH_TOKEN` | **yes** | server-only secret; never in the client bundle |
+| `SESSION_SECRET` | yes | ≥ 32 chars (`generateValue: true` in the blueprint) |
+| `CLIENT_ORIGIN` | yes | `https://hasa-xtg1.vercel.app` — exact, no trailing slash |
+| `TEACHER_SIGNUP_CODE` | for teacher signup | 6–80 characters; blank = disabled |
+| `TRUST_PROXY` | yes behind Render | `1` so `req.ip` and cookies are right |
+| `DATABASE_PATH` | only for `local` | absolute path on a volume; ignored when Turso is set |
+| `GEMINI_API_KEY` / `OPENAI_API_KEY` | optional | blank = AI honestly reports “not configured” |
 
-Generate a secret:
+Boot fails fast, with the reason printed, if `SESSION_SECRET` is short, if
+`TEACHER_SIGNUP_CODE` is set but shorter than 6 characters, or if production runs with
+neither `TURSO_DATABASE_URL` nor an explicit `DATABASE_DRIVER=local`.
+
+**Render Free sleeps** after ~15 minutes idle; the first request afterwards takes
+~30–60 s. The client already shows its Tagalog loading state; nothing needs changing.
+
+### 2.4 Cross-site cookies (Vercel ↔ Render)
+
+The API sends `HttpOnly; Secure; SameSite=None` when `CLIENT_ORIGIN` is set in
+production, and echoes only that origin in CORS with
+`Access-Control-Allow-Credentials: true`. That is enough for Chrome, Edge, Firefox and
+normal Safari. If you need first-party cookies for strict privacy modes, add the Vercel
+`/api` rewrite described in `docs/VERCEL-API-PROXY.md`.
+
+### 2.5 Verification commands
 
 ```bash
-node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+# Does the configured database answer? (read-only, same driver as the API)
+npm run db:check      --prefix server      # tables, row counts, relationships
+npm run db:init       --prefix server      # idempotent schema + platform seeds
+
+# Same code path as Turso, no cloud credentials needed (local libsql file)
+npm test              --prefix server      # node:sqlite driver
+npm run test:turso    --prefix server      # @libsql/client driver
+
+# Against a running API (use a test database — it creates records)
+HASA_API=https://hasa-api.onrender.com HASA_TEACHER_CODE=… \
+  npm run smoke --prefix server
 ```
 
-Health check: `GET /api/health` → `{ "status": "ok" }`.
-Config check: `GET /api/config` → shows grade, subject, and whether AI and teacher signup
-are enabled (never keys).
-
-### Back up the SQLite file
-
-The database is a single file on the volume. Back it up by copying `hasa.sqlite` **plus**
-`hasa.sqlite-wal` and `hasa.sqlite-shm` while the process is stopped, or run
-`sqlite3 hasa.sqlite ".backup backup.sqlite"` while it is running. No scheduled backup is
-configured by this repository — set one up in your host.
-
----
+`server/scripts/migrate-to-turso.mjs` is the migration; `server/scripts/smoke.mjs` is
+the 27-check end-to-end walkthrough. There is no `seed:reset` in production — it is a
+local-only script and prints a warning.
 
 ## 3. HTTPS and redirects
 
@@ -161,23 +279,43 @@ npm run build --prefix client → ✓ built, lazy route chunks, no .map files
 ```
 
 Served `client/dist` with filesystem-first + SPA fallback: `/`, `/student/dashboard`,
-`/teacher/mga-ulat`, `/mga-aralin`, `/assets/*.js|css`, `/fonts/*.woff2`, `/favicon.svg`,
+`/teacher/progreso`, `/teacher/mga-ulat`, `/mga-aralin`, `/assets/*.js|css`, `/fonts/*.woff2`, `/favicon.svg`,
 `/robots.txt`, `/sitemap.xml`, `/llms.txt`, `/og-image.png` all return 200 with the right
 content type.
 
-Automated tests: `cd server && npm test` → 24/24; `cd client && npm test` → 46/46
-(12 format, 8 SEO, 6 guard, 20 end-to-end page renders).
+Automated tests: `cd server && npm test` → 32/32; `cd client && npm test` → 52/52
+(12 format, 8 SEO, 6 guard, 26 end-to-end page renders).
+
+Against a running API, `HASA_API=<origin> HASA_TEACHER_CODE=<code> npm run smoke --prefix server`
+runs 27 full-stack checks (registration, drafts, publish, XP once, quiz, progress, reset).
+Use a test database — it creates records.
 
 The end-to-end file (`client/src/test/e2e.test.jsx`) opens every student and teacher
 page against a running API and fails on any `console.error`. Point it at a server with
 `HASA_E2E_API=http://127.0.0.1:3100` (and `HASA_E2E_SIGNUP_CODE`); it skips itself when
 nothing is listening.
 
-**Not verified:** the live Vercel URL after this change, and any browser interaction —
-this sandbox cannot reach `vercel.com`, and no headless browser can be installed here.
-After deploying, check: `/` loads, a hard refresh on `/student/dashboard` returns the app
-(not 404), fonts render as Inter, the favicon appears, and `/login` reports a clear Tagalog
-connection error until `VITE_API_URL` points at a running API.
+### Turso path, exercised end to end without the cloud
+
+| Check | Result |
+|---|---|
+| `npm test --prefix server` (node:sqlite driver) | 32/32 |
+| `npm run test:turso --prefix server` (@libsql/client driver) | 32/32 |
+| Schema + seed applied through the Turso driver on an empty database | ✔ 24 statements, 6 lessons, 3 quizzes, 4 activities |
+| Migration of a seeded local database → Turso driver | 82 rows copied, all 14 tables + 3 relation checks matched |
+| API restarted on the migrated database | teacher login 200; `/api/teacher/progress` → XP 162, 1/7 lessons, 14 % |
+| Second restart, new browser session, student login with a reset password | XP still 162, level 1, 14 % bar |
+| Re-completing the same lesson after migration | `xpAwarded: 0`, points unchanged (no duplicate XP) |
+| `npm run migrate:dry-run` on the same data | reads only, no writes |
+
+The Turso path was verified with `@libsql/client` pointed at a `file:` database, which
+uses the same driver code as `libsql://` — the network hop is the only untested part.
+
+**Not verified:** the live Vercel/Render URLs and real browser interaction — this sandbox
+cannot reach `vercel.com`, has no Turso credentials, and no headless browser can be
+installed here. After deploying, check: `/` loads, a hard refresh on `/student/dashboard`
+returns the app (not 404), fonts render as Inter, the favicon appears, logging in sets a
+`hasa_session` cookie, and `/api/health` answers from Render.
 
 ---
 
@@ -192,32 +330,22 @@ Do these steps **in this order**. Steps 1–2 must come first: the Vercel build 
 the `VITE_*` values that exist when the build runs, and without a reachable API every screen
 that needs data shows the Tagalog "cannot connect" state.
 
-### Step 1 — deploy the API (the only real blocker)
+### Step 1 — Turso + Render (the only real blocker)
 
-Vercel cannot host this API: it writes to SQLite on disk, and a serverless function's
-filesystem is ephemeral. Put `server/` on a host with a persistent volume (Render, Railway,
-Fly.io, a VPS):
+Free stack, in order:
 
-```
-Build:  npm ci --prefix server
-Start:  node server/src/index.js
-```
+1. **Turso** — `turso db create hasa`, then `turso db show hasa --url` and
+   `turso db tokens create hasa`.
+2. **Migrate** existing student data (backup + verify):
+   `npm run migrate:to-turso --prefix server` with `TURSO_DATABASE_URL` /
+   `TURSO_AUTH_TOKEN` / `DATABASE_PATH` set. It refuses to finish if any table or
+   relation does not match.
+3. **Render** — New → Blueprint → this repo (`render.yaml`), then set
+   `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `CLIENT_ORIGIN=https://hasa-xtg1.vercel.app`,
+   `TEACHER_SIGNUP_CODE` (6–80 chars). `SESSION_SECRET` and `TRUST_PROXY=1` come from the
+   blueprint. Wait for the deploy, then check `https://<service>.onrender.com/api/health`.
 
-Environment variables on that host:
-
-| Name | Value |
-|---|---|
-| `NODE_ENV` | `production` |
-| `SESSION_SECRET` | 32+ random characters (`openssl rand -hex 32`) |
-| `DATABASE_PATH` | absolute path **inside the mounted volume**, e.g. `/data/hasa.sqlite` |
-| `CLIENT_ORIGIN` | `https://hasa-xtg1.vercel.app` (exact origin, no trailing slash) |
-| `TEACHER_SIGNUP_CODE` | **6–80 characters**, e.g. `HASA-GURO-2026` |
-| `TRUST_PROXY` | `1` behind a proxy |
-| `PORT` | injected by the host |
-
-The server refuses to boot in production if `SESSION_SECRET` is missing/short or if
-`TEACHER_SIGNUP_CODE` is set but shorter than 6 characters. Check `GET /api/health` returns
-`{"status":"ok"}` before moving on.
+Render Free sleeps after ~15 minutes idle; the first request after that takes ~30–60 s.
 
 ### Step 2 — Vercel environment variables
 
@@ -255,7 +383,7 @@ Add the domain in Vercel, then update `VITE_SITE_URL`, `client/public/sitemap.xm
 ### Step 6 — verify on the live URL
 
 - `/` renders the redesign, not the Stage-1 prototype.
-- Hard-refresh `/student/dashboard` and `/teacher/mga-ulat` → app loads (SPA rewrite), not 404.
+- Hard-refresh `/student/dashboard` and `/teacher/progreso`, `/teacher/mga-ulat` → app loads (SPA rewrite), not 404.
 - Register a teacher with `TEACHER_SIGNUP_CODE` → get a `HASA-XXXXXX` class code.
 - Register a student with that code → the six lessons appear.
 - Complete a lesson → XP increases and no fake success message appears.

@@ -135,11 +135,11 @@ describe("mga pahina ng mag-aaral laban sa tunay na API", () => {
   const pages = [
     ["/student/dashboard", /pangunahing pahina/i],
     ["/student/aralin", /mga aralin/i],
-    ["/student/aktibidad", /mga aktibidad/i],
+    ["/student/aktibidad", /pagsasanay/i],
     ["/student/pagsusulit", /mga pagsusulit/i],
-    ["/student/progreso", /progreso/i],
+    ["/student/progreso", /aking pag-unlad/i],
     ["/student/mga-gantimpala", /gantimpala/i],
-    ["/student/pasimplehin", /pasimplehin|AI/i],
+    ["/student/pasimplehin", /tagapagpasimple/i],
     ["/student/profile", /profile|pangalan/i],
   ];
 
@@ -172,6 +172,56 @@ describe("mga pahina ng mag-aaral laban sa tunay na API", () => {
   });
 });
 
+describe("navigasyon ng sidebar", () => {
+  const STUDENT_LABELS = [
+    "Pangunahing Pahina",
+    "Mga Aralin",
+    "AI Tagapagpasimple",
+    "Pagsasanay",
+    "Mga Pagsusulit",
+    "Mga Gantimpala",
+    "Aking Pag-unlad",
+    "Aking Profile",
+  ];
+
+  it("tama at kumpleto ang mga link ng mag-aaral", async () => {
+    if (!apiAvailable) return;
+    renderAs(studentCookie, "/student/dashboard");
+    const nav = await screen.findByRole("navigation", { name: "Mga pahina" });
+    const labels = [...nav.querySelectorAll("a")].map((link) => link.textContent.trim());
+    for (const label of STUDENT_LABELS) {
+      expect(labels, `kulang ang "${label}"`).toContain(label);
+    }
+    expect(labels).not.toContain("Iba Pang Pahina");
+    expect(labels.join(" ")).not.toMatch(/tanawan ng guro|misyon/i);
+    assertCleanConsole();
+  });
+
+  it("isang link lamang ang aktibo at may highlight", async () => {
+    if (!apiAvailable) return;
+    renderAs(studentCookie, "/student/aralin");
+    const nav = await screen.findByRole("navigation", { name: "Mga pahina" });
+    const links = [...nav.querySelectorAll("a")];
+    const active = links.filter((link) => link.getAttribute("aria-current") === "page");
+    expect(active).toHaveLength(1);
+    expect(active[0].textContent.trim()).toBe("Mga Aralin");
+    expect(active[0].className).toMatch(/bg-white/);
+    assertCleanConsole();
+  });
+
+  it("hiwalay ang menu ng guro sa menu ng mag-aaral", async () => {
+    if (!apiAvailable) return;
+    renderAs(teacherCookie, "/teacher/dashboard");
+    const nav = await screen.findByRole("navigation", { name: "Mga pahina" });
+    const text = nav.textContent;
+    expect(text).toContain("Progreso ng Mag-aaral");
+    expect(text).toContain("Pamamahala ng Aralin");
+    expect(text).not.toContain("AI Tagapagpasimple");
+    expect(text).not.toContain("Aking Pag-unlad");
+    assertCleanConsole();
+  });
+});
+
 describe("player ng pagsusulit", () => {
   it("sinisimulan ang pagtatangka at lumalabas ang tanong", async () => {
     if (!apiAvailable) return;
@@ -197,9 +247,10 @@ describe("mga pahina ng guro laban sa tunay na API", () => {
   const pages = [
     ["/teacher/dashboard", /pangunahing pahina|mag-aaral/i],
     ["/teacher/mga-mag-aaral", /mga mag-aaral/i],
-    ["/teacher/mga-aralin", /mga aralin/i],
+    ["/teacher/mga-aralin", /pamamahala ng aralin/i],
     ["/teacher/mga-aktibidad", /mga aktibidad/i],
     ["/teacher/mga-pagsusulit", /mga pagsusulit/i],
+    ["/teacher/progreso", /progreso ng mag-aaral/i],
     ["/teacher/mga-ulat", /ulat/i],
     ["/teacher/profile", /profile|klase/i],
   ];
@@ -246,5 +297,57 @@ describe("hindi nagpapalit ng tungkulin ang guard", () => {
       },
       { timeout: 4000 },
     );
+  });
+});
+
+describe("progreso na nakatali sa backend", () => {
+  it("lumalabas sa guro ang aralin na tinapos ng mag-aaral", async () => {
+    if (!apiAvailable) return;
+
+    const listResponse = await realFetch(`${API_ORIGIN}/api/student/lessons`, {
+      headers: { cookie: studentCookie },
+    });
+    const { lessons } = await listResponse.json();
+
+    const completion = await realFetch(
+      `${API_ORIGIN}/api/student/lessons/${lessons[0].id}/complete`,
+      { method: "POST", headers: { cookie: studentCookie } },
+    );
+    expect(completion.status).toBe(200);
+
+    // Ang XP ay isang beses lang ibinibigay kahit tapusin muli.
+    const again = await realFetch(
+      `${API_ORIGIN}/api/student/lessons/${lessons[0].id}/complete`,
+      { method: "POST", headers: { cookie: studentCookie } },
+    );
+    const first = await completion.json();
+    const second = await again.json();
+    expect(first.alreadyCompleted).toBe(false);
+    expect(second.alreadyCompleted).toBe(true);
+    expect(second.lessonXp).toBe(0);
+    expect(second.stats.points).toBe(first.stats.points);
+
+    renderAs(teacherCookie, "/teacher/progreso");
+    await waitFor(
+      () => {
+        expect(screen.getAllByText(/1\/\d+ aralin/).length).toBeGreaterThan(0);
+      },
+      { timeout: 5000 },
+    );
+    assertCleanConsole();
+    cleanup();
+  });
+
+  it("nakikita ng mag-aaral ang sariling pag-unlad", async () => {
+    if (!apiAvailable) return;
+    renderAs(studentCookie, "/student/progreso");
+    await waitFor(
+      () => {
+        expect(screen.getAllByText(/aking pag-unlad/i).length).toBeGreaterThan(0);
+        expect(screen.queryByText(/^0%$/)).not.toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
+    assertCleanConsole();
   });
 });

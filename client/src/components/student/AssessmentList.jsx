@@ -19,7 +19,7 @@ export default function AssessmentList({ kind }) {
   const { data, error, loading } = useApi(`/student/activities?kind=${kind}`);
   const basePath = isQuiz ? "/student/pagsusulit" : "/student/aktibidad";
 
-  if (loading) return <Loading label={isQuiz ? "Nilinog ang mga pagsusulit…" : "Nilinog ang mga aktibidad…"} />;
+  if (loading) return <Loading label={isQuiz ? "Nilinog ang mga pagsusulit…" : "Nilinog ang pagsasanay…"} />;
   if (error) return <Alert tone="danger" title="Hindi mabuksan ang listahan">{errorMessage(error)}</Alert>;
 
   const items = data?.activities || [];
@@ -28,14 +28,14 @@ export default function AssessmentList({ kind }) {
   return (
     <>
       <Seo
-        title={isQuiz ? "Mga Pagsusulit" : "Mga Aktibidad"}
+        title={isQuiz ? "Mga Pagsusulit" : "Pagsasanay"}
         description={isQuiz ? "Subukan ang mga pagsusulit sa Araling Panlipunan 8 at tingnan ang paliwanag sa bawat sagot." : "Magsanay sa mga aktibidad sa Araling Panlipunan 8."}
         noindex
         path={basePath}
       />
       <PageHeader
         eyebrow={isQuiz ? "Sukatin ang pag-unawa" : "Magsanay muna"}
-        title={isQuiz ? "Mga Pagsusulit" : "Mga Aktibidad"}
+        title={isQuiz ? "Mga Pagsusulit" : "Pagsasanay"}
         description={
           isQuiz
             ? "May paliwanag ang bawat tanong pagkatapos mong sumagot. Ang XP ay ibinibigay isang beses lamang kapag naipasa."
@@ -47,7 +47,7 @@ export default function AssessmentList({ kind }) {
       {items.length === 0 ? (
         <EmptyState
           icon={isQuiz ? ListChecks : ClipboardList}
-          title={isQuiz ? "Wala pang pagsusulit" : "Wala pang aktibidad"}
+          title={isQuiz ? "Wala pang pagsusulit" : "Wala pang pagsasanay"}
           description="Magdagdag ang iyong guro ng gawain para sa klase. Balikan ito mamaya."
           action={<Link to="/student/aralin" className={buttonClass()}>Magbasa muna ng aralin</Link>}
         />

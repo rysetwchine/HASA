@@ -23,8 +23,12 @@ export const config = {
   isProduction,
   port: integer(process.env.PORT, 3000),
   serverRoot,
+  // Turso Cloud ang production database. Walang URL = local SQLite (dev/tests).
+  tursoUrl: (process.env.TURSO_DATABASE_URL || "").trim(),
+  tursoAuthToken: (process.env.TURSO_AUTH_TOKEN || "").trim(),
   databasePath:
-    process.env.DATABASE_PATH || path.join(serverRoot, "data", "hasa.sqlite"),
+    process.env.DATABASE_PATH ||
+    path.join(serverRoot, "data", "hasa.sqlite"),
   sessionSecret: process.env.SESSION_SECRET || "",
   sessionDays: integer(process.env.SESSION_DAYS, 14),
   clientOrigin,
@@ -56,6 +60,16 @@ export function assertProductionConfig() {
   const problems = [];
   if (!config.sessionSecret || config.sessionSecret.length < 32) {
     problems.push("SESSION_SECRET must be at least 32 characters.");
+  }
+  // Render Free ay walang persistent disk: kailangang Turso ang authoritative
+  // database. Hinahayaang local lamang kapag tahasang pinili (may volume).
+  if (!config.tursoUrl && process.env.DATABASE_DRIVER !== "local") {
+    problems.push(
+      "TURSO_DATABASE_URL is required in production (Render's filesystem is ephemeral). Set DATABASE_DRIVER=local only on a host with a persistent volume.",
+    );
+  }
+  if (config.tursoUrl && !config.tursoAuthToken) {
+    problems.push("TURSO_AUTH_TOKEN is required when TURSO_DATABASE_URL is set.");
   }
   if (!config.clientOrigin && process.env.VERCEL) {
     problems.push("CLIENT_ORIGIN must be set when the API and client use different domains.");

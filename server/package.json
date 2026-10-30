@@ -12,9 +12,17 @@
     "start": "node --env-file-if-exists=.env src/index.js",
     "test": "node --test --test-reporter=spec test/*.test.js",
     "check": "node --check src/index.js",
-    "seed:reset": "node --env-file-if-exists=.env src/db/reset.js"
+    "db:check": "node --env-file-if-exists=.env scripts/db-check.mjs",
+    "db:init": "node --env-file-if-exists=.env scripts/db-check.mjs --init",
+    "seed:reset": "node --env-file-if-exists=.env src/db/reset.js",
+    "smoke": "node scripts/smoke.mjs",
+    "test:turso": "node scripts/run-tests-turso.mjs",
+    "migrate:to-turso": "node scripts/migrate-to-turso.mjs",
+    "migrate:verify": "node scripts/migrate-to-turso.mjs --verify-only",
+    "migrate:dry-run": "node scripts/migrate-to-turso.mjs --dry-run"
   },
   "dependencies": {
+    "@libsql/client": "^0.18.0",
     "express": "5.1.0"
   }
 }

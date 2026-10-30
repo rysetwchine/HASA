@@ -109,8 +109,8 @@ async function callOpenai({ prompt, model, signal }) {
   return { raw, model: data?.model || model };
 }
 
-function recordUsage(db, { studentId, provider, inputChars, outputChars, succeeded, errorCode }) {
-  db.prepare(
+async function recordUsage(db, { studentId, provider, inputChars, outputChars, succeeded, errorCode }) {
+  (await db.prepare(
     `INSERT INTO ai_usage
      (student_id, provider, operation, input_chars, output_chars, succeeded, error_code, created_at)
      VALUES (?, ?, 'simplify', ?, ?, ?, ?, ?)`,
@@ -122,7 +122,7 @@ function recordUsage(db, { studentId, provider, inputChars, outputChars, succeed
     succeeded ? 1 : 0,
     errorCode ?? null,
     nowIso(),
-  );
+  ));
 }
 
 export function aiFeatureStatus() {
@@ -177,11 +177,11 @@ export async function simplifyForStudent({ studentId, text, level, provider }) {
   const today = manilaDateKey();
   const startOfDay = new Date(`${today}T00:00:00+08:00`).toISOString();
   const used = Number(
-    db
+    (await db
       .prepare(
         "SELECT COUNT(*) AS count FROM ai_usage WHERE student_id = ? AND created_at >= ? AND succeeded = 1",
       )
-      .get(studentId, startOfDay).count,
+      .get(studentId, startOfDay)).count,
   );
   if (used >= config.ai.dailyQuota) {
     throw new AppError(
@@ -193,9 +193,9 @@ export async function simplifyForStudent({ studentId, text, level, provider }) {
 
   const model = selected === "gemini" ? config.ai.geminiModel : config.ai.openaiModel;
   const cacheKey = sha256(`${selected}|${model}|${level}|${clean}`);
-  const cached = db
+  const cached = (await db
     .prepare("SELECT result_json FROM simplifications WHERE cache_key = ?")
-    .get(cacheKey);
+    .get(cacheKey));
   if (cached) {
     return { ...JSON.parse(cached.result_json), cached: true };
   }
@@ -213,14 +213,14 @@ export async function simplifyForStudent({ studentId, text, level, provider }) {
     raw = result.raw;
     reportedModel = result.model || model;
   } catch (error) {
-    recordUsage(db, {
+    (await recordUsage(db, {
       studentId,
       provider: selected,
       inputChars: clean.length,
       outputChars: 0,
       succeeded: false,
       errorCode: error.code || "AI_PROVIDER_ERROR",
-    });
+    }));
     if (error.name === "TimeoutError" || error.name === "AbortError") {
       throw new AppError(502, "AI_PROVIDER_TIMEOUT", "Masyadong matagal ang tugon ng AI provider. Subukan muli.");
     }
@@ -232,14 +232,14 @@ export async function simplifyForStudent({ studentId, text, level, provider }) {
   try {
     parsed = extractJson(raw);
   } catch {
-    recordUsage(db, {
+    (await recordUsage(db, {
       studentId,
       provider: selected,
       inputChars: clean.length,
       outputChars: raw.length,
       succeeded: false,
       errorCode: "AI_BAD_OUTPUT",
-    });
+    }));
     throw new AppError(502, "AI_BAD_OUTPUT", "Hindi wasto ang tugon ng AI. Subukan muli.");
   }
 
@@ -249,14 +249,14 @@ export async function simplifyForStudent({ studentId, text, level, provider }) {
     parsed.text.trim().length < 20 ||
     !Array.isArray(parsed.vocabulary)
   ) {
-    recordUsage(db, {
+    (await recordUsage(db, {
       studentId,
       provider: selected,
       inputChars: clean.length,
       outputChars: raw.length,
       succeeded: false,
       errorCode: "AI_BAD_OUTPUT",
-    });
+    }));
     throw new AppError(502, "AI_BAD_OUTPUT", "Hindi wasto ang tugon ng AI. Subukan muli.");
   }
 
@@ -281,19 +281,19 @@ export async function simplifyForStudent({ studentId, text, level, provider }) {
     cached: false,
   };
 
-  db.prepare(
+  (await db.prepare(
     `INSERT OR REPLACE INTO simplifications
      (cache_key, reading_level, provider, model, result_json, created_at)
      VALUES (?, ?, ?, ?, ?, ?)`,
-  ).run(cacheKey, level, selected, reportedModel, JSON.stringify(result), nowIso());
+  ).run(cacheKey, level, selected, reportedModel, JSON.stringify(result), nowIso()));
 
-  recordUsage(db, {
+  (await recordUsage(db, {
     studentId,
     provider: selected,
     inputChars: clean.length,
     outputChars: result.text.length,
     succeeded: true,
-  });
+  }));
 
   return result;
 }

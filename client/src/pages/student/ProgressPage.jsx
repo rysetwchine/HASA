@@ -49,14 +49,14 @@ export default function ProgressPage() {
   return (
     <>
       <Seo
-        title="Aking Progreso"
+        title="Aking Pag-unlad"
         description="Tingnan ang iyong mga natapos na aralin, iskor sa pagsusulit, puntos, at kasaysayan ng pag-aaral."
         noindex
         path="/student/progreso"
       />
       <PageHeader
         eyebrow="Pag-unlad"
-        title="Aking Progreso"
+        title="Aking Pag-unlad"
         description="Tunay na datos mula sa iyong account. Dito makikita ang mga aralin, pagtatangka, at puntos na iyong nakuha."
         actions={<Chip tone="gold"><Star className="size-3.5" aria-hidden="true" /> Antas {stats.level}</Chip>}
       />

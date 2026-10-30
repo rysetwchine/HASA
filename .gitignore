@@ -43,3 +43,7 @@ desktop.ini
 .vitest/
 playwright-report/
 test-results/
+
+# Local database backups at server/backups/
+/backups/
+server/backups/

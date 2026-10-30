@@ -41,14 +41,14 @@ export default function SimplifyPage() {
   return (
     <>
       <Seo
-        title="AI Pantulong sa Pagbasa"
+        title="AI Tagapagpasimple"
         description="Pasimplehin ang isang tekstong Araling Panlipunan sa antas ng pagbasang akma sa iyo. Gumagana lamang kapag naka-configure ang AI sa server."
         noindex
         path="/student/pasimplehin"
       />
       <PageHeader
         eyebrow="Opsyonal na tulong"
-        title="AI Pantulong sa Pagbasa"
+        title="AI Tagapagpasimple"
         description="I-paste ang isang tekstong mahirap intindihin at pasimplehin ito sa Tagalog. Ang resulta ay mula sa totoong AI provider, hindi imbento ng app."
       />
 
