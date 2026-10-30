@@ -20,12 +20,12 @@ const LEVELS = [
   {
     name: "Malayang Pagbasa",
     tag: "Independent",
-    text: "Umusbong ang mga unang lungsod sa tabi ng mga ilog dahil may tubig at matabang lupa para sa agrikultura.",
+    text: "Umusbong ang mga unang lungsod sa tabi ng mga ilog dahil may tubig at matabang lupa para sa agrikultura. Nang magkaroon ng sobrang ani at espesyalisasyon sa trabaho, lumitaw ang pamahalaan, batas, at sistema ng pagsulat.",
   },
   {
     name: "May Gabay na Pagbasa",
     tag: "Instructional",
-    text: "Ang mga ilog ay nagsilbing daan ng kalakalan at pinagkukunan ng tubig. Dahil dito, nagkaroon ng pagkain at hanapbuhay ang mga tao.",
+    text: "Umusbong ang mga unang lungsod sa tabi ng mga ilog dahil may tubig at matabang lupa. Dahil may sobrang pagkain, may mga taong naging artisano at tagapagtala.",
   },
   {
     name: "Nahihirapang Pagbasa",

@@ -1,6 +1,6 @@
 import { config } from "../config.js";
 import { getDatabase, transaction } from "../db/database.js";
-import { randomToken, sha256 } from "../utils/security.js";
+import { hashSessionToken, randomToken } from "../utils/security.js";
 import { nowIso } from "../utils/time.js";
 
 export function publicUser(db, userId) {
@@ -58,7 +58,7 @@ export function publicUser(db, userId) {
 export function findUserBySession(token) {
   if (!token) return null;
   const db = getDatabase();
-  const tokenHash = sha256(token);
+  const tokenHash = hashSessionToken(token);
   const row = db
     .prepare(
       `SELECT u.id, u.is_active, s.expires_at, s.token_hash
@@ -79,7 +79,7 @@ export function findUserBySession(token) {
 export function issueSession(userId) {
   const db = getDatabase();
   const token = randomToken(32);
-  const tokenHash = sha256(token);
+  const tokenHash = hashSessionToken(token);
   const now = new Date();
   const expires = new Date(now.getTime() + config.sessionDays * 24 * 60 * 60 * 1000);
 

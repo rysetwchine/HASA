@@ -35,9 +35,9 @@ export default function DashboardPage() {
   const { data, error, loading } = useApi("/student/dashboard");
   const achievements = useApi("/student/achievements");
 
-  if (loading) return <Loading label="Inihahanda ang dashboard…" />;
+  if (loading) return <Loading label="Inihahanda ang pangunahing pahina…" />;
   if (error) {
-    return <Alert tone="danger" title="Hindi mabuksan ang dashboard">{errorMessage(error)}</Alert>;
+    return <Alert tone="danger" title="Hindi mabuksan ang pangunahing pahina">{errorMessage(error)}</Alert>;
   }
 
   const stats = data.stats;
@@ -48,7 +48,7 @@ export default function DashboardPage() {
   return (
     <>
       <Seo
-        title="Dashboard ng Mag-aaral"
+        title="Pangunahing Pahina ng Mag-aaral"
         description="Tingnan ang iyong susunod na aralin, aktibidad, puntos, at progreso sa HASA."
         noindex
         path="/student/dashboard"

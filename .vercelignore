@@ -1,0 +1,10 @@
+# Upload lamang ang kailangan ng Vercel: ang client build.
+.design/
+docs/
+server/
+client/dist/
+client/node_modules/
+**/*.test.js
+**/*.test.jsx
+**/test/
+*.log

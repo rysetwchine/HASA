@@ -1,0 +1,44 @@
+# HASA
+
+> HASA (Pantulong sa Pag-aaral) ay isang pantulong na kagamitang
+> pampagkatuto sa Araling Panlipunan 8 para sa mga mag-aaral at guro sa
+> Pilipinas. Filipino ang wika ng lahat ng interface at nilalaman.
+
+Canonical home: https://hasa-xtg1.vercel.app/
+
+## Ano ang HASA
+
+- Naghahain ng mga aralin sa Araling Panlipunan 8 na may tatlong bersyon ng
+  teksto: Malayang Pagbasa (independent), May Gabay na Pagbasa
+  (instructional), at Nahihirapang Pagbasa (frustration).
+- Ang antas ng pagbasa ay PINIPILI ng mag-aaral o ITINATALAGA ng guro.
+  Hindi sinusukat, hindi dinidiyagnos, at hindi hinuhulaan ng HASA ang
+  kakayahan sa pagbasa ng sinuman.
+- May mga aktibidad at pagsusulit na awtomatikong sinusuri sa server. Ang
+  iskor, XP, at badge ay kinukuwenta ng API, hindi ng browser.
+- May hiwalay na karanasan ang guro: klaseng may kodigo, listahan ng
+  mag-aaral, sariling aralin at pagsusulit, at ulat ng klase.
+
+## Mga pampublikong pahina
+
+- `/` — paglalarawan ng HASA, mga antas ng teksto, at paraan ng paggamit
+- `/login` — pagpasok ng mag-aaral o guro
+- `/register` — paggawa ng account (kailangan ng kodigo ng klase; ang
+  pagpaparehistro ng guro ay nangangailangan ng kodigo ng paaralan)
+
+## Mga pahinang hindi pampubliko
+
+Ang `/student/*` at `/teacher/*` ay naka-log in lamang at may
+`noindex, nofollow`. Walang datos ng mag-aaral na makukuha nang walang
+session, at hindi maaaring buksan ng isang guro ang mag-aaral ng ibang klase.
+
+## Probisyon sa AI
+
+Ang AI Tagapagpasimple ay opsyonal. Kapag walang naka-configure na
+provider, malinaw na sinasabi ng HASA na hindi ito magagamit; hindi ito
+gumagawa ng pekeng resulta.
+
+## Wika
+
+Filipino ang lahat ng interface at nilalaman. Nananatili sa Ingles ang mga
+teknikal na katawagan tulad ng XP, badge, username, password, at AI.

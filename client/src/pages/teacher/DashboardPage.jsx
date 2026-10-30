@@ -34,8 +34,8 @@ export default function TeacherDashboard() {
   const { data, error, loading } = useApi("/teacher/dashboard");
   const [copied, setCopied] = useState(false);
 
-  if (loading) return <Loading label="Inihahanda ang dashboard ng guro…" />;
-  if (error) return <Alert tone="danger" title="Hindi mabuksan ang dashboard">{errorMessage(error)}</Alert>;
+  if (loading) return <Loading label="Inihahanda ang pangunahing pahina ng guro…" />;
+  if (error) return <Alert tone="danger" title="Hindi mabuksan ang pangunahing pahina">{errorMessage(error)}</Alert>;
 
   const { class: cls, counts, averages, students, recentAttempts } = data;
   const copyCode = async () => {
@@ -51,14 +51,14 @@ export default function TeacherDashboard() {
   return (
     <>
       <Seo
-        title="Dashboard ng Guro"
+        title="Pangunahing Pahina ng Guro"
         description="Tingnan ang buod ng iyong klase, aktibidad ng mag-aaral, at resulta sa HASA."
         noindex
         path="/teacher/dashboard"
       />
       <PageHeader
         eyebrow={cls.name}
-        title="Dashboard ng Guro"
+        title="Pangunahing Pahina ng Guro"
         description="Malinaw na tanawin ng gawain, progreso, at resulta ng iyong klase."
         actions={
           <button

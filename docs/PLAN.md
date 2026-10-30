@@ -56,7 +56,8 @@ HASA/
 ├─ AGENTS.md
 ├─ README.md
 ├─ .gitignore
-├─ .env.example
+├─ server/.env.example  # server environment names (no real values)
+├─ client/.env.example  # client VITE_* names
 ├─ docs/
 │  ├─ REQUIREMENTS.md
 │  ├─ PLAN.md

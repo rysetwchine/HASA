@@ -97,7 +97,14 @@ const LESSONS = [
         example: "Mataba ang lupa sa lambak dahil sa daluyong ng ilog.",
       },
     ],
-    independent: `Bakit umusbong ang mga unang sibilisasyon sa tabi ng ilog?
+    independent: `Ang heograpiya ay isang mahalagang salik sa pag-usbong ng mga unang sibilisasyon. Noong sinaunang panahon, ang mga tao ay nanirahan malapit sa mga ilog, lambak, at matabang lupa upang makakuha ng tubig at pagkain.
+
+Nang matutunan ng mga tao ang agrikultura, nagkaroon sila ng pantay-pantay at madalas na sobrang ani. Dahil hindi na kailangang lahat ay magsaka, nagsimulang magkaroon ng espesyalisasyon sa trabaho. May naging artisano, pari, mangangalakal, at tagapagtala.
+
+Sa paglaki ng populasyon, kailangan na ng organisadong pamahalaan, batas, at sistema ng pagsulat. Ang mga lungsod-estado ay umusbong sa mga lambak ng ilog tulad ng Tigris at Euphrates, Nile, Indus, at Huang He. Ang mga ilog ay nagbigay ng tubig, pataba mula sa daluyong, at daan para sa kalakalan.
+
+Sa madaling salita, ang likas na kapaligiran ay tumulong sa paglikha ng agrikultura, kalakalan, pamahalaan, at kultura. Ito ang mga haligi ng isang sibilisasyon.`,
+    instructional: `Bakit umusbong ang mga unang sibilisasyon sa tabi ng ilog?
 
 Noong unang panahon, naglakbay ang mga tao para humanap ng pagkain. Napansin nila na maganda ang lupa sa tabi ng ilog. Umuulan doon at umaapaw ang tubig. Dahil dito, mataba ang lupa at maganda itong taniman.
 
@@ -106,13 +113,6 @@ Nang matuto silang magtanim, nagkaroon sila ng sobrang pagkain. Hindi na kailang
 Dahil marami nang tao sa isang lugar, kailangan nila ng pamahalaan at mga tuntunin. Kailangan din nila ng paraan para itala ang bilang ng pagkain at kalakal. Kaya nagkaroon sila ng pagsulat.
 
 Kaya mahalaga ang heograpiya. Ang tubig, matabang lupa, at magandang klima ang tumulong sa pag-usbong ng mga unang sibilisasyon.`,
-    instructional: `Ang heograpiya ay isang mahalagang salik sa pag-usbong ng mga unang sibilisasyon. Noong sinaunang panahon, ang mga tao ay nanirahan malapit sa mga ilog, lambak, at matabang lupa upang makakuha ng tubig at pagkain.
-
-Nang matutunan ng mga tao ang agrikultura, nagkaroon sila ng pantay-pantay at madalas na sobrang ani. Dahil hindi na kailangang lahat ay magsaka, nagsimulang magkaroon ng espesyalisasyon sa trabaho. May naging artisano, pari, mangangalakal, at tagapagtala.
-
-Sa paglaki ng populasyon, kailangan na ng organisadong pamahalaan, batas, at sistema ng pagsulat. Ang mga lungsod-estado ay umusbong sa mga lambak ng ilog tulad ng Tigris at Euphrates, Nile, Indus, at Huang He. Ang mga ilog ay nagbigay ng tubig, pataba mula sa daluyong, at daan para sa kalakalan.
-
-Sa madaling salita, ang likas na kapaligiran ay tumulong sa paglikha ng agrikultura, kalakalan, pamahalaan, at kultura. Ito ang mga haligi ng isang sibilisasyon.`,
     frustration: `Ano ang sibilisasyon? Ito ay isang malaking pamayanan. May lungsod ito. May pamahalaan ito. May relihiyon at kalakalan din ito. May paraan din ito ng pagsulat.
 
 Saan nagsimula ang mga sibilisasyon? Nagsimula ang marami sa tabi ng ilog. Bakit? May tubig ang ilog. May matabang lupa rin sa tabi nito. Maganda itong taniman.
@@ -158,16 +158,7 @@ Dahil marami ang tao, kailangan nila ng tuntunin. Kailangan din nila ng pamahala
         example: "Nagpatayo ang mga Sumerian ng sistema ng patubig.",
       },
     ],
-    independent: `Ang Mesopotamia ay isang rehiyon sa Gitnang Silangan. Nasa pagitan ito ng mga ilog Tigris at Euphrates. Ang ibig sabihin ng pangalan nito ay "lupain sa pagitan ng mga ilog."
-
-Dito umusbong ang Sumer, isa sa mga unang sibilisasyon. Nagtayo ang mga Sumerian ng mga lungsod-estado tulad ng Ur at Uruk. Bawat lungsod ay may sariling pinuno at diyos.
-
-Mahalaga ang mga ilog sa kanila. Pero may baha rin. Kaya gumawa sila ng mga kanal at dike. Tinatawag itong sistema ng patubig. Dahil dito, nakapagtanim sila ng maraming pagkain.
-
-Nagsulat din ang mga Sumerian. Gumamit sila ng cuneiform. Nag-uukit sila ng hugis-kalso sa putik na tablet. Ginamit nila ito sa pagtatala ng kalakalan at batas.
-
-Si Hammurabi ang isa sa mga kilalang pinuno ng Mesopotamia. Naglagda siya ng mga batas na nakasulat sa bato. Mahalaga ang Mesopotamia dahil dito nagsimula ang maraming bagay na ginagamit pa rin natin, tulad ng lungsod, pagsulat, at batas.`,
-    instructional: `Ang Mesopotamia ay matatagpuan sa rehiyon ng Fertile Crescent, sa pagitan ng mga ilog Tigris at Euphrates. Ang pangalan nito ay nangangahulugang "lupain sa pagitan ng mga ilog." Dito umusbong ang ilan sa mga unang lungsod at sibilisasyon sa daigdig.
+    independent: `Ang Mesopotamia ay matatagpuan sa rehiyon ng Fertile Crescent, sa pagitan ng mga ilog Tigris at Euphrates. Ang pangalan nito ay nangangahulugang "lupain sa pagitan ng mga ilog." Dito umusbong ang ilan sa mga unang lungsod at sibilisasyon sa daigdig.
 
 Ang mga Sumerian ang nagtatag ng mga lungsod-estado tulad ng Uruk, Ur, at Lagash. Bawat lungsod-estado ay may sariling pinuno, templo, at diyos. Dahil walang sentralisadong pamahalaan, madalas silang magkaroon ng hidwaan.
 
@@ -176,6 +167,15 @@ Upang makapagtanim sa tuyong lupa, gumawa ang mga Sumerian ng sistema ng patubig
 Naimbento rin nila ang cuneiform, isang sistema ng pagsulat gamit ang matulis na kawayan sa putik na tablet. Ito ang ginamit sa pagtatala ng kalakalan, buwis, at batas. Ang Code of Hammurabi ay isa sa mga unang nakasulat na kalipunan ng batas.
 
 Ang Mesopotamia ay mahalaga dahil dito lumitaw ang mga unang lungsod, pagsulat, batas, at institusyong panlipunan.`,
+    instructional: `Ang Mesopotamia ay isang rehiyon sa Gitnang Silangan. Nasa pagitan ito ng mga ilog Tigris at Euphrates. Ang ibig sabihin ng pangalan nito ay "lupain sa pagitan ng mga ilog."
+
+Dito umusbong ang Sumer, isa sa mga unang sibilisasyon. Nagtayo ang mga Sumerian ng mga lungsod-estado tulad ng Ur at Uruk. Bawat lungsod ay may sariling pinuno at diyos.
+
+Mahalaga ang mga ilog sa kanila. Pero may baha rin. Kaya gumawa sila ng mga kanal at dike. Tinatawag itong sistema ng patubig. Dahil dito, nakapagtanim sila ng maraming pagkain.
+
+Nagsulat din ang mga Sumerian. Gumamit sila ng cuneiform. Nag-uukit sila ng hugis-kalso sa putik na tablet. Ginamit nila ito sa pagtatala ng kalakalan at batas.
+
+Si Hammurabi ang isa sa mga kilalang pinuno ng Mesopotamia. Naglagda siya ng mga batas na nakasulat sa bato. Mahalaga ang Mesopotamia dahil dito nagsimula ang maraming bagay na ginagamit pa rin natin, tulad ng lungsod, pagsulat, at batas.`,
     frustration: `Ang Mesopotamia ay isang lugar. Nasa Gitnang Silangan ito. May dalawang malaking ilog dito: ang Tigris at Euphrates.
 
 Ang ibig sabihin ng Mesopotamia ay "lupain sa pagitan ng mga ilog." Dito nakatira ang mga Sumerian. Sila ay nagtayo ng mga lungsod. Ang mga lungsod na ito ay may sariling pinuno. Tinatawag silang lungsod-estado.
@@ -221,7 +221,14 @@ Si Hammurabi ay isang hari. Gumawa siya ng mga batas. Isinulat ang mga ito sa ba
         example: "Ang Great Pyramid sa Giza ay para kay Pharaoh Khufu.",
       },
     ],
-    independent: `Ang Ehipto ay isang bansa sa Africa. Dumadaloy dito ang Ilog Nile. Mahalaga ang Nile sa mga taga-Ehipto.
+    independent: `Ang sinaunang Ehipto ay umusbong sa kahabaan ng Ilog Nile sa hilagang-silangan ng Africa. Ang Nile ay umaapaw taun-taon at nag-iiwan ng matabang putik sa mga pampang. Dahil dito, naging posible ang agrikultura sa disyerto. Sinabi ni Herodotus na ang Ehipto ay "regalo ng Nile."
+
+Ang sobrang ani ay nagbigay daan sa paglaki ng populasyon at sa pagkakaroon ng organisadong pamahalaan. Ang pharaoh ang pinakamataas na pinuno. Itinuturing siyang tagapamagitan ng mga diyos at may kontrol sa lupa, hukbo, at relihiyon. Tumulong ang mga escriba at opisyal sa pamamahala.
+
+Nagsulat ang mga Ehipto gamit ang hieroglyphics. Ginamit nila ang pagsulat sa relihiyon, batas, at talaan ng ani. Nagtayo rin sila ng mga piramide at templo. Ang mga piramide ay nagpapakita ng kakayahan sa inhinyeriya at ng paniniwala sa kabilang buhay.
+
+Ang Ehipto ay isang halimbawa ng sibilisasyong nakasalalay sa isang ilog. Ang Nile ang nagbigay ng tubig, matabang lupa, at transportasyon para sa kalakalan.`,
+    instructional: `Ang Ehipto ay isang bansa sa Africa. Dumadaloy dito ang Ilog Nile. Mahalaga ang Nile sa mga taga-Ehipto.
 
 Tuwing tag-init, umaapaw ang Nile. Pagkatapos ng baha, may natitirang matabang putik sa lupa. Maganda itong taniman. Dahil dito, nakapagtanim ang mga tao ng trigo at iba pang halaman. Kaya tinawag ng mananalaysay na Herodotus ang Ehipto na "regalo ng Nile."
 
@@ -230,13 +237,6 @@ Ang pinuno ng Ehipto ay tinatawag na pharaoh. Naniniwala ang mga tao na may kone
 Nagsulat din ang mga taga-Ehipto. Gumamit sila ng hieroglyphics. Mga larawan at simbolo ang kanilang ginamit. Nagtayo rin sila ng malalaking piramide para sa mga pharaoh.
 
 Mahalaga ang Nile sa Ehipto. Nagbigay ito ng tubig, pagkain, at daan para sa kalakalan. Dahil dito, umunlad ang kanilang sibilisasyon.`,
-    instructional: `Ang sinaunang Ehipto ay umusbong sa kahabaan ng Ilog Nile sa hilagang-silangan ng Africa. Ang Nile ay umaapaw taun-taon at nag-iiwan ng matabang putik sa mga pampang. Dahil dito, naging posible ang agrikultura sa disyerto. Sinabi ni Herodotus na ang Ehipto ay "regalo ng Nile."
-
-Ang sobrang ani ay nagbigay daan sa paglaki ng populasyon at sa pagkakaroon ng organisadong pamahalaan. Ang pharaoh ang pinakamataas na pinuno. Itinuturing siyang tagapamagitan ng mga diyos at may kontrol sa lupa, hukbo, at relihiyon. Tumulong ang mga escriba at opisyal sa pamamahala.
-
-Nagsulat ang mga Ehipto gamit ang hieroglyphics. Ginamit nila ang pagsulat sa relihiyon, batas, at talaan ng ani. Nagtayo rin sila ng mga piramide at templo. Ang mga piramide ay nagpapakita ng kakayahan sa inhinyeriya at ng paniniwala sa kabilang buhay.
-
-Ang Ehipto ay isang halimbawa ng sibilisasyong nakasalalay sa isang ilog. Ang Nile ang nagbigay ng tubig, matabang lupa, at transportasyon para sa kalakalan.`,
     frustration: `Ang Ehipto ay isang bansa sa Africa. May malaking ilog dito. Ang pangalan niya ay Nile.
 
 Mahalaga ang Nile. May tubig ito para sa mga tao at halaman. Tuwing tag-init, umaapaw ito. Pagkatapos, may matabang putik sa lupa. Maganda itong taniman ng trigo.
@@ -281,7 +281,14 @@ Nagsulat ang mga taga-Ehipto gamit ang mga larawan. Ang tawag dito ay hieroglyph
         example: "Si Socrates ay kilalang pilosopo sa Athens.",
       },
     ],
-    independent: `Ang sinaunang Greece ay binubuo ng maraming lungsod-estado. Tinatawag silang polis. Ang bawat polis ay may sariling pamahalaan at batas. Ang Athens at Sparta ang dalawang kilala.
+    independent: `Ang sinaunang Greece ay hindi isang malaking bansa kundi isang grupo ng mga polis o lungsod-estado. Ang bawat polis ay may sariling pamahalaan, batas, at hukbo. Ang Athens at Sparta ang pinakamakapangyarihan.
+
+Ang Athens ang unang lugar na nagkaroon ng demokrasya. Sa ilalim ni Cleisthenes, pinalawak ang paglahok ng mga mamamayan sa pagpili ng pinuno at sa paggawa ng batas. Gayunman, limitado ito: hindi makaboto ang mga babae, alipin, at dayuhan. Ang demokrasya sa Athens ay direktang demokrasya, kung saan direkta ang mamamayan sa pagboto.
+
+Ang Sparta naman ay nakatuon sa hukbo at disiplina. May dalawang hari ito at isang konseho ng mga matatanda. Ang kapangyarihan ay hawak ng maliit na grupo, kaya tinatawag itong oligarkiya. Ang buhay sa Sparta ay mahigpit at nakatuon sa pagiging sundalo.
+
+Ang Greece ay tahanan din ng pilosopiya. Sina Socrates, Plato, at Aristotle ay nagtanong tungkol sa kaalaman, etika, at pamahalaan. Ang kanilang mga ideya ay bahagi ng pundasyon ng makabagong pag-iisip.`,
+    instructional: `Ang sinaunang Greece ay binubuo ng maraming lungsod-estado. Tinatawag silang polis. Ang bawat polis ay may sariling pamahalaan at batas. Ang Athens at Sparta ang dalawang kilala.
 
 Ang Athens ay kilala sa demokrasya. Sa simula, hindi lahat ay makaboto. Mga lalaking mamamayan lamang ang may karapatan. Pero mahalaga ito dahil ang mga tao ang pumipili ng pinuno at bumuboto sa batas.
 
@@ -290,13 +297,6 @@ Ang Sparta ay iba. Mahigpit sila at nakatuon sa hukbo. Ang pamahalaan nila ay pi
 May mga pilosopo rin sa Greece. Sina Socrates, Plato, at Aristotle ay nagtanong tungkol sa tama at mali, kaalaman, at pamahalaan. Ang kanilang mga ideya ay ginagamit pa rin hanggang ngayon.
 
 Mahalaga ang Greece dahil dito nagsimula ang ideya ng demokrasya at ng pag-aaral sa pamamagitan ng pangangatwiran.`,
-    instructional: `Ang sinaunang Greece ay hindi isang malaking bansa kundi isang grupo ng mga polis o lungsod-estado. Ang bawat polis ay may sariling pamahalaan, batas, at hukbo. Ang Athens at Sparta ang pinakamakapangyarihan.
-
-Ang Athens ang unang lugar na nagkaroon ng demokrasya. Sa ilalim ni Cleisthenes, pinalawak ang paglahok ng mga mamamayan sa pagpili ng pinuno at sa paggawa ng batas. Gayunman, limitado ito: hindi makaboto ang mga babae, alipin, at dayuhan. Ang demokrasya sa Athens ay direktang demokrasya, kung saan direkta ang mamamayan sa pagboto.
-
-Ang Sparta naman ay nakatuon sa hukbo at disiplina. May dalawang hari ito at isang konseho ng mga matatanda. Ang kapangyarihan ay hawak ng maliit na grupo, kaya tinatawag itong oligarkiya. Ang buhay sa Sparta ay mahigpit at nakatuon sa pagiging sundalo.
-
-Ang Greece ay tahanan din ng pilosopiya. Sina Socrates, Plato, at Aristotle ay nagtanong tungkol sa kaalaman, etika, at pamahalaan. Ang kanilang mga ideya ay bahagi ng pundasyon ng makabagong pag-iisip.`,
     frustration: `Ang sinaunang Greece ay may maraming lungsod. Ang tawag sa lungsod ay polis. Ang bawat polis ay may sariling pinuno at batas. Ang Athens at Sparta ang dalawang kilalang polis.
 
 Ang Athens ay may demokrasya. Ang ibig sabihin nito ay ang mga tao ang pumipili ng pinuno. Bumuboto rin sila sa batas. Pero hindi lahat ay makaboto. Mga lalaking mamamayan lamang. Hindi makaboto ang mga babae at alipin.
@@ -341,7 +341,14 @@ Mahalaga ang Greece. Dito nagsimula ang demokrasya. Dito rin nagsimula ang pilos
         example: "Sa panahon ng Pax Romana, umunlad ang kalakalan.",
       },
     ],
-    independent: `Ang Roma ay isang lungsod sa Italy. Noong una, may mga hari ito. Pagkatapos, naging republika ito. Sa republika, pumipili ang mga tao ng pinuno.
+    independent: `Ayon sa tradisyon, itinatag ang Roma noong 753 BCE. Sa simula, pinamunuan ito ng mga hari. Noong 509 BCE, naging republika ito. Sa republika, ang mga mamamayan ay pumipili ng mga opisyal sa halip na mana ang pamumuno.
+
+Ang Senado ang pangunahing konseho ng Roma. Binubuo ito ng mga patrician, o maykayang pamilya. May dalawang konsul na pinipili taun-taon upang mamuno sa hukbo at pamahalaan. Sa paglipas ng panahon, ang mga plebeian o karaniwang mamamayan ay nakakuha ng karapatang magkaroon ng tribuno at ng nakasulat na batas, ang Twelve Tables.
+
+Lumaki ang teritoryo ng Roma sa pamamagitan ng digmaan at alyansa. Noong 27 BCE, naging imperyo ito sa ilalim ni Augustus. Ang mga emperador ang naging pinakamataas na pinuno. Nagkaroon ng mahabang panahon ng kapayapaan at kaayusan na tinatawag na Pax Romana.
+
+Ang pamana ng Roma ay makikita sa batas, wika, arkitektura, at pamahalaan. Ang ideya ng republika at ng pantay na batas ay naging inspirasyon ng maraming bansa.`,
+    instructional: `Ang Roma ay isang lungsod sa Italy. Noong una, may mga hari ito. Pagkatapos, naging republika ito. Sa republika, pumipili ang mga tao ng pinuno.
 
 May Senado ang Roma. Dito nagpupulong ang mga maykayang pamilya. Sila ang gumagawa ng batas. May dalawa ring konsul na namumuno sa hukbo at pamahalaan. Isang taon lamang ang kanilang tungkulin.
 
@@ -350,13 +357,6 @@ Hindi lahat ay pantay sa Roma. Ang mga patrician ay maykaya. Ang mga plebeian ay
 Sa paglipas ng panahon, lumaki ang Roma. Naging imperyo ito sa ilalim ng mga emperador. May mga panahon ng kapayapaan na tinatawag na Pax Romana. Umunlad ang kalakalan at daan.
 
 Mahalaga ang Roma dahil sa batas, wika, at pamahalaan nito. Marami sa mga ideyang ito ang ginagamit pa rin ngayon.`,
-    instructional: `Ayon sa tradisyon, itinatag ang Roma noong 753 BCE. Sa simula, pinamunuan ito ng mga hari. Noong 509 BCE, naging republika ito. Sa republika, ang mga mamamayan ay pumipili ng mga opisyal sa halip na mana ang pamumuno.
-
-Ang Senado ang pangunahing konseho ng Roma. Binubuo ito ng mga patrician, o maykayang pamilya. May dalawang konsul na pinipili taun-taon upang mamuno sa hukbo at pamahalaan. Sa paglipas ng panahon, ang mga plebeian o karaniwang mamamayan ay nakakuha ng karapatang magkaroon ng tribuno at ng nakasulat na batas, ang Twelve Tables.
-
-Lumaki ang teritoryo ng Roma sa pamamagitan ng digmaan at alyansa. Noong 27 BCE, naging imperyo ito sa ilalim ni Augustus. Ang mga emperador ang naging pinakamataas na pinuno. Nagkaroon ng mahabang panahon ng kapayapaan at kaayusan na tinatawag na Pax Romana.
-
-Ang pamana ng Roma ay makikita sa batas, wika, arkitektura, at pamahalaan. Ang ideya ng republika at ng pantay na batas ay naging inspirasyon ng maraming bansa.`,
     frustration: `Ang Roma ay isang lungsod sa Italy. Noong una, may hari ito. Pagkatapos, naging republika.
 
 Ang republika ay pamahalaan kung saan pumipili ang tao ng pinuno. May Senado ang Roma. Dito nagpupulong ang mga maykaya. Gumagawa sila ng batas.
@@ -404,16 +404,7 @@ Mahalaga ang Roma. Marami tayong natutunan sa kanilang batas at pamahalaan.`,
         example: "Pinunit ng mga Katipunero ang kanilang cedula.",
       },
     ],
-    independent: `Noong ika-19 na siglo, ang Pilipinas ay pinamahalaan ng Espanya. Maraming Pilipino ang hindi masaya. May mga mabigat na buwis. May diskriminasyon. Hindi pantay ang turing sa mga Pilipino at Espanyol.
-
-May mga Pilipinong nag-aral sa Europa. Sina Jose Rizal, Marcelo H. del Pilar, at Graciano Lopez Jaena. Sumulat sila ng mga akda para ipakita ang problema sa bansa. Ginamit nila ang panulat, hindi ang sandata.
-
-Noong 1892, itinatag ni Andres Bonifacio ang Katipunan. Lihim itong samahan. Layunin nitong makamit ang kalayaan. May mga aral itong tinatawag na Kartilya. Isinulat ito ni Emilio Jacinto.
-
-Noong Agosto 1896, naghimagsik ang mga Katipunero. Pinunit nila ang kanilang cedula. Ito ang Cry of Pugad Lawin. Nagsimula ang rebolusyon. Naging bayani sina Bonifacio at Rizal.
-
-Noong Hunyo 12, 1898, idineklara ang kalayaan sa Kawit, Cavite. Mahalaga ang rebolusyon dahil ipinakita nito ang lakas ng nasyonalismo ng mga Pilipino.`,
-    instructional: `Ang nasyonalismo ay ang damdamin ng pagmamahal at katapatan sa sariling bansa. Sa Pilipinas, lumakas ito noong ika-19 na siglo dahil sa mga karanasang hindi makatarungan sa ilalim ng pamamahala ng Espanya.
+    independent: `Ang nasyonalismo ay ang damdamin ng pagmamahal at katapatan sa sariling bansa. Sa Pilipinas, lumakas ito noong ika-19 na siglo dahil sa mga karanasang hindi makatarungan sa ilalim ng pamamahala ng Espanya.
 
 Isa sa mga dahilan ay ang diskriminasyon. Hindi pantay ang turing sa mga Pilipino at Espanyol sa pamahalaan at simbahan. Mabigat din ang mga buwis at sapilitang paggawa. Maraming Pilipino ang naghangad ng reporma.
 
@@ -422,6 +413,15 @@ Ang mga ilustrado na sina Jose Rizal, Marcelo H. del Pilar, at Graciano Lopez Ja
 Itinatag ni Andres Bonifacio ang Kataastaasan, Kagalanggalangang Katipunan ng mga Anak ng Bayan noong 1892. Ang Katipunan ay lihim na samahan na naglalayong makamit ang kalayaan. Isinulat ni Emilio Jacinto ang Kartilya, na nagturo ng mga tungkulin at pagpapahalaga ng mga kasapi.
 
 Noong Agosto 1896, naganap ang sigaw ng rebolusyon, na karaniwang tinatawag na Cry of Pugad Lawin. Pinunit ng mga Katipunero ang kanilang cedula bilang tanda ng paghihimagsik. Noong Hunyo 12, 1898, idineklara ang kalayaan sa Kawit, Cavite.`,
+    instructional: `Noong ika-19 na siglo, ang Pilipinas ay pinamahalaan ng Espanya. Maraming Pilipino ang hindi masaya. May mga mabigat na buwis. May diskriminasyon. Hindi pantay ang turing sa mga Pilipino at Espanyol.
+
+May mga Pilipinong nag-aral sa Europa. Sina Jose Rizal, Marcelo H. del Pilar, at Graciano Lopez Jaena. Sumulat sila ng mga akda para ipakita ang problema sa bansa. Ginamit nila ang panulat, hindi ang sandata.
+
+Noong 1892, itinatag ni Andres Bonifacio ang Katipunan. Lihim itong samahan. Layunin nitong makamit ang kalayaan. May mga aral itong tinatawag na Kartilya. Isinulat ito ni Emilio Jacinto.
+
+Noong Agosto 1896, naghimagsik ang mga Katipunero. Pinunit nila ang kanilang cedula. Ito ang Cry of Pugad Lawin. Nagsimula ang rebolusyon. Naging bayani sina Bonifacio at Rizal.
+
+Noong Hunyo 12, 1898, idineklara ang kalayaan sa Kawit, Cavite. Mahalaga ang rebolusyon dahil ipinakita nito ang lakas ng nasyonalismo ng mga Pilipino.`,
     frustration: `Noong unang panahon, pinamahalaan ng Espanya ang Pilipinas. Maraming Pilipino ang nahirapan. Mabigat ang buwis. Hindi pantay ang turing sa kanila.
 
 May mga Pilipinong nag-aral sa ibang bansa. Si Jose Rizal ay isa sa kanila. Sumulat siya ng mga libro. Ipinakita niya ang problema sa bansa.
@@ -638,9 +638,9 @@ const ACTIVITIES = [
           "Pagdeklara ng kalayaan sa Kawit",
           "Pagbagsak ng Imperyo ng Roma",
         ],
-        correctIndex: 1,
+        correctIndex: 2,
         explanation:
-          "Itinatag ang Katipunan noong 1892, mas huli kaysa sa mga sinaunang pangyayari.",
+          "Ang pagdeklara ng kalayaan sa Kawit noong 1898 ang pinakahuli. Nauna rito ang pagbagsak ng Roma (476 AD) at ang pagtatag ng Katipunan (1892).",
       },
       {
         prompt: "Kailan itinatag ang Katipunan?",
@@ -983,10 +983,31 @@ export function seedBadges(db) {
 }
 
 export function seedCurriculum(db) {
-  const lessonCount = db.prepare("SELECT COUNT(*) AS count FROM lessons").get();
-  if (Number(lessonCount.count) > 0) return;
-
   const now = new Date().toISOString();
+
+  /*
+   * Ang seeding ay idempotent sa pamamagitan ng slug (aralin) at pamagat
+   * (aktibidad). Dati, humihinto ang seeding kapag may umiiral nang aralin,
+   * kaya hindi umaabot sa lumang database ang mga koreksyon sa nilalaman.
+   * Ngayon, ina-update ang platform rows (class_id IS NULL, created_by IS
+   * NULL) nang hindi binabago ang kanilang id — kaya nananatili ang
+   * lesson_progress, attempts, at attempt_answers ng mga mag-aaral.
+   *
+   * Hindi ginagalaw ang nilalamang ginawa ng guro (may class_id o
+   * created_by).
+   */
+  const LESSON_ID = new Map();
+
+  const selectLesson = db.prepare(
+    "SELECT id, class_id, created_by FROM lessons WHERE slug = ?",
+  );
+  const updateLesson = db.prepare(`
+    UPDATE lessons SET
+      title = ?, unit = ?, description = ?, difficulty = ?, estimated_minutes = ?,
+      xp = ?, content_independent = ?, content_instructional = ?,
+      content_frustration = ?, vocabulary_json = ?, published = 1, updated_at = ?
+    WHERE id = ?
+  `);
   const insertLesson = db.prepare(`
     INSERT INTO lessons (
       slug, title, unit, description, difficulty, estimated_minutes, xp,
@@ -995,10 +1016,8 @@ export function seedCurriculum(db) {
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NULL, NULL, ?, ?)
   `);
 
-  const lessonIds = new Map();
   for (const lesson of LESSONS) {
-    const result = insertLesson.run(
-      lesson.slug,
+    const values = [
       lesson.title,
       lesson.unit,
       lesson.description,
@@ -1009,45 +1028,122 @@ export function seedCurriculum(db) {
       lesson.instructional,
       lesson.frustration,
       JSON.stringify(lesson.vocabulary),
-      now,
-      now,
-    );
-    lessonIds.set(lesson.slug, Number(result.lastInsertRowid));
+    ];
+
+    const existing = selectLesson.get(lesson.slug);
+    if (!existing) {
+      const result = insertLesson.run(
+        lesson.slug,
+        ...values,
+        now,
+        now,
+      );
+      LESSON_ID.set(lesson.slug, Number(result.lastInsertRowid));
+      continue;
+    }
+
+    LESSON_ID.set(lesson.slug, Number(existing.id));
+    const isPlatformLesson = existing.class_id === null && existing.created_by === null;
+    if (isPlatformLesson) {
+      updateLesson.run(...values, now, Number(existing.id));
+    }
   }
 
+  const selectActivity = db.prepare(
+    "SELECT id, class_id, created_by FROM activities WHERE title = ? AND kind = ? ORDER BY id LIMIT 1",
+  );
+  const updateActivity = db.prepare(`
+    UPDATE activities SET
+      description = ?, lesson_id = ?, xp = ?, pass_percent = ?, timer_seconds = ?,
+      published = 1, updated_at = ?
+    WHERE id = ?
+  `);
   const insertActivity = db.prepare(`
     INSERT INTO activities (
       title, description, kind, lesson_id, xp, pass_percent, timer_seconds,
       published, class_id, created_by, created_at, updated_at
     ) VALUES (?, ?, ?, ?, ?, ?, ?, 1, NULL, NULL, ?, ?)
   `);
-  const insertQuestion = db.prepare(`
-    INSERT INTO questions (activity_id, position, prompt, options_json, correct_index, explanation)
-    VALUES (?, ?, ?, ?, ?, ?)
+  const selectQuestion = db.prepare(
+    "SELECT id FROM questions WHERE activity_id = ? AND position = ?",
+  );
+  const updateQuestion = db.prepare(`
+    UPDATE questions SET prompt = ?, options_json = ?, correct_index = ?, explanation = ?
+    WHERE id = ?
   `);
+  const insertQuestion = db.prepare(
+    "INSERT INTO questions (activity_id, position, prompt, options_json, correct_index, explanation) VALUES (?, ?, ?, ?, ?, ?)",
+  );
+  const deleteQuestion = db.prepare("DELETE FROM questions WHERE id = ?");
 
   for (const activity of ACTIVITIES) {
-    const result = insertActivity.run(
-      activity.title,
-      activity.description,
-      activity.kind,
-      lessonIds.get(activity.lessonSlug) ?? null,
-      activity.xp,
-      activity.passPercent,
-      activity.timerSeconds,
-      now,
-      now,
-    );
-    const activityId = Number(result.lastInsertRowid);
-    activity.questions.forEach((question, index) => {
-      insertQuestion.run(
-        activityId,
-        index + 1,
-        question.prompt,
-        JSON.stringify(question.options),
-        question.correctIndex,
-        question.explanation,
+    const existing = selectActivity.get(activity.title, activity.kind);
+    const lessonId = LESSON_ID.get(activity.lessonSlug) ?? null;
+    let activityId;
+
+    if (!existing) {
+      const result = insertActivity.run(
+        activity.title,
+        activity.description,
+        activity.kind,
+        lessonId,
+        activity.xp,
+        activity.passPercent,
+        activity.timerSeconds,
+        now,
+        now,
       );
+      activityId = Number(result.lastInsertRowid);
+    } else {
+      activityId = Number(existing.id);
+      const isPlatformActivity = existing.class_id === null && existing.created_by === null;
+      if (isPlatformActivity) {
+        updateActivity.run(
+          activity.description,
+          lessonId,
+          activity.xp,
+          activity.passPercent,
+          activity.timerSeconds,
+          now,
+          activityId,
+        );
+      }
+    }
+
+    // Tanong: i-update sa puwesto para manatili ang question_id na
+    // tinutukoy ng attempt_answers, at alisin ang sobrang puwesto.
+    const keptPositions = new Set();
+    activity.questions.forEach((question, index) => {
+      const position = index + 1;
+      keptPositions.add(position);
+      const existingQuestion = selectQuestion.get(activityId, position);
+      if (existingQuestion) {
+        updateQuestion.run(
+          question.prompt,
+          JSON.stringify(question.options),
+          question.correctIndex,
+          question.explanation,
+          Number(existingQuestion.id),
+        );
+      } else {
+        insertQuestion.run(
+          activityId,
+          position,
+          question.prompt,
+          JSON.stringify(question.options),
+          question.correctIndex,
+          question.explanation,
+        );
+      }
     });
+
+    const extraQuestions = db
+      .prepare("SELECT id, position FROM questions WHERE activity_id = ?")
+      .all(activityId);
+    for (const row of extraQuestions) {
+      if (!keptPositions.has(Number(row.position))) {
+        deleteQuestion.run(Number(row.id));
+      }
+    }
   }
 }

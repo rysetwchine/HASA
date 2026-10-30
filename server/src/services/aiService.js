@@ -5,9 +5,10 @@ import { sha256 } from "../utils/security.js";
 import { manilaDateKey, nowIso } from "../utils/time.js";
 
 const LEVEL_GUIDE = {
-  independent: "Maikling pangungusap, karaniwang salita, at kaunting gabay.",
+  independent:
+    "Buong teksto sa antas ng baitang: panatilihin ang orihinal na nilalaman, mas mahahabang pangungusap, at mas mayamang talasalitaan.",
   instructional:
-    "Katamtamang haba ng pangungusap, may maikling paliwanag sa mahirap na salita.",
+    "Katamtamang haba ng pangungusap, payak na salita, at maikling paliwanag sa mahihirap na termino.",
   frustration:
     "Napakaikling pangungusap, konkretong halimbawa, at hakbang-hakbang na paliwanag.",
 };

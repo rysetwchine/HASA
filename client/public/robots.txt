@@ -1,0 +1,13 @@
+# HASA — robots.txt
+# Pampublikong bahagi lamang ang dapat i-index. Ang mga pahina ng
+# naka-log in na mag-aaral at guro ay may noindex meta at naka-blangko rin
+# dito para hindi makita sa mga search engine.
+
+User-agent: *
+Allow: /
+Disallow: /student/
+Disallow: /teacher/
+Disallow: /login
+Disallow: /register
+
+Sitemap: https://hasa-xtg1.vercel.app/sitemap.xml
