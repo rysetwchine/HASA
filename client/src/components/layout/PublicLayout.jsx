@@ -11,7 +11,6 @@ export default function PublicLayout() {
           <Logo />
           <nav className="ml-auto hidden items-center gap-6 text-sm font-semibold text-plum-700 md:flex" aria-label="Pangunahing nabigasyon">
             <a href="#paano" className="hover:text-plum-900">Paano ito gumagana</a>
-            <a href="#para-sa-guro" className="hover:text-plum-900">Para sa guro</a>
             <Link to="/login" className="hover:text-plum-900">Mag-log in</Link>
           </nav>
           <Link to="/register" className={buttonClass({ size: "sm", className: "ml-auto md:ml-0" })}>

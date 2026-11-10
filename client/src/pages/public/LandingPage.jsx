@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link } from "react-router";
 import {
   ArrowRight,
@@ -6,154 +5,12 @@ import {
   BookOpen,
   Check,
   ClipboardCheck,
-  GraduationCap,
   Layers,
   LockKeyhole,
-  RotateCcw,
   Sparkles,
-  Star,
-  Users,
-  X,
 } from "lucide-react";
 import Seo from "../../components/Seo.jsx";
-import Logo from "../../components/Logo.jsx";
-import { buttonClass, Card, Chip } from "../../components/ui.jsx";
-import { cx } from "../../utils/cx.js";
-
-const DEMO_QUIZ = {
-  prompt: "Ano ang tawag sa lungsod-estado ng sinaunang Greece?",
-  options: ["Polis", "Imperyo", "Piramide", "Forum"],
-  answer: 0,
-  explanation:
-    "Ang polis ang lungsod-estado ng Greece. Sa Athens, dito nagsimula ang ideya ng demokrasya.",
-};
-
-function HeroQuiz() {
-  const [selected, setSelected] = useState(null);
-  const answered = selected !== null;
-  const correct = selected === DEMO_QUIZ.answer;
-
-  return (
-    <div className="p-5 sm:p-6">
-      <div className="flex items-start justify-between gap-3">
-        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-accent-strong">
-          Yunit 1 · Sinaunang Sibilisasyon
-        </p>
-        <span className="shrink-0 rounded-full bg-gold-soft px-2 py-0.5 text-[10px] font-bold text-brown">
-          +15 XP
-        </span>
-      </div>
-      <h2 id="landing-quiz-prompt" className="mt-1 text-xl font-bold tracking-tight text-ink">
-        {DEMO_QUIZ.prompt}
-      </h2>
-      <p className="mt-1 text-xs text-muted">Piliin ang sagot. Walang account na kailangan.</p>
-
-      <div
-        role="group"
-        aria-labelledby="landing-quiz-prompt"
-        className="mt-4 grid gap-2 sm:grid-cols-2"
-      >
-        {DEMO_QUIZ.options.map((option, index) => {
-          const isAnswer = index === DEMO_QUIZ.answer;
-          const isSelected = index === selected;
-          let tone = "border-plum-200 bg-white text-ink hover:border-accent hover:bg-accent-soft/40";
-          if (answered && isAnswer) {
-            tone = "border-success/40 bg-success-soft text-success-strong";
-          } else if (answered && isSelected) {
-            tone = "border-danger/40 bg-danger-soft text-danger-deep";
-          } else if (answered) {
-            tone = "border-plum-100 bg-cream-50 text-muted opacity-70";
-          }
-
-          return (
-            <button
-              key={option}
-              type="button"
-              onClick={() => setSelected(index)}
-              disabled={answered}
-              className={cx(
-                "flex min-h-11 items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default",
-                tone,
-              )}
-            >
-              <span
-                className={cx(
-                  "grid size-7 shrink-0 place-items-center rounded-lg text-xs font-bold",
-                  answered && isAnswer
-                    ? "bg-success text-white"
-                    : answered && isSelected
-                      ? "bg-danger text-white"
-                      : "bg-plum-50 text-plum-700",
-                )}
-              >
-                {String.fromCharCode(65 + index)}
-              </span>
-              <span className="min-w-0 flex-1">{option}</span>
-              {answered && isAnswer ? (
-                <Check className="size-4 shrink-0" aria-hidden="true" />
-              ) : null}
-              {answered && isSelected && !isAnswer ? (
-                <X className="size-4 shrink-0" aria-hidden="true" />
-              ) : null}
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="mt-3 min-h-12" aria-live="polite">
-        {answered ? (
-          <div
-            className={cx(
-              "animate-pop rounded-xl border px-3.5 py-2.5",
-              correct ? "border-success/20 bg-success-soft" : "border-danger/20 bg-danger-soft",
-            )}
-          >
-            <p
-              className={cx(
-                "flex items-center gap-1.5 text-sm font-bold",
-                correct ? "text-success-strong" : "text-danger-deep",
-              )}
-            >
-              {correct ? (
-                <Star className="size-4 animate-star" aria-hidden="true" />
-              ) : (
-                <X className="size-4" aria-hidden="true" />
-              )}
-              {correct
-                ? "Tama! +15 XP"
-                : `Hindi pa. ${DEMO_QUIZ.options[DEMO_QUIZ.answer]} ang tamang sagot.`}
-            </p>
-            <p className="mt-0.5 text-xs leading-relaxed text-plum-700">
-              {DEMO_QUIZ.explanation}
-            </p>
-          </div>
-        ) : null}
-      </div>
-
-      <div className="mt-3 flex items-center justify-between gap-3">
-        {answered ? (
-          <button
-            type="button"
-            onClick={() => setSelected(null)}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-plum-700 hover:text-plum-900"
-          >
-            <RotateCcw className="size-3.5" aria-hidden="true" />
-            Subukan ulit
-          </button>
-        ) : (
-          <span className="text-xs text-muted">Isang tanong lang ito</span>
-        )}
-        <Link
-          to="/register"
-          className="inline-flex items-center gap-1 text-xs font-bold text-accent-strong hover:text-accent-deep"
-        >
-          Gawin ang buong quest
-          <ArrowRight className="size-3.5" aria-hidden="true" />
-        </Link>
-      </div>
-    </div>
-  );
-}
+import { buttonClass, Chip } from "../../components/ui.jsx";
 
 const FEATURES = [
   {
@@ -205,20 +62,20 @@ export default function LandingPage() {
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute -right-24 -top-24 size-[28rem] rounded-full bg-gold/20 blur-3xl" aria-hidden="true" />
         <div className="pointer-events-none absolute -left-32 top-48 size-[24rem] rounded-full bg-accent/10 blur-3xl" aria-hidden="true" />
-        <div className="relative mx-auto grid w-full max-w-6xl items-center gap-12 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
+        <div className="relative mx-auto w-full max-w-4xl px-4 py-16 text-center sm:px-6 sm:py-24">
           <div className="animate-rise">
             <Chip tone="gold" className="mb-5">
               <Sparkles className="size-3.5" aria-hidden="true" />
               Araling Panlipunan · Baitang 8
             </Chip>
-            <h1 className="max-w-xl text-4xl font-extrabold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-[3.4rem]">
+            <h1 className="mx-auto max-w-2xl text-4xl font-extrabold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-[3.4rem]">
               Mas malinaw ang kasaysayan kapag naiintindihan mo ito.
             </h1>
-            <p className="mt-5 max-w-lg text-lg leading-relaxed text-muted">
+            <p className="mx-auto mt-5 max-w-lg text-lg leading-relaxed text-muted">
               Isang aralin, tatlong antas ng pagbasa. Piliin ang bersyong akma sa iyo,
               sagutin ang mga tanong, at sundan ang tunay na progreso kasama ang guro.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link to="/register" className={buttonClass({ size: "lg" })}>
                 Simulan ang pag-aaral
                 <ArrowRight className="size-4.5" aria-hidden="true" />
@@ -227,25 +84,11 @@ export default function LandingPage() {
                 May account na ako
               </Link>
             </div>
-            <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium text-plum-700">
+            <ul className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-medium text-plum-700">
               <li className="flex items-center gap-2"><Check className="size-4 text-success" aria-hidden="true" /> Walang bayad</li>
               <li className="flex items-center gap-2"><Check className="size-4 text-success" aria-hidden="true" /> Para sa mag-aaral at guro</li>
               <li className="flex items-center gap-2"><Check className="size-4 text-success" aria-hidden="true" /> Tagalog ang buong app</li>
             </ul>
-          </div>
-
-          <div className="relative animate-rise-late">
-            <Card className="relative overflow-hidden border-plum-200/80 bg-white p-0 shadow-[0_24px_60px_-24px_rgba(46,40,87,0.35)]">
-              <div className="flex items-center justify-between border-b border-plum-100 bg-plum-50/70 px-5 py-4">
-                <div className="flex items-center gap-2">
-                  <span className="size-2.5 rounded-full bg-danger/70" aria-hidden="true" />
-                  <span className="size-2.5 rounded-full bg-gold" aria-hidden="true" />
-                  <span className="size-2.5 rounded-full bg-success/70" aria-hidden="true" />
-                </div>
-                <p className="text-xs font-semibold text-muted">Hamon ngayon</p>
-              </div>
-              <HeroQuiz />
-            </Card>
           </div>
         </div>
       </section>
@@ -283,73 +126,6 @@ export default function LandingPage() {
             </li>
           ))}
         </ol>
-      </section>
-
-      <section id="para-sa-guro" className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6 sm:pb-20">
-        <div className="overflow-hidden rounded-3xl bg-plum-900">
-          <div className="grid gap-10 p-7 sm:p-10 lg:grid-cols-[1.1fr_0.9fr] lg:p-12">
-            <div>
-              <Chip tone="gold" className="border-white/10 bg-white/10 text-gold">Para sa guro</Chip>
-              <h2 className="mt-4 text-3xl font-bold tracking-tight text-white">
-                Isang malinaw na tanawin ng buong klase.
-              </h2>
-              <p className="mt-3 max-w-xl text-base leading-relaxed text-plum-200">
-                Gumawa ng klase, ibahagi ang kodigo, at tingnan ang tunay na gawain ng mga
-                mag-aaral. Maaaring magdagdag ng sariling aralin, aktibidad, at pagsusulit.
-              </p>
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                <Link to="/register?role=teacher" className={buttonClass({ variant: "gold", size: "lg" })}>
-                  Gumawa ng account ng guro
-                  <ArrowRight className="size-4.5" aria-hidden="true" />
-                </Link>
-                <Link to="/login" className={buttonClass({ variant: "secondary", size: "lg", className: "border-white/20 bg-transparent text-white hover:bg-white/10" })}>
-                  Mag-log in
-                </Link>
-              </div>
-            </div>
-            <div className="space-y-3">
-              {[
-                { icon: Users, text: "Tingnan ang progreso ng bawat mag-aaral sa iyong klase" },
-                { icon: BookOpen, text: "I-edit ang mga aralin na ikaw mismo ang gumawa" },
-                { icon: ClipboardCheck, text: "Lumikha ng pagsusulit at tingnan ang iskor at pumasa" },
-                { icon: GraduationCap, text: "I-reset ang password ng mag-aaral nang ligtas" },
-              ].map(({ icon: Icon, text }) => (
-                <div key={text} className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-4">
-                  <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-white/10 text-gold">
-                    <Icon className="size-4.5" aria-hidden="true" />
-                  </span>
-                  <p className="pt-1 text-sm font-medium leading-relaxed text-plum-100">{text}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="border-t border-plum-100 bg-white">
-        <div className="mx-auto w-full max-w-4xl px-4 py-16 text-center sm:px-6">
-          <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-accent-soft text-accent-strong">
-            <GraduationCap className="size-6" aria-hidden="true" />
-          </span>
-          <h2 className="mt-4 text-3xl font-bold tracking-tight text-ink">Handa ka na bang magsimula?</h2>
-          <p className="mx-auto mt-3 max-w-xl text-base leading-relaxed text-muted">
-            Kunin ang kodigo ng klase sa iyong guro, gumawa ng account, at pumili ng antas ng
-            pagbasa. Maaari mo itong palitan anumang oras sa iyong profile.
-          </p>
-          <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link to="/register" className={buttonClass({ size: "lg" })}>
-              Gumawa ng account
-              <ArrowRight className="size-4.5" aria-hidden="true" />
-            </Link>
-            <Link to="/login" className={buttonClass({ variant: "secondary", size: "lg" })}>
-              Mag-log in
-            </Link>
-          </div>
-          <div className="mt-10 flex items-center justify-center gap-2 text-xs text-muted">
-            <Logo compact to="/" />
-            <span>· Pantulong sa Araling Panlipunan 8</span>
-          </div>
-        </div>
       </section>
     </>
   );
