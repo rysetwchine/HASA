@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router";
 import {
   ArrowRight,
@@ -8,31 +9,151 @@ import {
   GraduationCap,
   Layers,
   LockKeyhole,
+  RotateCcw,
   Sparkles,
-  Trophy,
+  Star,
   Users,
+  X,
 } from "lucide-react";
 import Seo from "../../components/Seo.jsx";
 import Logo from "../../components/Logo.jsx";
 import { buttonClass, Card, Chip } from "../../components/ui.jsx";
+import { cx } from "../../utils/cx.js";
 
-const LEVELS = [
-  {
-    name: "Malayang Pagbasa",
-    tag: "Independent",
-    text: "Umusbong ang mga unang lungsod sa tabi ng mga ilog dahil may tubig at matabang lupa para sa agrikultura. Nang magkaroon ng sobrang ani at espesyalisasyon sa trabaho, lumitaw ang pamahalaan, batas, at sistema ng pagsulat.",
-  },
-  {
-    name: "May Gabay na Pagbasa",
-    tag: "Instructional",
-    text: "Umusbong ang mga unang lungsod sa tabi ng mga ilog dahil may tubig at matabang lupa. Dahil may sobrang pagkain, may mga taong naging artisano at tagapagtala.",
-  },
-  {
-    name: "Nahihirapang Pagbasa",
-    tag: "Frustration",
-    text: "May tubig sa ilog. May matabang lupa rin. Kaya nagtanim ng pagkain ang mga tao. Dito nagsimula ang mga lungsod.",
-  },
-];
+const DEMO_QUIZ = {
+  prompt: "Ano ang tawag sa lungsod-estado ng sinaunang Greece?",
+  options: ["Polis", "Imperyo", "Piramide", "Forum"],
+  answer: 0,
+  explanation:
+    "Ang polis ang lungsod-estado ng Greece. Sa Athens, dito nagsimula ang ideya ng demokrasya.",
+};
+
+function HeroQuiz() {
+  const [selected, setSelected] = useState(null);
+  const answered = selected !== null;
+  const correct = selected === DEMO_QUIZ.answer;
+
+  return (
+    <div className="p-5 sm:p-6">
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-accent-strong">
+          Yunit 1 · Sinaunang Sibilisasyon
+        </p>
+        <span className="shrink-0 rounded-full bg-gold-soft px-2 py-0.5 text-[10px] font-bold text-brown">
+          +15 XP
+        </span>
+      </div>
+      <h2 id="landing-quiz-prompt" className="mt-1 text-xl font-bold tracking-tight text-ink">
+        {DEMO_QUIZ.prompt}
+      </h2>
+      <p className="mt-1 text-xs text-muted">Piliin ang sagot. Walang account na kailangan.</p>
+
+      <div
+        role="group"
+        aria-labelledby="landing-quiz-prompt"
+        className="mt-4 grid gap-2 sm:grid-cols-2"
+      >
+        {DEMO_QUIZ.options.map((option, index) => {
+          const isAnswer = index === DEMO_QUIZ.answer;
+          const isSelected = index === selected;
+          let tone = "border-plum-200 bg-white text-ink hover:border-accent hover:bg-accent-soft/40";
+          if (answered && isAnswer) {
+            tone = "border-success/40 bg-success-soft text-success-strong";
+          } else if (answered && isSelected) {
+            tone = "border-danger/40 bg-danger-soft text-danger-deep";
+          } else if (answered) {
+            tone = "border-plum-100 bg-cream-50 text-muted opacity-70";
+          }
+
+          return (
+            <button
+              key={option}
+              type="button"
+              onClick={() => setSelected(index)}
+              disabled={answered}
+              className={cx(
+                "flex min-h-11 items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default",
+                tone,
+              )}
+            >
+              <span
+                className={cx(
+                  "grid size-7 shrink-0 place-items-center rounded-lg text-xs font-bold",
+                  answered && isAnswer
+                    ? "bg-success text-white"
+                    : answered && isSelected
+                      ? "bg-danger text-white"
+                      : "bg-plum-50 text-plum-700",
+                )}
+              >
+                {String.fromCharCode(65 + index)}
+              </span>
+              <span className="min-w-0 flex-1">{option}</span>
+              {answered && isAnswer ? (
+                <Check className="size-4 shrink-0" aria-hidden="true" />
+              ) : null}
+              {answered && isSelected && !isAnswer ? (
+                <X className="size-4 shrink-0" aria-hidden="true" />
+              ) : null}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-3 min-h-12" aria-live="polite">
+        {answered ? (
+          <div
+            className={cx(
+              "animate-pop rounded-xl border px-3.5 py-2.5",
+              correct ? "border-success/20 bg-success-soft" : "border-danger/20 bg-danger-soft",
+            )}
+          >
+            <p
+              className={cx(
+                "flex items-center gap-1.5 text-sm font-bold",
+                correct ? "text-success-strong" : "text-danger-deep",
+              )}
+            >
+              {correct ? (
+                <Star className="size-4 animate-star" aria-hidden="true" />
+              ) : (
+                <X className="size-4" aria-hidden="true" />
+              )}
+              {correct
+                ? "Tama! +15 XP"
+                : `Hindi pa. ${DEMO_QUIZ.options[DEMO_QUIZ.answer]} ang tamang sagot.`}
+            </p>
+            <p className="mt-0.5 text-xs leading-relaxed text-plum-700">
+              {DEMO_QUIZ.explanation}
+            </p>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="mt-3 flex items-center justify-between gap-3">
+        {answered ? (
+          <button
+            type="button"
+            onClick={() => setSelected(null)}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-plum-700 hover:text-plum-900"
+          >
+            <RotateCcw className="size-3.5" aria-hidden="true" />
+            Subukan ulit
+          </button>
+        ) : (
+          <span className="text-xs text-muted">Isang tanong lang ito</span>
+        )}
+        <Link
+          to="/register"
+          className="inline-flex items-center gap-1 text-xs font-bold text-accent-strong hover:text-accent-deep"
+        >
+          Gawin ang buong quest
+          <ArrowRight className="size-3.5" aria-hidden="true" />
+        </Link>
+      </div>
+    </div>
+  );
+}
 
 const FEATURES = [
   {
@@ -114,13 +235,6 @@ export default function LandingPage() {
           </div>
 
           <div className="relative animate-rise-late">
-            <div className="absolute -right-4 -top-5 hidden rotate-3 rounded-2xl border border-gold-strong/30 bg-gold-soft px-4 py-3 shadow-sm sm:block">
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-brown">Bonus</p>
-              <p className="mt-0.5 flex items-center gap-1.5 text-sm font-bold text-brown">
-                <Trophy className="size-4" aria-hidden="true" /> Mga badge sa bawat hakbang
-              </p>
-            </div>
-
             <Card className="relative overflow-hidden border-plum-200/80 bg-white p-0 shadow-[0_24px_60px_-24px_rgba(46,40,87,0.35)]">
               <div className="flex items-center justify-between border-b border-plum-100 bg-plum-50/70 px-5 py-4">
                 <div className="flex items-center gap-2">
@@ -128,43 +242,9 @@ export default function LandingPage() {
                   <span className="size-2.5 rounded-full bg-gold" aria-hidden="true" />
                   <span className="size-2.5 rounded-full bg-success/70" aria-hidden="true" />
                 </div>
-                <p className="text-xs font-semibold text-muted">Tatlong antas ng teksto</p>
+                <p className="text-xs font-semibold text-muted">Hamon ngayon</p>
               </div>
-              <div className="p-5 sm:p-6">
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-accent-strong">
-                  Yunit 1 · Sinaunang Sibilisasyon
-                </p>
-                <h2 className="mt-1 text-xl font-bold tracking-tight text-ink">
-                  Heograpiya at ang Simula ng Sibilisasyon
-                </h2>
-                <div className="mt-4 space-y-2.5">
-                  {LEVELS.map((level, index) => (
-                    <div
-                      key={level.name}
-                      className={
-                        index === 1
-                          ? "rounded-xl border border-accent/30 bg-accent-soft p-3.5"
-                          : "rounded-xl border border-plum-100 bg-cream-50 p-3.5"
-                      }
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="text-xs font-bold text-ink">{level.name}</p>
-                        <span className="text-[10px] font-semibold uppercase tracking-wide text-muted">
-                          {level.tag}
-                        </span>
-                      </div>
-                      <p className="mt-1 text-xs leading-relaxed text-muted">{level.text}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-4 flex items-center justify-between rounded-xl bg-plum-900 px-4 py-3 text-white">
-                  <span className="flex items-center gap-2 text-xs font-semibold">
-                    <BookOpen className="size-4 text-gold" aria-hidden="true" />
-                    Basahin ang aralin
-                  </span>
-                  <ArrowRight className="size-4 text-plum-300" aria-hidden="true" />
-                </div>
-              </div>
+              <HeroQuiz />
             </Card>
           </div>
         </div>
