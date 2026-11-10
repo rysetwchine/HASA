@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import { ChevronRight, Flame, LogOut, Menu, Star, X } from "lucide-react";
 import { useAuth } from "../../app/AuthProvider.jsx";
@@ -6,6 +6,7 @@ import { navForRole } from "../../config/navigation.js";
 import { cx } from "../../utils/cx.js";
 import { formatNumber } from "../../lib/format.js";
 import Logo from "../Logo.jsx";
+import { Loading } from "../ui.jsx";
 
 function initials(name = "") {
   return name
@@ -74,23 +75,6 @@ export default function AppLayout({ role }) {
           </button>
         </div>
 
-        <div className="mx-5 mb-5 rounded-2xl border border-white/10 bg-white/5 p-3.5">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-plum-300">
-            {role === "teacher" ? "Klase" : "Antas ng pagbasa"}
-          </p>
-          <p className="mt-1 truncate text-sm font-semibold text-white">
-            {role === "teacher"
-              ? user?.class?.name || "Walang klase"
-              : user?.readingLevel === "independent"
-                ? "Malayang Pagbasa"
-                : user?.readingLevel === "frustration"
-                  ? "Nahihirapang Pagbasa"
-                  : "May Gabay na Pagbasa"}
-          </p>
-          {role === "teacher" && user?.class?.joinCode ? (
-            <p className="mt-1 font-mono text-xs text-gold">{user.class.joinCode}</p>
-          ) : null}
-        </div>
 
         <nav className="min-h-0 flex-1 overflow-y-auto px-3 pb-4">
           <ul className="space-y-1">
@@ -100,10 +84,10 @@ export default function AppLayout({ role }) {
                   to={to}
                   className={({ isActive }) =>
                     cx(
-                      "group flex min-h-11 items-center gap-3 rounded-xl px-3.5 text-sm font-semibold transition-colors",
+                      "group flex min-h-11 items-center gap-3 rounded-xl px-3.5 text-sm font-semibold transition-all duration-200",
                       isActive
                         ? "bg-white text-plum-900 shadow-sm"
-                        : "text-plum-100 hover:bg-white/10 hover:text-white",
+                        : "text-plum-100 hover:translate-x-1 hover:bg-white/10 hover:text-white",
                     )
                   }
                 >
@@ -128,7 +112,7 @@ export default function AppLayout({ role }) {
         <div className="border-t border-white/10 p-4">
           <Link
             to={role === "teacher" ? "/teacher/profile" : "/student/profile"}
-            className="flex items-center gap-3 rounded-xl p-2 hover:bg-white/10"
+            className="flex items-center gap-3 rounded-xl p-2 transition-all duration-200 hover:translate-x-1 hover:bg-white/10"
           >
             <span className="grid size-10 shrink-0 place-items-center rounded-full bg-gold text-sm font-bold text-brown">
               {initials(user?.displayName)}
@@ -145,7 +129,7 @@ export default function AppLayout({ role }) {
           <button
             type="button"
             onClick={handleLogout}
-            className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-plum-200 hover:bg-white/10 hover:text-white"
+            className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-plum-200 transition-all duration-200 hover:translate-x-1 hover:bg-white/10 hover:text-white"
           >
             <LogOut className="size-4" aria-hidden="true" />
             Mag-log out
@@ -186,8 +170,8 @@ export default function AppLayout({ role }) {
               ) : null}
               <Link
                 to={role === "teacher" ? "/teacher/profile" : "/student/profile"}
-                className="grid size-9 place-items-center rounded-full bg-plum-800 text-xs font-bold text-white"
-                aria-label="Buksan ang profile"
+                className="grid size-9 place-items-center rounded-full bg-plum-800 text-xs font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+                aria-label={`${initials(user?.displayName)}, buksan ang aking impormasyon`}
               >
                 {initials(user?.displayName)}
               </Link>
@@ -196,7 +180,11 @@ export default function AppLayout({ role }) {
         </header>
 
         <main id="nilalaman" className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-          <Outlet />
+          <div key={location.pathname} className="animate-page">
+            <Suspense fallback={<Loading label="Binubuksan ang pahina…" />}>
+              <Outlet />
+            </Suspense>
+          </div>
         </main>
         <footer className="border-t border-plum-100 px-4 py-5 text-center text-xs text-muted">
           HASA · Pantulong sa Araling Panlipunan para sa Baitang 8

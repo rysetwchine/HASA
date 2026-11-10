@@ -5,6 +5,7 @@ import {
   Lock,
   Pencil,
   Plus,
+  Swords,
   Trash2,
   Trophy,
   X,
@@ -369,25 +370,57 @@ export default function AssessmentsPage({ kind }) {
     <>
       <Seo title={`Pamamahala ng ${title}`} description={`Gumawa at pamahalaan ang ${title.toLowerCase()} sa HASA.`} noindex path={isQuiz ? "/teacher/mga-pagsusulit" : "/teacher/mga-aktibidad"} />
       <PageHeader
-        eyebrow="Pagsusukat"
+        eyebrow={isQuiz ? "Hamon ng klase" : "Pagsusukat"}
         title={title}
         description={
           isQuiz
-            ? "Gumawa ng pagsusulit na may paliwanag sa bawat sagot. Nakasara ang mga tanong kapag may naisumite nang sagot."
+            ? "Gumawa ng mga hamon para sa Arena ng Pagsusulit. Ikaw ang magtatakda ng mga tanong, tamang sagot, paliwanag, XP, oras, at porsyentong pumasa."
             : "Gumawa ng maikling aktibidad para sanayin ang mga konsepto ng klase."
         }
-        actions={<Button onClick={openCreate}><Plus className="size-4" aria-hidden="true" /> Bagong {isQuiz ? "pagsusulit" : "aktibidad"}</Button>}
+        actions={<Button onClick={openCreate}><Plus className="size-4" aria-hidden="true" /> Bagong {isQuiz ? "hamon" : "aktibidad"}</Button>}
       />
 
+      {isQuiz ? (
+        <Card className="animate-rise mb-6 border-accent/20 bg-gradient-to-br from-accent-soft via-white to-gold-soft">
+          <div className="flex items-start gap-3">
+            <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-plum-800 text-white">
+              <Swords className="size-5" aria-hidden="true" />
+            </span>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-accent-strong">
+                Ikaw ang gumagawa ng laro
+              </p>
+              <h2 className="mt-1 text-lg font-bold text-ink">
+                Bawat pagsusulit mo ay isang hamon sa arena
+              </h2>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted">
+                Ang mga tanong, tamang sagot, paliwanag, XP, oras, at porsyentong pumasa na
+                itatakda mo rito ang magiging laban ng klase sa Arena ng Pagsusulit.
+              </p>
+            </div>
+          </div>
+        </Card>
+      ) : null}
+
       <section>
-        <h2 className="mb-3 text-base font-bold text-ink">Aking mga gawa ({mine.length})</h2>
+        <h2 className="mb-3 text-base font-bold text-ink">
+          {isQuiz ? "Aking mga hamon" : "Aking mga gawa"} ({mine.length})
+        </h2>
         {mine.length === 0 ? (
           <Card className="border-dashed bg-white/60">
             <div className="flex flex-col items-center py-6 text-center">
               {isQuiz ? <FileText className="size-8 text-plum-400" aria-hidden="true" /> : <ClipboardList className="size-8 text-plum-400" aria-hidden="true" />}
-              <p className="mt-3 text-sm font-semibold text-ink">Wala ka pang sariling {isQuiz ? "pagsusulit" : "aktibidad"}</p>
-              <p className="mt-1 text-xs text-muted">Gumawa ng gawain na may mga tanong at tamang sagot.</p>
-              <Button className="mt-4" onClick={openCreate}><Plus className="size-4" aria-hidden="true" /> Gumawa</Button>
+              <p className="mt-3 text-sm font-semibold text-ink">
+                Wala ka pang sariling {isQuiz ? "hamon" : "aktibidad"}
+              </p>
+              <p className="mt-1 text-xs text-muted">
+                {isQuiz
+                  ? "Gumawa ng hamon na may mga tanong, tamang sagot, at paliwanag."
+                  : "Gumawa ng gawain na may mga tanong at tamang sagot."}
+              </p>
+              <Button className="mt-4" onClick={openCreate}>
+                <Plus className="size-4" aria-hidden="true" /> {isQuiz ? "Gumawa ng hamon" : "Gumawa"}
+              </Button>
             </div>
           </Card>
         ) : (
@@ -424,7 +457,9 @@ export default function AssessmentsPage({ kind }) {
       <section className="mt-7">
         <div className="mb-3 flex items-center gap-2">
           <Lock className="size-4 text-plum-400" aria-hidden="true" />
-          <h2 className="text-base font-bold text-ink">Pangkalahatang gawa ({shared.length})</h2>
+          <h2 className="text-base font-bold text-ink">
+            {isQuiz ? "Pangkalahatang hamon" : "Pangkalahatang gawa"} ({shared.length})
+          </h2>
         </div>
         {shared.length === 0 ? (
           <p className="rounded-xl border border-dashed border-plum-200 bg-white/60 p-4 text-sm text-muted">Walang pangkalahatang gawa sa uri na ito.</p>
@@ -450,7 +485,7 @@ export default function AssessmentsPage({ kind }) {
       <Modal
         open={Boolean(modal)}
         onClose={() => { setModal(null); setDetail(null); }}
-        title={modal?.mode === "create" ? `Bagong ${isQuiz ? "pagsusulit" : "aktibidad"}` : modal?.mode === "edit" ? "I-edit ang gawa" : "Tingnan ang gawa"}
+        title={modal?.mode === "create" ? `Bagong ${isQuiz ? "hamon" : "aktibidad"}` : modal?.mode === "edit" ? "I-edit ang gawa" : "Tingnan ang gawa"}
         description={modal?.mode === "preview" ? "Pagtingin lamang sa mga tanong at tamang sagot." : "Ang mga tanong ay may 2–4 na pagpipilian at isang tamang sagot."}
         size="xl"
       >
